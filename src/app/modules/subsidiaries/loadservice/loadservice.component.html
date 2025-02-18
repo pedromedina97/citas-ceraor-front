@@ -1,0 +1,43 @@
+<app-nav></app-nav>
+
+<div class="container mt-5">
+    <div class="row">
+      <h1>Cargar Servicios</h1>
+        <div class="col-12">
+          <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+            <div class="card-body">
+              <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container mt-4">
+                
+                <div formArrayName="items">
+   
+                      <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row justify-content-center mb-3">
+                        
+                          <div class="col-3">
+                            <input formControlName="name" class="form-control" placeholder="Nombre" />
+                          </div>
+                          <div class="col-3">
+                            <input formControlName="id_subsidiary" class="form-control" placeholder="ID Subsidiaria" />
+                          </div>
+                          <div class="col-3">
+                            <input formControlName="description" class="form-control" placeholder="Descripción" />
+                          </div>
+                          <div class="col-3 d-flex align-items-center">
+                            <button type="button" class="btn btn-danger" (click)="removeItem(i)">Eliminar</button>
+                          </div>
+                        
+                        
+                      </div>
+                   
+                 
+                  
+                </div>
+              
+                <button type="button" class="btn btn-primary mt-2 mr-2" (click)="addItem()">Agregar Item</button>
+                <button type="submit" class="btn btn-success mt-2 ml-2">Enviar Formulario</button>
+              </form>
+            </div>
+          </div>
+            
+        </div>
+    </div>
+</div>

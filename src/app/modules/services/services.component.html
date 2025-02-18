@@ -1,0 +1,97 @@
+<app-nav></app-nav>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+        <div class="card-body">
+          <div class="form-group">
+            <form #form="ngForm" (ngSubmit)="search(form)">
+              <label for="">Seleccione una sucursal:</label>
+              <select [(ngModel)]="subsidiary" class="form-control" name="id_subsidiary" id="">
+                <option *ngFor="let sub of subsidiaries" [value]="sub.id">{{sub.name}}</option>
+              </select>
+              <button type="submit" class="btn btn-primary w-100 mt-3">
+                <i class="bi bi-search"></i> Buscar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="col">
+      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Descripción</th>
+                  <th scope="col">Opciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let instance of filtered">
+                  <td>{{instance.name}}</td>
+
+                  <td>{{instance.description}}</td>
+                  <td>
+                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editModal"
+                      (click)="getInstance(instance, instance.id)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="delete(instance.id, instance.name)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sucursar</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form #form="ngForm">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2"
+                    [(ngModel)]="dataInstance.name">
+                  <input type="text" name="id_subsidiary" class="form-control mb-2" [(ngModel)]="dataInstance.id_subsidiary"
+                    id="">
+                  <input type="text" placeholder="Descripción" name="address" id="" class="form-control mb-2"
+                    [(ngModel)]="dataInstance.description">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="editInstance(form)">Editar</button>
+      </div>
+    </div>
+  </div>
+</div>
