@@ -1,79 +1,63 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
-        aria-controls="offcanvasExample">
-        <i class="bi bi-list"></i>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          
-          
-        </ul>
-        <div class="d-flex" role="search">
-          <img src="../../../assets/logo_ceraor.svg" class="text-center" width="80" height="auto" alt="">
-          
-        </div>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm rounded-4 px-3 my-3">
+  <div class="container-fluid">
+    <a class="btn btn-primary rounded-circle" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+      <i class="bi bi-list"></i>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      </ul>
+      <div class="d-flex" role="search">
+        <img src="../../../assets/logo_ceraor.svg" class="text-center" width="80" height="auto" alt="">
       </div>
-    </div>
-  </nav>
-  
-  
-  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-    <div class="offcanvas-header text-center">
-      <h2>Citas Ceraor3D</h2>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <div>
-        <ul class="list-group">
-          <a style="text-decoration: none;" [routerLink]="['/home']">
-            <li class="list-group-item">
-              <i class="bi bi-house-door-fill"></i>
-              Home
-            </li>
-          </a>
-          <a *ngIf="canShow('get_user')" style="text-decoration: none;" [routerLink]="['/users']">
-            <li class="list-group-item">
-              <i class="bi bi-people-fill"></i>
-              Usuarios
-            </li>
-          </a>
-          <a *ngIf="canShow('get_service')" style="text-decoration: none;" [routerLink]="['/services']">
-            <li class="list-group-item">
-              <i class="bi bi-list-check"></i>
-              Servicios
-            </li>
-          </a>
-          <a *ngIf="canShow('get_subsidiary')" style="text-decoration: none;" [routerLink]="['/subsidiaries']">
-            <li class="list-group-item">
-              <i class="bi bi-building"></i>
-              Sucursales
-            </li>
-          </a>
-          <a *ngIf="canShow('get_client')" style="text-decoration: none;" [routerLink]="['/clients']">
-            <li class="list-group-item">
-              <i class="bi bi-person-video2"></i>
-              Clientes
-            </li>
-          </a>
-          <a  style="text-decoration: none;" [routerLink]="['/agenda']">
-            <li class="list-group-item">
-              <i class="bi bi-calendar-date-fill"></i>
-              Agenda
-            </li>
-          </a>
-          <a  style="text-decoration: none; cursor: pointer;" (click)="logout()">
-            <li class="list-group-item">
-              <i class="bi bi-box-arrow-left"></i>
-              Cerrar Sesión
-            </li>
-          </a>
-        </ul>
-      </div>
-  
     </div>
   </div>
+</nav>
+
+<div class="offcanvas offcanvas-start rounded-top-4" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+  <div class="offcanvas-header">
+    <h2 class="m-0">Citas Ceraor3D</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-group list-group-flush">
+      <a style="text-decoration: none;" [routerLink]="['/home']">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-house-door-fill"></i> Home
+        </li>
+      </a>
+      <a *ngIf="canShow('get_user')" [routerLink]="['/users']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-people-fill"></i> Usuarios
+        </li>
+      </a>
+      <a *ngIf="canShow('get_service')" [routerLink]="['/services']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-list-check"></i> Servicios
+        </li>
+      </a>
+      <a *ngIf="canShow('get_subsidiary')" [routerLink]="['/subsidiaries']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-building"></i> Sucursales
+        </li>
+      </a>
+      <a *ngIf="canShow('get_client')" [routerLink]="['/clients']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-person-video2"></i> Clientes
+        </li>
+      </a>
+      <a [routerLink]="['/agenda']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 mb-2">
+          <i class="bi bi-calendar-date-fill"></i> Agenda
+        </li>
+      </a>
+      <a style="text-decoration: none; cursor: pointer;" (click)="logout()">
+        <li class="list-group-item item-hover rounded-3 mb-2 text-danger">
+          <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+        </li>
+      </a>
+    </ul>
+  </div>
+</div>
