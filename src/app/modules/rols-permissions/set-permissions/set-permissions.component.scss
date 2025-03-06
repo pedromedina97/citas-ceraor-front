@@ -1,0 +1,21 @@
+.scrollable-list {
+    max-height: 300px; /* Altura máxima de la lista */
+    overflow-y: auto;  /* Agrega la barra de desplazamiento vertical */
+    border: 1px solid #ccc; /* Borde opcional para separar */
+    padding: 5px; /* Espaciado interno */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+/* Personalizar la barra de desplazamiento */
+.scrollable-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

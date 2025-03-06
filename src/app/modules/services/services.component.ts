@@ -129,16 +129,16 @@ export class ServicesComponent implements OnInit {
             Swal.fire({
               title: 'Borrado',
               icon: 'success',
-              text: data.message,
+              text: data.msg,
               confirmButtonColor: '#198754'
             });
-            this.getServices();
+            this.filtered = [];
           },
           (error) => {
             Swal.fire({
               title: 'Error',
               icon: 'error',
-              text: error.error.message,
+              text: error.error.msg,
               confirmButtonColor: '#198754'
             });
           }

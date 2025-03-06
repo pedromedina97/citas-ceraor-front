@@ -15,6 +15,12 @@ import { AuthService } from './services/auth.service';
 import { LoginComponent } from './modules/login/login.component';
 import { LoadserviceComponent } from './modules/subsidiaries/loadservice/loadservice.component';
 import { UnauthorizedAccessComponent } from './modules/unauthorized-access/unauthorized-access.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RolsPermissionsComponent } from './modules/rols-permissions/rols-permissions.component';
+import { PermissionsComponent } from './modules/rols-permissions/permissions/permissions.component';
+import { RolsComponent } from './modules/rols-permissions/rols/rols.component';
+import { SetPermissionsComponent } from './modules/rols-permissions/set-permissions/set-permissions.component';
+import { OrdersComponent } from './modules/orders/orders.component';
 
 
 @NgModule({
@@ -29,14 +35,20 @@ import { UnauthorizedAccessComponent } from './modules/unauthorized-access/unaut
     HomeComponent,
     LoginComponent,
     LoadserviceComponent,
-    UnauthorizedAccessComponent
+    UnauthorizedAccessComponent,
+    RolsPermissionsComponent,
+    PermissionsComponent,
+    RolsComponent,
+    SetPermissionsComponent,
+    OrdersComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(ROUTES, {useHash: true})
+    RouterModule.forRoot(ROUTES, {useHash: true}),
+    NgbModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthService, multi: true},

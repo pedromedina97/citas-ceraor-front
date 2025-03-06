@@ -7,12 +7,22 @@ import { UsersComponent } from "./modules/users/users.component";
 import { SubsidiariesComponent } from "./modules/subsidiaries/subsidiaries.component";
 import { authGuard } from "./guards/auth.guard";
 import { LoadserviceComponent } from "./modules/subsidiaries/loadservice/loadservice.component";
+import { RolsPermissionsComponent } from "./modules/rols-permissions/rols-permissions.component";
+import { PermissionsComponent } from "./modules/rols-permissions/permissions/permissions.component";
+import { RolsComponent } from "./modules/rols-permissions/rols/rols.component";
+import { SetPermissionsComponent } from "./modules/rols-permissions/set-permissions/set-permissions.component";
+import { OrdersComponent } from "./modules/orders/orders.component";
 export const ROUTES: Routes = [
     { path: 'agenda', component: AgendaComponent, canActivate: [authGuard], data: {permissions: 'get_agenda'} },
     { path: 'services', component: ServicesComponent, canActivate: [authGuard], data: {permissions: 'get_service'} },
     { path: 'subsidiaries', component: SubsidiariesComponent, canActivate: [authGuard], data: {permissions: 'get_subsidiary'}},
     { path: 'subsidiaries/:id', component: LoadserviceComponent, canActivate: [authGuard], data: {permissions: 'getall_subsidiary'} },
     { path: 'users', component: UsersComponent, canActivate: [authGuard], data: {permissions: 'get_user'}},
+    { path: 'rolspermissions', component: RolsPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
+    { path: 'rolspermissions/permissions',component: PermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'} },
+    { path: 'rolspermissions/rols', component: RolsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
+    { path: 'rolspermissions/rols/setpermissions/:id', component: SetPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
+    { path: 'orders', component: OrdersComponent },
     { path: 'login', component: LoginComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard]},
     { path: '**', pathMatch: 'full', redirectTo: 'login'}

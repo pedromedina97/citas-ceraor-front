@@ -1,0 +1,25 @@
+<app-nav></app-nav>
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col mt-5">
+            <a style="text-decoration: none; position: relative;" [routerLink]="['rols']">
+                <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded hover-up">
+                    <div class="card-body">
+                        <h2 class="text-center px-5 py-5"><i class="bi bi-toggles2"></i> Administrar Roles</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col mt-5">
+            <a [routerLink]="['permissions']" style="text-decoration: none; position: relative;">
+                <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded hover-up">
+                    <div class="card-body">
+                        <h2 class="text-center px-5 py-5"><i class="bi bi-ui-checks"></i> Administrar Permisos</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

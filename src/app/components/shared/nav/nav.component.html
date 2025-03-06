@@ -24,37 +24,47 @@
   <div class="offcanvas-body">
     <ul class="list-group list-group-flush">
       <a style="text-decoration: none;" [routerLink]="['/home']">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-house-door-fill"></i> Home
         </li>
       </a>
       <a *ngIf="canShow('get_user')" [routerLink]="['/users']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-people-fill"></i> Usuarios
         </li>
       </a>
+      <a *ngIf="canShow('get_rolpermission')" [routerLink]="['/rolspermissions']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
+          <i class="bi bi-ui-radios"></i> Roles/Permisos
+        </li>
+      </a>
       <a *ngIf="canShow('get_service')" [routerLink]="['/services']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-list-check"></i> Servicios
         </li>
       </a>
       <a *ngIf="canShow('get_subsidiary')" [routerLink]="['/subsidiaries']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-building"></i> Sucursales
         </li>
       </a>
       <a *ngIf="canShow('get_client')" [routerLink]="['/clients']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-person-video2"></i> Clientes
         </li>
       </a>
       <a [routerLink]="['/agenda']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 mb-2">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-calendar-date-fill"></i> Agenda
         </li>
       </a>
+      <a *ngIf="canShow('get_order')" [routerLink]="['/orders']" style="text-decoration: none;">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
+          <i class="bi bi-list-ul"></i> Ordenes
+        </li>
+      </a>
       <a style="text-decoration: none; cursor: pointer;" (click)="logout()">
-        <li class="list-group-item item-hover rounded-3 mb-2 text-danger">
+        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2 text-danger">
           <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
         </li>
       </a>

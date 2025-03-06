@@ -1,0 +1,27 @@
+.hover-up {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .hover-up::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 123, 255, 0.2); /* Color azul semi-transparente */
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    left: 0;
+    top: 0;
+  }
+  
+  .hover-up:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .hover-up:hover::before {
+    transform: translateY(0);
+  }
+  

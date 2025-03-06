@@ -1,1 +1,57 @@
 <app-nav></app-nav>
+<div class="calendar-container">
+    <div class="calendar-header">
+      <button class="btn btn-outline-primary" (click)="prev()">Anterior</button>
+      <h4>{{ currentDate | date: 'MMMM yyyy' }}</h4>
+      <button class="btn btn-outline-primary" (click)="next()">Siguiente</button>
+    </div>
+  
+    <div class="view-toggle">
+      <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
+      <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
+      <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
+    </div>
+  
+    <div *ngIf="view === 'month'" class="month-view">
+      <div class="grid">
+        <div class="day-cell" *ngFor="let day of getDaysOfMonth()" (click)="openModal(day)">
+          <span class="day-number">{{ day | date: 'd' }}</span>
+          <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
+            <span>{{ event.title }}</span>
+            <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- MODAL PARA AGREGAR/EDITAR EVENTO -->
+    <!-- MODAL PARA AGREGAR/EDITAR EVENTO -->
+<ng-template #eventModal let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar Evento</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body">
+        <label>Título del Evento</label>
+        <input type="text" class="form-control" [(ngModel)]="eventForm.title" />
+  
+        <label>Fecha y Hora de Inicio</label>
+        <input type="datetime-local" class="form-control" [(ngModel)]="eventForm.start" />
+  
+        <label>Fecha y Hora de Fin</label>
+        <input type="datetime-local" class="form-control" [(ngModel)]="eventForm.end" />
+  
+        <label>Color</label>
+        <input type="color" class="form-control form-control-color" [(ngModel)]="eventForm.color" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()">Guardar</button>
+      </div>
+    </div>
+  </ng-template>
+  
+  </div>
+  
+  
