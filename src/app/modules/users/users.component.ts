@@ -17,7 +17,10 @@ export class UsersComponent implements OnInit {
     lastname: '',
     email: '',
     password: '',
-    birthday: ''
+    birthday: '',
+    phone: '',
+    related: '',
+    address: ''
   }
   id: string = '';
 
@@ -146,7 +149,10 @@ export class UsersComponent implements OnInit {
       lastname: '',
       email: '',
       password: '',
-      birthday: ''
+      birthday: '',
+      phone: '',
+      address: '',
+      related: ''
     }
   }
 
