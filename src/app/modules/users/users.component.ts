@@ -29,6 +29,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.getData();
+    this.getRols();
   }
 
   getData() {
@@ -103,7 +104,7 @@ export class UsersComponent implements OnInit {
         });
       }
     );
-    this.resetForm(form);
+    this.resetForm();
   }
 
   delete(id: string, name: string) {
@@ -142,8 +143,7 @@ export class UsersComponent implements OnInit {
    
   }
 
-  resetForm(form: NgForm) {
-    form.resetForm();
+  resetForm() {
     this.dataInstance = {
       name: '',
       lastname: '',
@@ -154,6 +154,17 @@ export class UsersComponent implements OnInit {
       address: '',
       related: ''
     }
+  }
+
+  getRols(){
+    this.api.getData('rol/getall').subscribe(
+      (resp: any)=>{
+        console.log(resp);
+      },
+      (error)=>{
+        console.log(error);
+      }
+    );
   }
 
 

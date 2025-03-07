@@ -10,7 +10,7 @@
                 [(ngModel)]="filterText" (input)="filter()">
 
               <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
-                data-bs-target="#createModal"><i class="bi bi-plus-circle"></i> Crear</button>
+                data-bs-target="#createModal" (click)="resetForm()"><i class="bi bi-plus-circle"></i> Crear</button>
             </div>
 
           </form>
@@ -71,8 +71,7 @@
               <div class="form-group">
                 <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2" [(ngModel)]="dataInstance.name">
                 <input type="text" placeholder="Apellidos" name="lastname" id="" class="form-control mb-2" [(ngModel)]="dataInstance.lastname">
-                <input type="date" class="form-control mb-2" name="birthday" placeholder="Nacimiento" id="" [(ngModel)]="dataInstance.birthday">
-                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
+                <input type="date" class="form-control mb-2" name="birthday" placeholder="Nacimiento" id="" [(ngModel)]="dataInstance.birthday">             
               </div>
             </div>
             <div class="col">
@@ -80,6 +79,7 @@
                 <input type="email" placeholder="email" name="email" id="" class="form-control mb-2" [(ngModel)]="dataInstance.email">
                 <input type="password" placeholder="password" name="password" id="" class="form-control mb-2 d-none" [(ngModel)]="dataInstance.password">
                 <input type="text" placeholder="Teléfono" name="phone" id="" class="form-control mb-2" [(ngModel)]="dataInstance.phone">
+                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
               </div>
             </div>
           </div>
@@ -111,7 +111,7 @@
                 <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2" [(ngModel)]="dataInstance.name">
                 <input type="text" placeholder="Apellidos" name="lastname" id="" class="form-control mb-2" [(ngModel)]="dataInstance.lastname">
                 <input type="date" class="form-control mb-2" name="birthday" placeholder="Nacimiento" id="" [(ngModel)]="dataInstance.birthday">
-                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
+                
               </div>
             </div>
             <div class="col">
@@ -119,6 +119,7 @@
                 <input type="email" placeholder="email" name="email" id="" class="form-control mb-2" [(ngModel)]="dataInstance.email">
                 <input type="password" placeholder="password" name="password" id="" class="form-control mb-2 d-none" [(ngModel)]="dataInstance.password">
                 <input type="text" placeholder="Teléfono" name="phone" id="" class="form-control mb-2" [(ngModel)]="dataInstance.phone">
+                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
               </div>
             </div>
           </div>
