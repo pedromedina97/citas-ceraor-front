@@ -1,55 +1,168 @@
+/* 🗓 CONTENEDOR PRINCIPAL DEL CALENDARIO */
 .calendar-container {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    max-width: 800px;
-    margin: auto;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .view-toggle {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  
-  .month-view .grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-  
-  .day-cell {
-    padding: 10px;
-    background: white;
-    border-radius: 6px;
-    text-align: center;
-    min-height: 80px;
-    position: relative;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s;
-  }
-  
-  .day-cell:hover {
-    background: #e9ecef;
-  }
-  
-  .modal-content {
-    border-radius: 12px;
-  }
-  
-  .modal-header {
-    border-bottom: none;
-  }
-  
-  .modal-footer {
-    border-top: none;
-  }
-  
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  width: 90%;
+  margin: auto;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 📌 CABECERA Y BOTONES DE VISTA */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.view-toggle {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* 📆 VISTA MENSUAL */
+.month-view .grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+/* Contenedor de cada día en la vista mensual */
+.day-cell {
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+  min-height: 80px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Efecto hover en la vista mensual */
+.day-cell:hover {
+  background: #e9ecef;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 📅 VISTA SEMANAL */
+.week-view {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+/* Estilo de cada día en la vista semanal */
+.week-day {
+  flex: 1;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+  min-height: 120px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Efecto hover en la vista semanal */
+.week-day:hover {
+  background: #e9ecef;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 📆 VISTA DIARIA */
+.day-view {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* 🌙 ESTILOS GENERALES DE EVENTOS */
+.events-container {
+  max-height: 80px;
+  overflow-y: auto;
+  padding-right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Estilos de cada evento */
+.event {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--event-color, #007bff);
+  color: white;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 24px;
+}
+
+/* Hover en eventos */
+.event:hover {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Botón de eliminar evento */
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.btn-delete:hover {
+  color: #ffdddd;
+}
+
+/* 🎨 MODALES */
+.modal-content {
+  border-radius: 12px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+
+/* 🌟 Estilo para la fecha actual en la vista mensual y semanal */
+.current-day {
+  background: rgba(0, 123, 255, 0.1); /* Azul claro translúcido */
+  border: 2px solid #007bff; /* Borde azul más visible */
+  box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.2); /* Sombra azul tenue */
+  transition: all 0.3s ease-in-out;
+}
+
+/* Hover en la fecha actual */
+.current-day:hover {
+  background: rgba(0, 123, 255, 0.2);
+  box-shadow: 0px 6px 12px rgba(0, 123, 255, 0.3);
+}

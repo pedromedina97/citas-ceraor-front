@@ -80,7 +80,7 @@ export class RolsComponent {
     let data = [
       this.dataInstance
     ];
-    this.api.createData('subsidiary/create', data).subscribe(
+    this.api.createData('rol/create', data).subscribe(
       (data: any) => {
         console.log(data);
         Swal.fire({
@@ -101,7 +101,7 @@ export class RolsComponent {
         });
       }
     );
-    this.resetForm(form);
+    this.resetForm();
   }
 
 
@@ -141,8 +141,7 @@ export class RolsComponent {
 
   }
 
-  resetForm(form: NgForm) {
-    form.resetForm();
+  resetForm() {
     this.dataInstance = {
       name: '',
       description: ''

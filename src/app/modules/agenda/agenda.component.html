@@ -1,55 +1,113 @@
 <app-nav></app-nav>
-<div class="calendar-container">
-    <div class="calendar-header">
+<div class="calendar-container mt-5 text-center">
+    <div class="calendar-header mt-5">
       <button class="btn btn-outline-primary" (click)="prev()">Anterior</button>
       <h4>{{ currentDate | date: 'MMMM yyyy' }}</h4>
       <button class="btn btn-outline-primary" (click)="next()">Siguiente</button>
     </div>
-  
-    <div class="view-toggle">
+    <div class="view-toggle btn-group text-center" role="group">
       <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
       <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
       <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
     </div>
   
+
     <div *ngIf="view === 'month'" class="month-view">
       <div class="grid">
-        <div class="day-cell" *ngFor="let day of getDaysOfMonth()" (click)="openModal(day)">
+        <div class="day-cell" 
+             *ngFor="let day of getDaysOfMonth()" 
+             (click)="openModal(day)" 
+             [ngClass]="{'current-day': isToday(day)}">
           <span class="day-number">{{ day | date: 'd' }}</span>
-          <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
+          
+          <div class="events-container">
+            <div *ngFor="let event of getEventsForDay(day)" 
+                 class="event" 
+                 [style.backgroundColor]="event.color">
+              <span>{{ event.title }}</span>
+              <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    <div *ngIf="view === 'week'" class="week-view">
+      <div *ngFor="let day of getDaysOfWeek()" 
+           class="week-day" 
+           (click)="openModal(day)" 
+           [ngClass]="{'current-day': isToday(day)}">
+        <span class="day-number">{{ day | date: 'EEEE d' }}</span>
+        
+        <div class="events-container">
+          <div *ngFor="let event of getEventsForDay(day)" 
+               class="event" 
+               [style.backgroundColor]="event.color">
             <span>{{ event.title }}</span>
             <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
           </div>
         </div>
       </div>
     </div>
-  
-    <!-- MODAL PARA AGREGAR/EDITAR EVENTO -->
-    <!-- MODAL PARA AGREGAR/EDITAR EVENTO -->
-<ng-template #eventModal let-modal>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Agregar Evento</h5>
-        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
-      </div>
-      <div class="modal-body">
-        <label>Título del Evento</label>
-        <input type="text" class="form-control" [(ngModel)]="eventForm.title" />
-  
-        <label>Fecha y Hora de Inicio</label>
-        <input type="datetime-local" class="form-control" [(ngModel)]="eventForm.start" />
-  
-        <label>Fecha y Hora de Fin</label>
-        <input type="datetime-local" class="form-control" [(ngModel)]="eventForm.end" />
-  
-        <label>Color</label>
-        <input type="color" class="form-control form-control-color" [(ngModel)]="eventForm.color" />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()">Guardar</button>
+    
+
+    <div *ngIf="view === 'day'" class="day-view">
+      <h4>{{ currentDate | date: 'EEEE, d MMMM yyyy' }}</h4>
+    
+      <div class="events-container">
+        <div *ngFor="let event of getDayEvents()" 
+             class="event" 
+             [style.backgroundColor]="event.color">
+          <span>{{ event.title }}</span>
+          <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+        </div>
       </div>
     </div>
+    
+    
+    
+    <ng-template #eventModal let-modal>
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Agregar Cita</h5>
+              <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+          </div>
+          <div class="modal-body">
+              <label>Título del Evento</label>
+              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.title" required />
+
+              <label>Fecha</label>
+              <input type="date" class="form-control mb-2" [(ngModel)]="eventForm.start" required />
+
+              <label>Hora de Inicio</label>
+              <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.startTime" required />
+
+              <label>Hora de Finalización</label>
+              <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.endTime" required />
+
+              <label>Personal</label>
+              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.personal" required />
+
+              <label>Sucursal</label>
+              <select class="form-control mb-2" [(ngModel)]="eventForm.id_subsidiary" required>
+                  <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
+                      {{ subsidiary.name }}
+                  </option>
+              </select>
+
+              <label>Servicio</label>
+              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.service" required />
+
+              <label>Color</label>
+              <input type="color" class="form-control form-control-color mb-2" [(ngModel)]="eventForm.color" />
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
+              <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()">Guardar</button>
+          </div>
+      </div>
   </ng-template>
   
   </div>

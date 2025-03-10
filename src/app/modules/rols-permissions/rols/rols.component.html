@@ -2,13 +2,15 @@
 
 <div class="container mt-5">
   <div class="row">
-    <div class="col-12">
+    <div class="col-12 mt-5">
       <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
         <div class="card-body">
           <form>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" [ngModelOptions]="{standalone: true}" autocomplete="off"
+              <input type="text" placeholder="Buscar" class="form-control" [ngModelOptions]="{standalone: true}" autocomplete="off"
                 [(ngModel)]="filterText" (input)="filter()">
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
+                data-bs-target="#createModal" (click)="resetForm()"><i class="bi bi-plus-circle"></i> Crear</button>
             </div>
 
           </form>
@@ -16,7 +18,7 @@
       </div>
 
     </div>
-    <div class="col">
+    <div class="col mt-5">
       <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
         <div class="card-body">
           <div class="table-responsive">
@@ -64,7 +66,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Sucursal</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Nuevo Rol</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -75,7 +77,7 @@
                 <div class="form-group">
                   <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2"
                     [(ngModel)]="dataInstance.name">
-                  <input type="text" placeholder="Dirección" name="description" id="" class="form-control mb-2"
+                  <input type="text" placeholder="Descripción" name="description" id="" class="form-control mb-2"
                     [(ngModel)]="dataInstance.description">
                 </div>
               </div>
