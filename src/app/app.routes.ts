@@ -15,7 +15,7 @@ import { OrdersComponent } from "./modules/orders/orders.component";
 import { UnauthorizedAccessComponent } from "./modules/unauthorized-access/unauthorized-access.component";
 
 export const ROUTES: Routes = [
-    { path: 'agenda', component: AgendaComponent, canActivate: [authGuard], data: {permissions: 'get_agenda'} },
+    { path: 'agenda', component: AgendaComponent, canActivate: [authGuard]},
     { path: 'services', component: ServicesComponent, canActivate: [authGuard], data: {permissions: 'get_service'} },
     { path: 'subsidiaries', component: SubsidiariesComponent, canActivate: [authGuard], data: {permissions: 'get_subsidiary'}},
     { path: 'subsidiaries/:id', component: LoadserviceComponent, canActivate: [authGuard], data: {permissions: 'getall_subsidiary'} },

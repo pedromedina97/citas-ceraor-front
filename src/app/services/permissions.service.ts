@@ -26,8 +26,8 @@ export class PermissionsService {
   }
 
   getPermissionsValue(): string[] {
-    const permissions = this.permissionsSubject.getValue();
-    return permissions ? permissions.split(',') : [];
+    const permissions = localStorage.getItem('permissions'); // Obtener permisos desde localStorage
+  return permissions ? permissions.split(',') : [];
   }
   
   
