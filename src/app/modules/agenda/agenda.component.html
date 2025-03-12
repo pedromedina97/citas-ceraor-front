@@ -1,115 +1,144 @@
 <app-nav></app-nav>
 <div class="calendar-container mt-5 text-center">
-    <div class="calendar-header mt-5">
-      <button class="btn btn-outline-primary" (click)="prev()">Anterior</button>
-      <h4>{{ currentDate | date: 'MMMM yyyy' }}</h4>
-      <button class="btn btn-outline-primary" (click)="next()">Siguiente</button>
-    </div>
-    <div class="view-toggle btn-group text-center" role="group">
-      <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
-      <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
-      <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
-    </div>
-  
+  <div class="calendar-header mt-5">
+    <button class="btn btn-outline-primary" (click)="prev()">Anterior</button>
+    <h4>{{ currentDate | date: 'MMMM yyyy' }}</h4>
+    <button class="btn btn-outline-primary" (click)="next()">Siguiente</button>
+  </div>
+  <div class="view-toggle btn-group text-center" role="group">
+    <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
+    <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
+    <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
+  </div>
 
-    <div *ngIf="view === 'month'" class="month-view">
-      <div class="grid">
-        <div class="day-cell" 
-             *ngFor="let day of getDaysOfMonth()" 
-             (click)="openModal(day)" 
-             [ngClass]="{'current-day': isToday(day)}">
-          <span class="day-number">{{ day | date: 'd' }}</span>
-          
-          <div class="events-container">
-            <div *ngFor="let event of getEventsForDay(day)" 
-                 class="event" 
-                 [style.backgroundColor]="event.color">
-              <span>{{ event.title }}</span>
-              <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
-            </div>
-          </div>
-        </div>
+  <div *ngIf="view === 'month'" class="month-view">
+    <div class="grid">
+      <div class="day-header" *ngFor="let day of weekDays">
+        {{ day }}
       </div>
-    </div>
-    
-    
-    
-    <div *ngIf="view === 'week'" class="week-view">
-      <div *ngFor="let day of getDaysOfWeek()" 
-           class="week-day" 
-           (click)="openModal(day)" 
-           [ngClass]="{'current-day': isToday(day)}">
-        <span class="day-number">{{ day | date: 'EEEE d' }}</span>
-        
-        <div class="events-container">
-          <div *ngFor="let event of getEventsForDay(day)" 
-               class="event" 
-               [style.backgroundColor]="event.color">
+
+      <div class="day-cell" *ngFor="let day of getDaysOfMonth()" (click)="openModal(day, $event)"
+        [ngClass]="{'current-day': day && isToday(day)}">
+
+        <span *ngIf="day" class="day-number">{{ day | date: 'd' }}</span>
+
+        <div class="events-container" *ngIf="day">
+          <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
+            (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
             <span>{{ event.title }}</span>
             <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
           </div>
         </div>
       </div>
     </div>
-    
+  </div>
 
-    <div *ngIf="view === 'day'" class="day-view">
-      <h4>{{ currentDate | date: 'EEEE, d MMMM yyyy' }}</h4>
-    
+  <ng-template #eventDetailsModal let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Evento</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedEvent">
+        <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
+        <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
+        <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
+        <p><strong>Sucursal:</strong> {{ selectedEvent.id_subsidiary }}</p>
+        <p><strong>Servicio:</strong> {{ selectedEvent.service }}</p>
+        <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <div *ngIf="view === 'week'" class="week-view">
+    <div *ngFor="let day of getDaysOfWeek()" class="week-day" (click)="openModal(day)"
+      [ngClass]="{'current-day': isToday(day)}">
+      <span class="day-number">{{ day | date: 'EEEE d' }}</span>
+
       <div class="events-container">
-        <div *ngFor="let event of getDayEvents()" 
-             class="event" 
-             [style.backgroundColor]="event.color">
+        <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
           <span>{{ event.title }}</span>
           <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
         </div>
+
       </div>
     </div>
-    
-    
-    
-    <ng-template #eventModal let-modal>
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Agregar Cita</h5>
-              <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
-          </div>
-          <div class="modal-body">
-              <label>Título del Evento</label>
-              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.title" required />
-
-              <label>Fecha</label>
-              <input type="date" class="form-control mb-2" [(ngModel)]="eventForm.start" required />
-
-              <label>Hora de Inicio</label>
-              <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.startTime" required />
-
-              <label>Hora de Finalización</label>
-              <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.endTime" required />
-
-              <label>Personal</label>
-              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.personal" required />
-
-              <label>Sucursal</label>
-              <select class="form-control mb-2" [(ngModel)]="eventForm.id_subsidiary" required>
-                  <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
-                      {{ subsidiary.name }}
-                  </option>
-              </select>
-
-              <label>Servicio</label>
-              <input type="text" class="form-control mb-2" [(ngModel)]="eventForm.service" required />
-
-              <label>Color</label>
-              <input type="color" class="form-control form-control-color mb-2" [(ngModel)]="eventForm.color" />
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
-              <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()">Guardar</button>
-          </div>
-      </div>
-  </ng-template>
-  
   </div>
-  
-  
+
+
+  <div *ngIf="view === 'day'" class="day-view">
+    <h4>{{ currentDate | date: 'EEEE, d MMMM yyyy' }}</h4>
+
+    <div class="events-container">
+      <div *ngFor="let event of getDayEvents()" class="event" [style.backgroundColor]="event.color">
+        <span>{{ event.title }}</span>
+        <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <ng-template #eventModal let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar Cita</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body">
+        <label>Cliente</label>
+        <select name="title" id="" class="form-control mb-2" [(ngModel)]="eventForm.title">
+          <option *ngFor="let client of clients" value="{{client.name}} {{client.lastname}}">{{client.name}}
+            {{client.lastname}}</option>
+        </select>
+
+        <label>Fecha</label>
+        <input type="date" class="form-control mb-2" [(ngModel)]="eventForm.start" required />
+
+        <label>Hora de Inicio</label>
+        <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.startTime" (change)="updateEndTime()"
+          required />
+
+        <label>Hora de Finalización</label>
+        <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.endTime" readonly required />
+
+
+        <label>Doctor Afiliado</label>
+        <select name="personal" id="" class="form-control mb-2" [(ngModel)]="eventForm.personal">
+          <option value="" selected>Seleccione un doctor</option>
+          <option *ngFor="let doctor of doctors" value="{{doctor.name}} {{doctor.lastname}}">{{doctor.name}}
+            {{doctor.lastname}}</option>
+        </select>
+
+
+        <label>Sucursal</label>
+        <select class="form-control mb-2" [(ngModel)]="eventForm.id_subsidiary"
+          (change)="getServices(eventForm.id_subsidiary)" required>
+          <option value="" selected>Seleccione una sucursal</option>
+          <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
+            {{ subsidiary.name }}
+          </option>
+        </select>
+
+        <label>Servicio</label>
+        <select class="form-control mb-2" [(ngModel)]="eventForm.service" required>
+          <option *ngFor="let service of services" [value]="service.id">
+            {{ service.name }}
+          </option>
+        </select>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()" [disabled]="!isFormValid()">Guardar</button>
+
+      </div>
+    </div>
+  </ng-template>
+
+</div>

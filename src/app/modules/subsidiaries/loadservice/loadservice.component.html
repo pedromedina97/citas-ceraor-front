@@ -1,43 +1,57 @@
 <app-nav></app-nav>
 
 <div class="container mt-5">
-    <div class="row">
-      <h1>Cargar Servicios</h1>
-        <div class="col-12">
-          <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-            <div class="card-body">
-              <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container mt-4">
+  <div class="row">
+    <h1 class="mt-5 text-center">Cargar Servicios</h1>
+    <div class="col-12 mt-4">
+      <div class="card shadow-lg p-4 rounded-lg">
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container mt-3">
+
+            <div formArrayName="items">
+              <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row justify-content-center mb-3">
                 
-                <div formArrayName="items">
-   
-                      <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row justify-content-center mb-3">
-                        
-                          <div class="col-3">
-                            <input formControlName="name" class="form-control" placeholder="Nombre" />
-                          </div>
-                          <div class="col-3">
-                            <input formControlName="id_subsidiary" class="form-control" placeholder="ID Subsidiaria" />
-                          </div>
-                          <div class="col-3">
-                            <input formControlName="description" class="form-control" placeholder="Descripción" />
-                          </div>
-                          <div class="col-3 d-flex align-items-center">
-                            <button type="button" class="btn btn-danger" (click)="removeItem(i)">Eliminar</button>
-                          </div>
-                        
-                        
-                      </div>
-                   
-                 
-                  
+                <div class="col-md-4">
+                  <input 
+                    formControlName="name" 
+                    class="form-control input-ios" 
+                    placeholder="Nombre"
+                    [ngClass]="{'is-invalid': isFieldInvalid(i, 'name')}" 
+                  />
+                  <div *ngIf="isFieldInvalid(i, 'name')" class="invalid-feedback">El nombre es obligatorio.</div>
                 </div>
-              
-                <button type="button" class="btn btn-primary mt-2 mr-2" (click)="addItem()">Agregar Item</button>
-                <button type="submit" class="btn btn-success mt-2 ml-2">Enviar Formulario</button>
-              </form>
+
+                <div class="col-md-4">
+                  <input 
+                    formControlName="description" 
+                    class="form-control input-ios" 
+                    placeholder="Descripción"
+                    [ngClass]="{'is-invalid': isFieldInvalid(i, 'description')}"
+                  />
+                  <div *ngIf="isFieldInvalid(i, 'description')" class="invalid-feedback">La descripción es obligatoria.</div>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center">
+                  <button type="button" class="btn btn-danger btn-ios" (click)="removeItem(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+
+              </div>
             </div>
-          </div>
-            
+
+            <div class="d-flex justify-content-center">
+              <button type="button" class="btn btn-primary btn-ios mx-2" (click)="addItem()">
+                <i class="bi bi-plus-circle"></i> Agregar Servicio
+              </button>
+              <button type="submit" class="btn btn-success btn-ios mx-2" [disabled]="form.invalid">
+                <i class="bi bi-send"></i> Enviar Formulario
+              </button>
+            </div>
+
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>

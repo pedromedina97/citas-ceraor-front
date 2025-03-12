@@ -1,15 +1,17 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { CeraorService } from '../../services/ceraor.service';
 import Swal from 'sweetalert2';
 import { NgForm } from '@angular/forms';
-
+import { Router } from '@angular/router';
+import { PermissionsService } from '../../services/permissions.service';
 @Component({
   selector: 'app-subsidiaries',
   standalone: false,
   templateUrl: './subsidiaries.component.html',
   styleUrl: './subsidiaries.component.scss'
 })
-export class SubsidiariesComponent implements OnInit{
+export class SubsidiariesComponent implements OnInit, AfterViewInit{
+  permissions: any;
   subsidiaries: any;
   filtered: any[] = [];
   filterText: string = '';
@@ -25,7 +27,37 @@ export class SubsidiariesComponent implements OnInit{
     this.getData();
   }
 
-  constructor(private api: CeraorService){}
+  constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone){}
+
+
+  ngAfterViewInit(): void {
+    this.loadPermissions();
+  }
+
+  loadPermissions(){
+    this.permissionsService.getPermissions().subscribe(
+      value=>{
+        this.zone.run(
+          ()=>{
+            this.permissions = value;
+            this.cd.detectChanges();
+          }
+        );
+      }
+    );
+  }
+
+  updatePermissions(token: string){
+    this.permissionsService.setPermissions(token);
+  }
+
+  hasPermissions(permission: string): boolean {
+    return this.permissions && this.permissions.includes(permission);
+  }
+
+  canShow(option: string): boolean{
+    return this.hasPermissions(option);
+  }
 
   getData(){
     this.api.getData('subsidiary/getall').subscribe(

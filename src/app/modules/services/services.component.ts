@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { CeraorService } from '../../services/ceraor.service';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
+import { PermissionsService } from '../../services/permissions.service';
 
 @Component({
   selector: 'app-services',
@@ -9,8 +11,8 @@ import Swal from 'sweetalert2';
   templateUrl: './services.component.html',
   styleUrl: './services.component.scss'
 })
-export class ServicesComponent implements OnInit {
-
+export class ServicesComponent implements OnInit, AfterViewInit {
+  permissions: any;
   subsidiaries: any;
   subsidiary: string;
   filtered: any[] = [];
@@ -24,10 +26,14 @@ export class ServicesComponent implements OnInit {
   }
   remainingId: string;
 
-  constructor(private api: CeraorService) { }
+  constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone){}
 
   ngOnInit(): void {
     this.getSubsidiaries();
+  }
+
+  ngAfterViewInit(): void {
+    this.loadPermissions();
   }
 
   filter() {
@@ -154,5 +160,30 @@ export class ServicesComponent implements OnInit {
       id_subsidiary: '',
       description: ''
     }
+  }
+
+  loadPermissions(){
+    this.permissionsService.getPermissions().subscribe(
+      value=>{
+        this.zone.run(
+          ()=>{
+            this.permissions = value;
+            this.cd.detectChanges();
+          }
+        );
+      }
+    );
+  }
+
+  updatePermissions(token: string){
+    this.permissionsService.setPermissions(token);
+  }
+
+  hasPermissions(permission: string): boolean {
+    return this.permissions && this.permissions.includes(permission);
+  }
+
+  canShow(option: string): boolean{
+    return this.hasPermissions(option);
   }
 }

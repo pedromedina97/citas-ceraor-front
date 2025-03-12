@@ -1,126 +1,124 @@
 <app-nav></app-nav>
 
 <div class="container mt-5">
-  <div class="row">
-    <div class="col-12 mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+  <div class="row justify-content-center">
+    <!-- Buscador y botón de creación -->
+    <div class="col-lg-6 col-md-8 col-sm-12 mt-5">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <form>
-            <div class="input-group mb-3">
-              <input type="text" placeholder="Buscar" class="form-control" [ngModelOptions]="{standalone: true}" autocomplete="off"
+            <div class="input-group">
+              <input type="text" class="form-control input-ios" placeholder="Buscar rol..." [ngModelOptions]="{standalone: true}" autocomplete="off"
                 [(ngModel)]="filterText" (input)="filter()">
-                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
-                data-bs-target="#createModal" (click)="resetForm()"><i class="bi bi-plus-circle"></i> Crear</button>
+              <button class="btn btn-primary btn-ios" type="button" data-bs-toggle="modal"
+                data-bs-target="#createModal" (click)="resetForm()">
+                <i class="bi bi-plus-circle"></i> Crear
+              </button>
             </div>
-
           </form>
         </div>
       </div>
-
     </div>
-    <div class="col mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+
+    <!-- Tabla de Roles -->
+    <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-hover">
-              <thead>
+              <thead class="table-light">
                 <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">Nombre</th>
-                  <th scope="col">Descripción</th>
-                  <th scope="col">Opciones</th>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Creado</th>
+                  <th>Opciones</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let instance of filtered">
-                  <td>{{instance.id}}</td>
-                  <td>{{instance.name}}</td>
-                  <td>{{instance.description}}</td>
+                  <td>{{ instance.id }}</td>
+                  <td>{{ instance.name }}</td>
+                  <td>{{ instance.description }}</td>
+                  <td>{{instance.created_at | date:'dd/MM/yyyy'}}</td>
                   <td>
-                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editModal"
-                      (click)="getInstance(instance, instance.id)">
+                    <button class="btn btn-outline-warning btn-sm me-2"
+                      data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(instance, instance.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    
-                    <a class="btn btn-outline-primary" [routerLink]="['setpermissions', instance.id]">
+                    <a class="btn btn-outline-primary btn-sm me-2" [routerLink]="['setpermissions', instance.id]">
                       <i class="bi bi-info-circle-fill"></i>
                     </a>
-                    <button class="btn btn-outline-danger" (click)="delete(instance.id, instance.name)">
-                        <i class="bi bi-trash"></i>
-                      </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="delete(instance.id, instance.name)">
+                      <i class="bi bi-trash"></i>
+                    </button>
                   </td>
                 </tr>
               </tbody>
-
             </table>
           </div>
         </div>
       </div>
-
     </div>
 
   </div>
 </div>
 
+<!-- Modal de Creación -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content modal-ios fade-in">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Nuevo Rol</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Crear Nuevo Rol</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form #form="ngForm">
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.name">
-                  <input type="text" placeholder="Descripción" name="description" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.description">
-                </div>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.name">
+                <input type="text" placeholder="Descripción" name="description" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.description">
               </div>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="create(form)">Guardar</button>
+        <button type="button" class="btn btn-secondary btn-ios" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success btn-ios" (click)="create(form)">Guardar</button>
       </div>
     </div>
   </div>
 </div>
 
-
+<!-- Modal de Edición -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content modal-ios fade-in">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sucursar</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Editar Rol</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form #form="ngForm">
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.name">
-                  <input type="text" placeholder="Dirección" name="description" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.description">
-                </div>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.name">
+                <input type="text" placeholder="Descripción" name="description" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.description">
               </div>
-
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="editInstance(form)">Editar</button>
+        <button type="button" class="btn btn-secondary btn-ios" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success btn-ios" (click)="editInstance(form)">Editar</button>
       </div>
     </div>
   </div>

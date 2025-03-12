@@ -1,0 +1,118 @@
+.container {
+    max-width: 1100px;
+    margin: auto;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .input-ios {
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+  
+    &:focus {
+      border-color: #007aff;
+      box-shadow: 0px 0px 8px rgba(0, 122, 255, 0.3);
+    }
+  }
+  
+  .btn-ios {
+    border-radius: 12px;
+    font-size: 16px;
+    padding: 10px 15px;
+    transition: all 0.3s ease-in-out;
+  
+    &.btn-primary {
+      background: #007aff;
+      border: none;
+  
+      &:hover {
+        background: #005ecb;
+      }
+    }
+  
+    &.btn-success {
+      background: #34c759;
+      border: none;
+  
+      &:hover {
+        background: #28a745;
+      }
+    }
+  
+    &.btn-secondary {
+      background: #8e8e93;
+      border: none;
+  
+      &:hover {
+        background: #6c757d;
+      }
+    }
+  
+    &.btn-outline-warning {
+      border: 2px solid #ffcc00;
+      color: #ffcc00;
+  
+      &:hover {
+        background: #ffcc00;
+        color: white;
+      }
+    }
+  
+    &.btn-outline-danger {
+      border: 2px solid #ff3b30;
+      color: #ff3b30;
+  
+      &:hover {
+        background: #ff3b30;
+        color: white;
+      }
+    }
+  }
+  
+  /* Animaciones */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .modal-ios {
+    border-radius: 15px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.3s ease-in-out;
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

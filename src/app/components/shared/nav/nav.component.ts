@@ -13,11 +13,14 @@ import { PermissionsService } from '../../../services/permissions.service';
 export class NavComponent implements AfterViewInit{
 
   permissions: any;
+  user: string;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone){}
   
   ngAfterViewInit(): void {
     this.loadPermissions();
+    let username = localStorage.getItem('userName');
+    this.user = username
   }
 
   logout(){

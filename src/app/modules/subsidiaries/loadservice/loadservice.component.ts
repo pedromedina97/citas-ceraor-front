@@ -14,7 +14,7 @@ export class LoadserviceComponent implements OnInit{
   form: FormGroup;
   id: string;
 
-  constructor(private route: ActivatedRoute, private api: CeraorService, private fb: FormBuilder){
+  constructor(private route: ActivatedRoute, private api: CeraorService, private fb: FormBuilder) {
     this.form = this.fb.group({
       items: this.fb.array([])
     });
@@ -22,19 +22,23 @@ export class LoadserviceComponent implements OnInit{
 
   ngOnInit(): void {
     this.loadRoute();
+    this.ensureAtLeastOneItem();
   }
 
-
   loadRoute(): void {
-    this.route.params.subscribe(
-      (params)=>{
-        this.id = params['id'];
-      }
-    );
+    this.route.params.subscribe(params => {
+      this.id = params['id'];
+    });
   }
 
   get items(): FormArray {
     return this.form.get('items') as FormArray;
+  }
+
+  ensureAtLeastOneItem(): void {
+    if (this.items.length === 0) {
+      this.addItem();
+    }
   }
 
   addItem(): void {
@@ -48,22 +52,35 @@ export class LoadserviceComponent implements OnInit{
   }
 
   removeItem(index: number): void {
-    this.items.removeAt(index);
+    if (this.items.length > 1) {
+      this.items.removeAt(index);
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atención',
+        text: 'Debe haber al menos un servicio en la lista'
+      });
+    }
+  }
+
+  isFieldInvalid(index: number, field: string): boolean {
+    const item = this.items.at(index);
+    return item.get(field)?.invalid && (item.get(field)?.touched || item.get(field)?.dirty);
   }
 
   onSubmit(): void {
     if (this.form.valid) {
       console.log(this.form.value.items);
       this.api.createData('service/create', this.form.value.items).subscribe(
-        (resp: any) =>{
+        (resp: any) => {
           console.log(resp);
           Swal.fire({
             icon: 'success',
-            title: 'Exito',
+            title: 'Éxito',
             text: resp.message
           });
         },
-        (error)=>{
+        error => {
           console.log(error);
           Swal.fire({
             icon: 'error',
@@ -73,7 +90,11 @@ export class LoadserviceComponent implements OnInit{
         }
       );
     } else {
-      console.log('Formulario inválido');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor complete todos los campos antes de enviar'
+      });
     }
   }
 

@@ -1,134 +1,186 @@
 <app-nav></app-nav>
+
 <div class="container mt-5">
-  <div class="row">
-    <div class="col-12 mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+  <div class="row justify-content-center">
+    <!-- Buscador y botón de creación -->
+    <div class="col-lg-6 col-md-8 col-sm-12 mt-5">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <form>
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" [ngModelOptions]="{standalone: true}" autocomplete="off"
-                [(ngModel)]="filterText" (input)="filter()">
-
-              <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
-                data-bs-target="#createModal" (click)="resetForm()"><i class="bi bi-plus-circle"></i> Crear</button>
+            <div class="input-group">
+              <input type="text" class="form-control input-ios" [ngModelOptions]="{standalone: true}" autocomplete="off"
+                [(ngModel)]="filterText" (input)="filter()" placeholder="Buscar usuario...">
+              <button *ngIf="canShow('create_user')" class="btn btn-primary btn-ios" type="button"
+                data-bs-toggle="modal" data-bs-target="#createModal" (click)="resetForm()">
+                <i class="bi bi-plus-circle"></i> Crear
+              </button>
             </div>
-
           </form>
         </div>
       </div>
-
     </div>
-    <div class="col">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+
+    <!-- Tabla de Usuarios -->
+    <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-hover">
-              <thead>
+              <thead class="table-light">
                 <tr>
-                  <th scope="col">Email</th>
-                  <th scope="col">Nombre</th>
-                  <th scope="col">Creado</th>
-                  <th scope="col">Opciones</th>
+                  <th>Email</th>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Usuario Relacionado</th>
+                  <th>Dirección</th>
+                  <th>Creado</th>
+                  <th>Opciones</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let user of filtered">
-                  <th scope="row">{{user.email}}</th>
-                  <td>{{user.name}} {{user.lastname}}</td>
-                  <td>{{user.created_at | date:'dd/MM/yyyy'}}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.name }} {{ user.lastname }}</td>
+                  <td>{{ user.phone }}</td>
+                  <td>{{ user.related }}</td>
+                  <td>{{ user.address }}</td>
+                  <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
                   <td>
-                    <button class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+                    <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
+                      data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-outline-danger" (click)="delete(user.id, user.name)">
+                    <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+                      (click)="delete(user.id, user.name)">
                       <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>
               </tbody>
-
             </table>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="createModal"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+<!-- Modal de Creación -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content modal-ios fade-in">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Usuario</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Crear Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form #form="ngForm">
-        <div class="container">
+        <form #form="ngForm" (ngSubmit)="create(form)" novalidate>
           <div class="row">
-            <div class="col">
+            <div class="col-md-6">
               <div class="form-group">
-                <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2" [(ngModel)]="dataInstance.name">
-                <input type="text" placeholder="Apellidos" name="lastname" id="" class="form-control mb-2" [(ngModel)]="dataInstance.lastname">
-                <input type="date" class="form-control mb-2" name="birthday" placeholder="Nacimiento" id="" [(ngModel)]="dataInstance.birthday">             
+                <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
+                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3 caracteres.</div>
+
+                <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
+                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos 3 caracteres.</div>
+
+                <input type="date" class="form-control input-ios mb-2" name="birthday" [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
+                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de nacimiento.</div>
+
+                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required #id_rol="ngModel">
+                  <option *ngFor="let rol of rols" [value]="rol.id">{{ rol.name }}</option>
+                </select>
+                <div *ngIf="id_rol.invalid && id_rol.touched" class="text-danger">Seleccione un rol.</div>
               </div>
             </div>
-            <div class="col">
+            <div class="col-md-6">
               <div class="form-group">
-                <input type="email" placeholder="email" name="email" id="" class="form-control mb-2" [(ngModel)]="dataInstance.email">
-                <input type="password" placeholder="password" name="password" id="" class="form-control mb-2 d-none" [(ngModel)]="dataInstance.password">
-                <input type="text" placeholder="Teléfono" name="phone" id="" class="form-control mb-2" [(ngModel)]="dataInstance.phone">
-                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
+                <input type="email" placeholder="Email" name="email" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.email" required email #email="ngModel">
+                <div *ngIf="email.invalid && email.touched" class="text-danger">Ingrese un email válido.</div>
+
+                <input type="password" placeholder="Password" name="password" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.password" required minlength="8" #password="ngModel">
+                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos 8 caracteres.</div>
+
+                <input type="text" placeholder="Teléfono" name="phone" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.phone" required #phone="ngModel">
+                <div *ngIf="phone.invalid && phone.touched" class="text-danger">Ingrese un número de teléfono.</div>
+
+                <input type="text" placeholder="Dirección" name="address" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.address" required minlength="3" #address="ngModel">
+                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3 caracteres.</div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="create(form)">Guardar</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-ios" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-success btn-ios" [disabled]="form.invalid">Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
 
-
+<!-- Modal de Creación -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content modal-ios fade-in">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Usuario</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Crear Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form #form="ngForm">
-        <div class="container">
+        <form #form="ngForm" (ngSubmit)="editInstance(form)" novalidate>
           <div class="row">
-            <div class="col">
+            <div class="col-md-6">
               <div class="form-group">
-                <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2" [(ngModel)]="dataInstance.name">
-                <input type="text" placeholder="Apellidos" name="lastname" id="" class="form-control mb-2" [(ngModel)]="dataInstance.lastname">
-                <input type="date" class="form-control mb-2" name="birthday" placeholder="Nacimiento" id="" [(ngModel)]="dataInstance.birthday">
-                
+                <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
+                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3 caracteres.</div>
+
+                <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
+                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos 3 caracteres.</div>
+
+                <input type="date" class="form-control input-ios mb-2" name="birthday" [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
+                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de nacimiento.</div>
+
+                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required #id_rol="ngModel">
+                  <option *ngFor="let rol of rols" [value]="rol.id">{{ rol.name }}</option>
+                </select>
+                <div *ngIf="id_rol.invalid && id_rol.touched" class="text-danger">Seleccione un rol.</div>
               </div>
             </div>
-            <div class="col">
+            <div class="col-md-6">
               <div class="form-group">
-                <input type="email" placeholder="email" name="email" id="" class="form-control mb-2" [(ngModel)]="dataInstance.email">
-                <input type="password" placeholder="password" name="password" id="" class="form-control mb-2 d-none" [(ngModel)]="dataInstance.password">
-                <input type="text" placeholder="Teléfono" name="phone" id="" class="form-control mb-2" [(ngModel)]="dataInstance.phone">
-                <input type="text" placeholder="Dirección" name="address" id="" class="form-control mb-2" [(ngModel)]="dataInstance.address">
+                <input type="email" placeholder="Email" name="email" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.email" required email #email="ngModel">
+                <div *ngIf="email.invalid && email.touched" class="text-danger">Ingrese un email válido.</div>
+
+                <input type="password" placeholder="Password" name="password" class="form-control input-ios mb-2 d-none"
+                  [(ngModel)]="dataInstance.password" required minlength="8" #password="ngModel">
+                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos 8 caracteres.</div>
+
+                <input type="text" placeholder="Teléfono" name="phone" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.phone" required #phone="ngModel">
+                <div *ngIf="phone.invalid && phone.touched" class="text-danger">Ingrese un número de teléfono.</div>
+
+                <input type="text" placeholder="Dirección" name="address" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.address" required minlength="3" #address="ngModel">
+                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3 caracteres.</div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="editInstance(form)">Editar</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-ios" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-success btn-ios" [disabled]="form.invalid">Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

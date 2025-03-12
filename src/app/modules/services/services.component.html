@@ -1,97 +1,85 @@
 <app-nav></app-nav>
 
 <div class="container mt-5">
-  <div class="row">
-    <div class="col mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+  <div class="row justify-content-center">
+    <!-- Formulario de Búsqueda -->
+    <div class="col-lg-5 col-md-6 col-sm-12 mt-5">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
-          <div class="form-group">
-            <form #form="ngForm" (ngSubmit)="search(form)">
-              <label for="">Seleccione una sucursal:</label>
-              <select [(ngModel)]="subsidiary" class="form-control" name="id_subsidiary" id="">
-                <option *ngFor="let sub of subsidiaries" [value]="sub.id">{{sub.name}}</option>
-              </select>
-              <button type="submit" class="btn btn-primary w-100 mt-3">
-                <i class="bi bi-search"></i> Buscar
-              </button>
-            </form>
-          </div>
+          <h4 class="text-center mb-3">Buscar Sucursal</h4>
+          <form #form="ngForm" (ngSubmit)="search(form)">
+            <label class="form-label">Seleccione una sucursal:</label>
+            <select [(ngModel)]="subsidiary" class="form-select input-ios" name="id_subsidiary">
+              <option *ngFor="let sub of subsidiaries" [value]="sub.id">{{ sub.name }}</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-ios w-100 mt-3">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </form>
         </div>
       </div>
-
-
     </div>
 
-    <div class="col mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+    <!-- Tabla de Resultados -->
+    <div class="col-lg-7 col-md-6 col-sm-12 mt-4 mt-5">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
+          <h4 class="text-center mb-3">Resultados</h4>
           <div class="table-responsive">
             <table class="table table-hover">
-              <thead>
+              <thead class="table-light">
                 <tr>
-                  <th scope="col">Nombre</th>
-                  <th scope="col">Descripción</th>
-                  <th scope="col">Opciones</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Opciones</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let instance of filtered">
-                  <td>{{instance.name}}</td>
-
-                  <td>{{instance.description}}</td>
+                  <td>{{ instance.name }}</td>
+                  <td>{{ instance.description }}</td>
                   <td>
-                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editModal"
-                      (click)="getInstance(instance, instance.id)">
+                    <button *ngIf="canShow('update_service')" class="btn btn-outline-warning btn-sm me-2"
+                      data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(instance, instance.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-outline-danger" (click)="delete(instance.id, instance.name)">
+                    <button *ngIf="canShow('delete_service')" class="btn btn-outline-danger btn-sm"
+                      (click)="delete(instance.id, instance.name)">
                       <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>
               </tbody>
-
             </table>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-
-
+<!-- Modal de Edición -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content modal-ios fade-in">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sucursar</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Editar Sucursal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form #form="ngForm">
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <input type="text" placeholder="Nombre" name="name" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.name">
-                  <input type="text" name="id_subsidiary" class="form-control mb-2" [(ngModel)]="dataInstance.id_subsidiary"
-                    id="">
-                  <input type="text" placeholder="Descripción" name="address" id="" class="form-control mb-2"
-                    [(ngModel)]="dataInstance.description">
-                </div>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.name">
+                <input type="text" name="id_subsidiary" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.id_subsidiary">
+                <input type="text" placeholder="Descripción" name="description" class="form-control input-ios mb-2"
+                  [(ngModel)]="dataInstance.description">
               </div>
-
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" (click)="editInstance(form)">Editar</button>
-      </div>
-    </div>
-  </div>
-</div>

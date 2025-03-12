@@ -3,7 +3,7 @@
 
 <div class="container mt-5">
     <div class="row">
-        <div class="col mt-5">
+        <div *ngIf="canShow('get_rolpermission')" class="col mt-5">
             <a style="text-decoration: none; position: relative;" [routerLink]="['rols']">
                 <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded hover-up">
                     <div class="card-body">
@@ -12,7 +12,7 @@
                 </div>
             </a>
         </div>
-        <div class="col mt-5">
+        <div *ngIf="canShow('get_rolpermission')" class="col mt-5">
             <a [routerLink]="['permissions']" style="text-decoration: none; position: relative;">
                 <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded hover-up">
                     <div class="card-body">
