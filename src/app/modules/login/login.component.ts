@@ -39,7 +39,7 @@ export class LoginComponent {
         this.api.saveToken(resp.token);
         this.permissionsService.setPermissions(resp.token);
         this.api.saveUserDataInLocalStorage(this.credentials.email);
-       this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/home');
       /*  window.location.reload(); */
       },
       (error) => {

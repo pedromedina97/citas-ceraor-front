@@ -12,6 +12,8 @@ import { PermissionsComponent } from "./modules/rols-permissions/permissions/per
 import { RolsComponent } from "./modules/rols-permissions/rols/rols.component";
 import { SetPermissionsComponent } from "./modules/rols-permissions/set-permissions/set-permissions.component";
 import { OrdersComponent } from "./modules/orders/orders.component";
+import { UnauthorizedAccessComponent } from "./modules/unauthorized-access/unauthorized-access.component";
+
 export const ROUTES: Routes = [
     { path: 'agenda', component: AgendaComponent, canActivate: [authGuard], data: {permissions: 'get_agenda'} },
     { path: 'services', component: ServicesComponent, canActivate: [authGuard], data: {permissions: 'get_service'} },
@@ -22,8 +24,9 @@ export const ROUTES: Routes = [
     { path: 'rolspermissions/permissions',component: PermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'} },
     { path: 'rolspermissions/rols', component: RolsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
     { path: 'rolspermissions/rols/setpermissions/:id', component: SetPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
-    { path: 'orders', component: OrdersComponent },
+    { path: 'orders', component: OrdersComponent, canActivate: [authGuard], data: {permissions: 'get_order'}},
     { path: 'login', component: LoginComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard]},
+    { path: 'unauthorized-access', component: UnauthorizedAccessComponent },
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
 ];

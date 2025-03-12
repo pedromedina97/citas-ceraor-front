@@ -25,6 +25,13 @@ export class PermissionsService {
     return this.permissionsSubject.asObservable();
   }
 
+  getPermissionsValue(): string[] {
+    const permissions = this.permissionsSubject.getValue();
+    return permissions ? permissions.split(',') : [];
+  }
+  
+  
+
   private getDecodedAccessToken(token: string) {
     try {
       return jwtDecode(token);
