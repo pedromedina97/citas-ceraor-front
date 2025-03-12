@@ -13,6 +13,7 @@ import { RolsComponent } from "./modules/rols-permissions/rols/rols.component";
 import { SetPermissionsComponent } from "./modules/rols-permissions/set-permissions/set-permissions.component";
 import { OrdersComponent } from "./modules/orders/orders.component";
 import { UnauthorizedAccessComponent } from "./modules/unauthorized-access/unauthorized-access.component";
+import { noAuthGuard } from "./guards/no-auth.guard";
 
 export const ROUTES: Routes = [
     { path: 'agenda', component: AgendaComponent, canActivate: [authGuard]},
@@ -25,7 +26,7 @@ export const ROUTES: Routes = [
     { path: 'rolspermissions/rols', component: RolsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
     { path: 'rolspermissions/rols/setpermissions/:id', component: SetPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
     { path: 'orders', component: OrdersComponent, canActivate: [authGuard], data: {permissions: 'get_order'}},
-    { path: 'login', component: LoginComponent },
+    { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [authGuard]},
     { path: 'unauthorized-access', component: UnauthorizedAccessComponent },
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
