@@ -1,0 +1,144 @@
+<app-nav></app-nav>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col mt-5">
+            <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+                <div class="card-title">
+                    <div class="card-header"><h2>Crear Orden de Estudios</h2></div>
+                </div>
+                <div class="card-body"> 
+                    <form class="row g-3">
+
+                        <!-- Datos del paciente -->
+                        <div class="col-md-6">
+                          <label class="form-label">Nombre del paciente</label>
+                          <select name="patient" id="" class="form-control">
+                            <option *ngFor="let client of clients" value="{{client.name}} {{client.lastname}}">{{client.name}} {{client.lastname}}</option>
+                          </select>
+                        </div>
+                      
+                        <div class="col-md-6">
+                          <label class="form-label">Fecha de nacimiento</label>
+                          <input type="date" class="form-control" name="birthdate" />
+                        </div>
+                      
+                        <div class="col-md-6">
+                          <label class="form-label">Teléfono</label>
+                          <input type="text" class="form-control" name="phone" />
+                        </div>
+                      
+                        <div class="col-md-6">
+                          <label class="form-label">Doctor</label>
+                          <input type="text" class="form-control" name="doctor" />
+                        </div>
+                      
+                        <div class="col-12">
+                          <label class="form-label">Dirección</label>
+                          <input type="text" class="form-control" name="address" />
+                        </div>
+                      
+                        <div class="col-md-6">
+                          <label class="form-label">Cédula profesional</label>
+                          <input type="text" class="form-control" name="professional_id" />
+                        </div>
+                      
+                        <div class="col-md-6">
+                          <label class="form-label">Correo electrónico</label>
+                          <input type="email" class="form-control" name="email" />
+                        </div>
+                      
+                        <hr class="mt-4" />
+                      
+                        <!-- Switches -->
+                        <div class="col-md-4 form-check form-switch">
+                          <input class="form-check-input" type="checkbox" name="acetate_print">
+                          <label class="form-check-label">Impresión en acetato</label>
+                        </div>
+                      
+                        <div class="col-md-4 form-check form-switch">
+                          <input class="form-check-input" type="checkbox" name="paper_print">
+                          <label class="form-check-label">Impresión en papel</label>
+                        </div>
+                      
+                        <div class="col-md-4 form-check form-switch">
+                          <input class="form-check-input" type="checkbox" name="send_email">
+                          <label class="form-check-label">Enviar por correo</label>
+                        </div>
+                      
+                        <!-- Más switches agrupados -->
+                        <div class="col-12 mt-4">
+                          <label class="form-label fw-bold">Radiografías</label>
+                        </div>
+                      
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="rx_panoramic"><label class="form-check-label">Rx Panorámica</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="rx_arc_panoramic"><label class="form-check-label">Rx Arco Panorámico</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="rx_lateral_skull"><label class="form-check-label">Rx Lateral Cráneo</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="ap_skull"><label class="form-check-label">AP Cráneo</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="pa_skull"><label class="form-check-label">PA Cráneo</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="paranasal_sinuses"><label class="form-check-label">Senos Paranasales</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="atm_open_close"><label class="form-check-label">ATM Abre/Cierra</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="profilogram"><label class="form-check-label">Profilograma</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="watters_skull"><label class="form-check-label">Watters</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="palmar_digit"><label class="form-check-label">Dígito Palmar</label></div>
+                      
+                        <div class="col-md-8">
+                          <label class="form-label">Otras radiografías</label>
+                          <input type="text" class="form-control" name="others_radiography" />
+                        </div>
+                      
+                        <!-- Otros switches por categorías -->
+                        <div class="col-12 mt-4">
+                          <label class="form-label fw-bold">Periapicales</label>
+                        </div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="complete_periapical"><label class="form-check-label">Periapical Completa</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="individual_periapical"><label class="form-check-label">Periapical Individual</label></div>
+                      
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="superior"><label class="form-check-label">Superior</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="inferior"><label class="form-check-label">Inferior</label></div>
+                      
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="occlusal_xray"><label class="form-check-label">Oclusal</label></div>
+                      
+                        <!-- Análisis -->
+                        <div class="col-12 mt-4">
+                          <label class="form-label fw-bold">Análisis Cefalométricos</label>
+                        </div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="rickets"><label class="form-check-label">Rickets</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="mcnamara"><label class="form-check-label">McNamara</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="downs"><label class="form-check-label">Downs</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="jaraback"><label class="form-check-label">Jaraback</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="steiner"><label class="form-check-label">Steiner</label></div>
+                        <div class="col-md-8">
+                          <label class="form-label">Otros análisis</label>
+                          <input type="text" class="form-control" name="others_analysis" />
+                        </div>
+                      
+                        <!-- Modelos -->
+                        <div class="col-12 mt-4">
+                          <label class="form-label fw-bold">Modelos</label>
+                        </div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="risina"><label class="form-check-label">Resina</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="dentalprint"><label class="form-check-label">Impresión Dental</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="3d_risina"><label class="form-check-label">Resina 3D</label></div>
+                        <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox" name="surgical_guide"><label class="form-check-label">Guía Quirúrgica</label></div>
+                        <div class="col-md-8">
+                          <label class="form-label">Pieza de estudio</label>
+                          <input type="text" class="form-control" name="studio_piece" />
+                        </div>
+                      
+                        <!-- Tomografías -->
+                        <div class="col-12 mt-4">
+                          <label class="form-label fw-bold">Tomografías</label>
+                        </div>
+                        <!-- Puedes continuar aquí agregando el resto de switches e inputs -->
+                        
+                        <div class="col-12 mt-4">
+                          <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                      </form>
+                      
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

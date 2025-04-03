@@ -14,18 +14,20 @@ import { SetPermissionsComponent } from "./modules/rols-permissions/set-permissi
 import { OrdersComponent } from "./modules/orders/orders.component";
 import { UnauthorizedAccessComponent } from "./modules/unauthorized-access/unauthorized-access.component";
 import { noAuthGuard } from "./guards/no-auth.guard";
+import { CreateOrderComponent } from "./modules/orders/create-order/create-order.component";
 
 export const ROUTES: Routes = [
     { path: 'agenda', component: AgendaComponent, canActivate: [authGuard]},
-    { path: 'services', component: ServicesComponent, canActivate: [authGuard], data: {permissions: 'get_service'} },
-    { path: 'subsidiaries', component: SubsidiariesComponent, canActivate: [authGuard], data: {permissions: 'get_subsidiary'}},
-    { path: 'subsidiaries/:id', component: LoadserviceComponent, canActivate: [authGuard], data: {permissions: 'getall_subsidiary'} },
-    { path: 'users', component: UsersComponent, canActivate: [authGuard], data: {permissions: 'get_user'}},
-    { path: 'rolspermissions', component: RolsPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
-    { path: 'rolspermissions/permissions',component: PermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'} },
-    { path: 'rolspermissions/rols', component: RolsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
-    { path: 'rolspermissions/rols/setpermissions/:id', component: SetPermissionsComponent, canActivate: [authGuard], data: {permissions: 'getall_rolpermission'}},
-    { path: 'orders', component: OrdersComponent, canActivate: [authGuard], data: {permissions: 'get_order'}},
+    { path: 'services', component: ServicesComponent, canActivate: [authGuard], data: {permissions: 'see_service'} },
+    { path: 'subsidiaries', component: SubsidiariesComponent, canActivate: [authGuard], data: {permissions: 'see_subsidiary'}},
+    { path: 'subsidiaries/:id', component: LoadserviceComponent, canActivate: [authGuard], data: {permissions: 'see_subsidiary'} },
+    { path: 'users', component: UsersComponent, canActivate: [authGuard], data: {permissions: 'see_user'}},
+    { path: 'rolspermissions', component: RolsPermissionsComponent, canActivate: [authGuard], data: {permissions: 'see_rolpermission'}},
+    { path: 'rolspermissions/permissions',component: PermissionsComponent, canActivate: [authGuard], data: {permissions: 'see_permission'} },
+    { path: 'rolspermissions/rols', component: RolsComponent, canActivate: [authGuard], data: {permissions: 'see_rolpermission'}},
+    { path: 'rolspermissions/rols/setpermissions/:id', component: SetPermissionsComponent, canActivate: [authGuard], data: {permissions: 'see_rol'}},
+    { path: 'orders', component: OrdersComponent, canActivate: [authGuard], data: {permissions: 'see_order'}},
+    { path: 'orders/create-order', component: CreateOrderComponent, canActivate: [authGuard], data: {permissions: 'create_order'}},
     { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [authGuard]},
     { path: 'unauthorized-access', component: UnauthorizedAccessComponent },

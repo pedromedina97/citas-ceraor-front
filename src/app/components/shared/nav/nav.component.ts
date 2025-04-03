@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, NgZone } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CeraorService } from '../../../services/ceraor.service';
@@ -10,18 +10,19 @@ import { PermissionsService } from '../../../services/permissions.service';
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss'
 })
-export class NavComponent implements AfterViewInit{
+export class NavComponent implements OnInit{
 
   permissions: any;
   user: string;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone){}
   
-  ngAfterViewInit(): void {
+  
+  ngOnInit(): void {
     this.loadPermissions();
-    let username = localStorage.getItem('userName');
-    this.user = username
+    this.user = localStorage.getItem('userName') || ''; // Asigna el valor en ngOnInit
   }
+  
 
   logout(){
     Swal.fire({

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit, NgZone} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone} from '@angular/core';
 import { Router } from '@angular/router';
 import { CeraorService } from '../../services/ceraor.service';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
-export class UsersComponent implements OnInit, AfterViewInit {
+export class UsersComponent implements OnInit{
   permissions: any;
   users: any[] = [];
   filtered: any[] = [];
@@ -29,33 +29,48 @@ export class UsersComponent implements OnInit, AfterViewInit {
     address: '',
     id_rol: null
   }
-  id: string = localStorage.getItem('userId');
+  id: string;
+  idUser: string;
   user: string = localStorage.getItem('userName');
+  rol: string;
   rols: any;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) {}
 
   ngOnInit() {
-    this.getData();
+    this.setPermissions();
+   
+    this.setPetitions();
     this.getRols();
   }
 
-  ngAfterViewInit(): void {
-    this.loadPermissions();
+  setPetitions(){
+    if(this.rol == 'Owner' || this.rol == 'Superadmin'){
+      this.getData();
+    }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
+      console.log("entra");
+      this.getClients();
+    }
   }
 
-  loadPermissions(){
-    this.permissionsService.getPermissions().subscribe(
-      value=>{
-        this.zone.run(
-          ()=>{
-            this.permissions = value;
-            this.cd.detectChanges();
-          }
-        );
+  setPermissions(){
+    this.permissionsService.getId().subscribe(
+      (value)=>{
+        this.idUser = value;
+        this.cd.detectChanges();
       }
     );
+    this.permissionsService.getRol().subscribe(value => {
+      this.rol = value;
+      this.cd.detectChanges(); 
+    });
+  
+    this.permissionsService.getPermissions().subscribe(value => {
+      this.permissions = value;
+      this.cd.detectChanges(); 
+    });
   }
+  
 
   updatePermissions(token: string){
     this.permissionsService.setPermissions(token);
@@ -108,7 +123,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
       return;
     }
   
-    this.dataInstance.parentId = this.id;
+    this.dataInstance.parentId = this.idUser;
     this.dataInstance.related = this.user;
   
     this.api.createData('user/register', this.dataInstance).subscribe(
@@ -169,7 +184,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
         this.closeModal('#editModal');
   
         // Actualizar la lista de usuarios
-        this.getData();
+      this.setPetitions();
       },
       (error) => {
         Swal.fire({
@@ -254,11 +269,29 @@ export class UsersComponent implements OnInit, AfterViewInit {
   getRols(){
     this.api.getData('rol/getall').subscribe(
       (resp: any)=>{
-        console.log(resp);
         this.rols = resp.data;
       },
       (error)=>{
         console.log(error);
+      }
+    );
+  }
+
+  getClients(){
+    this.api.getDataById('user/getmyusers', this.idUser).subscribe(
+      (resp: any) =>{
+        console.log(resp);
+        this.users = resp.data;
+        console.log(this.users);
+        this.filtered = [...this.users];
+      },
+      (error)=>{
+        console.log(error);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sin usuarios',
+          text: error.error.msg
+        });
       }
     );
   }

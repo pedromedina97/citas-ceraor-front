@@ -30,27 +30,27 @@
           <i class="bi bi-house-door-fill"></i> Home
         </li>
       </a>
-      <a *ngIf="canShow('get_user')" [routerLink]="['/users']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_user')" [routerLink]="['/users']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-people-fill"></i> Usuarios
         </li>
       </a>
-      <a *ngIf="canShow('get_rolpermission')" [routerLink]="['/rolspermissions']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-ui-radios"></i> Roles/Permisos
         </li>
       </a>
-      <a *ngIf="canShow('get_service')" [routerLink]="['/services']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_service')" [routerLink]="['/services']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-list-check"></i> Servicios
         </li>
       </a>
-      <a *ngIf="canShow('get_subsidiary')" [routerLink]="['/subsidiaries']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_subsidiary')" [routerLink]="['/subsidiaries']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-building"></i> Sucursales
         </li>
       </a>
-      <a *ngIf="canShow('get_client')" [routerLink]="['/clients']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_client')" [routerLink]="['/clients']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-person-video2"></i> Clientes
         </li>
@@ -60,7 +60,7 @@
           <i class="bi bi-calendar-date-fill"></i> Agenda
         </li>
       </a>
-      <a *ngIf="canShow('get_order')" [routerLink]="['/orders']" style="text-decoration: none;">
+      <a *ngIf="canShow('see_order')" [routerLink]="['/orders']" style="text-decoration: none;">
         <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
           <i class="bi bi-list-ul"></i> Ordenes
         </li>

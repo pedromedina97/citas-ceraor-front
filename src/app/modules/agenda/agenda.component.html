@@ -114,6 +114,11 @@
             {{doctor.lastname}}</option>
         </select>
 
+        <label>Orden ligada</label>
+        <select name="id_order" id="" class="form-control mb-2" [(ngModel)]="eventForm.id_order">
+          <option value="" selected>Seleccione un orden</option>
+          <option *ngFor="let order of catalogOrders" value="{{order.id}}">{{order.patient}} - {{order.created_at}}</option>
+        </select>
 
         <label>Sucursal</label>
         <select class="form-control mb-2" [(ngModel)]="eventForm.id_subsidiary"

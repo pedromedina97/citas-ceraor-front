@@ -22,6 +22,7 @@ import { RolsComponent } from './modules/rols-permissions/rols/rols.component';
 import { SetPermissionsComponent } from './modules/rols-permissions/set-permissions/set-permissions.component';
 import { OrdersComponent } from './modules/orders/orders.component';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+import { CreateOrderComponent } from './modules/orders/create-order/create-order.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,7 +40,8 @@ import { TimepickerModule } from 'ngx-bootstrap/timepicker';
     PermissionsComponent,
     RolsComponent,
     SetPermissionsComponent,
-    OrdersComponent
+    OrdersComponent,
+    CreateOrderComponent
   ],
   imports: [
     BrowserModule,
