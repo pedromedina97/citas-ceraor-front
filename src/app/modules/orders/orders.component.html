@@ -39,7 +39,8 @@
               </thead>
               <tbody>
                 <tr *ngFor="let user of filtered">
-                  <td>{{user.appointment_code}}</td>
+                  <td *ngIf="user.appointment_code == null">Sin Folio</td>
+                  <td *ngIf="user.appointment_code !== null">{{user.appointment_code}}</td>
                   <td>{{ user.patient }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.phone }}</td>
@@ -47,14 +48,17 @@
                   <td>{{ user.address }}</td>
                   <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
                   <td>
-                    <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
+                    <button *ngIf="canShow('update_order')" class="btn btn-outline-warning btn-sm me-2"
                       data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <a href="http://localhost:4445/file/getfile/download/{{user.appointment_code}}.pdf" download class="btn btn-outline-danger">
+                    <a *ngIf="user.appointment_code !== null" href="http://localhost:4445/file/getfile/download/{{user.appointment_code}}.pdf" download _blank class="btn btn-outline-danger">
                       <i class="bi bi-file-earmark-pdf-fill"></i>
                     </a>
-                    <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+                    <a *ngIf="user.appointment_code == null" href="http://localhost:4445/file/getfile/downloadbyid/{{user.id}}.pdf" download _blank class="btn btn-outline-primary">
+                      <i class="bi bi-file-earmark-pdf-fill"></i>
+                    </a>
+                    <button *ngIf="canShow('delete_order')" class="btn btn-outline-danger btn-sm"
                       (click)="delete(user.id, user.name)">
                       <i class="bi bi-trash"></i>
                     </button>

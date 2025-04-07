@@ -329,7 +329,7 @@ export class AgendaComponent implements OnInit {
       end_appointment: endDate.toISOString(),
       color: this.eventForm.color  // 🟢 Ahora enviamos siempre un color aleatorio
     };
-
+    
     this.api.createData('appointment/setappointment', eventData).subscribe(
       (resp: any) => {
         console.log('Evento guardado:', resp);
