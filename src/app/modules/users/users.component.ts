@@ -34,6 +34,7 @@ export class UsersComponent implements OnInit{
   user: string = localStorage.getItem('userName');
   rol: string;
   rols: any;
+  private exclude: any;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) {}
 
@@ -45,7 +46,7 @@ export class UsersComponent implements OnInit{
   }
 
   setPetitions(){
-    if(this.rol == 'Owner' || this.rol == 'Superadmin'){
+    if(this.rol == 'Owner' || this.rol == 'SuperAdmin'){
       this.getData();
     }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
       console.log("entra");
@@ -131,7 +132,7 @@ export class UsersComponent implements OnInit{
         Swal.fire({
           title: 'Usuario Creado',
           icon: 'success',
-          text: data.message,
+          text: data.msg,
           confirmButtonColor: '#198754'
         });
   
@@ -268,8 +269,19 @@ export class UsersComponent implements OnInit{
 
   getRols(){
     this.api.getData('rol/getall').subscribe(
-      (resp: any)=>{
-        this.rols = resp.data;
+      (resp: any)=>{ 
+        if (this.rol === 'SuperAdmin' || this.rol === 'Owner') {    
+          this.exclude = ['Owner'];
+          this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
+        }
+        if (this.rol === 'Admin') {    
+          this.exclude = ['Owner', 'SuperAdmin', 'Admin'];
+          this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
+        } 
+        if (this.rol === 'Doctor' || this.rol === 'Cliente') {    
+          this.exclude = ['Owner', 'SuperAdmin', 'Admin', 'Doctor', 'Recepcionista'];
+          this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
+        }
       },
       (error)=>{
         console.log(error);
@@ -280,9 +292,7 @@ export class UsersComponent implements OnInit{
   getClients(){
     this.api.getDataById('user/getmyusers', this.idUser).subscribe(
       (resp: any) =>{
-        console.log(resp);
         this.users = resp.data;
-        console.log(this.users);
         this.filtered = [...this.users];
       },
       (error)=>{

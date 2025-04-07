@@ -1,5 +1,5 @@
-import { Component, ViewChild, TemplateRef, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, ViewChild, TemplateRef, OnInit, NgZone, ChangeDetectorRef, inject, signal, WritableSignal, HostListener } from '@angular/core';
+import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CeraorService } from '../../services/ceraor.service';
 import { PermissionsService } from '../../services/permissions.service';
 interface Event {
@@ -57,6 +57,9 @@ export class AgendaComponent implements OnInit {
   name: any;
   lastname: any;
   catalogOrders: any;
+	closeResult: WritableSignal<string> = signal('');
+  private buffer: string = '';
+  private timeout: any;
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -456,5 +459,47 @@ export class AgendaComponent implements OnInit {
     return this.hasPermissions(option);
   }
 
+  open(content: TemplateRef<any>) {
+		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+			(result) => {
+				this.closeResult.set(`Closed with: ${result}`);
+			},
+			(reason) => {
+				this.closeResult.set(`Dismissed ${this.getDismissReason(reason)}`);
+			},
+		);
+	}
+
+	private getDismissReason(reason: any): string {
+		switch (reason) {
+			case ModalDismissReasons.ESC:
+				return 'by pressing ESC';
+			case ModalDismissReasons.BACKDROP_CLICK:
+				return 'by clicking on a backdrop';
+			default:
+				return `with: ${reason}`;
+		}
+	}
+
+  @HostListener('window:keypress', ['$event'])
+  handleKeyPress(event: KeyboardEvent) {
+    // Reinicia si no escribe en menos de 300ms
+    if (this.timeout) clearTimeout(this.timeout);
+
+    if (event.key === 'Enter') {
+      console.log('Código escaneado:', this.buffer);
+      // Aquí puedes hacer lo que quieras con el valor
+      this.procesarCodigo(this.buffer);
+      this.buffer = '';
+    } else {
+      this.buffer += event.key;
+      this.timeout = setTimeout(() => this.buffer = '', 300); // limpia si se tarda mucho
+    }
+  }
+
+  procesarCodigo(codigo: string) {
+    // Aquí va tu lógica con el código de barras
+    console.log('Procesado:', codigo);
+  }
 
 }

@@ -8,7 +8,14 @@
   <div class="view-toggle btn-group text-center" role="group">
     <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
     <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
-    <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
+    <button class="btn btn-secondary" (click)="changeView('day')">Día</button>    
+  </div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <button class="btn btn-dark" (click)="open(content)"><i class="bi bi-upc-scan"></i> Escanear Cita</button>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="view === 'month'" class="month-view">
@@ -147,3 +154,18 @@
   </ng-template>
 
 </div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">BARCODE</h4>
+    <input type="text" #codigoInput (keydown.enter)="procesarCodigo(codigoInput.value); codigoInput.value=''" autofocus>
+
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.close('Save click')">Save</button>
+	</div>
+</ng-template>
