@@ -2,6 +2,7 @@ import { Component, ViewChild, TemplateRef, OnInit, NgZone, ChangeDetectorRef, i
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CeraorService } from '../../services/ceraor.service';
 import { PermissionsService } from '../../services/permissions.service';
+import Swal from 'sweetalert2';
 interface Event {
   id: number;
   id_order: string;
@@ -60,6 +61,9 @@ export class AgendaComponent implements OnInit {
 	closeResult: WritableSignal<string> = signal('');
   private buffer: string = '';
   private timeout: any;
+  barcodeBuffer: string = '';
+  barcodeTimer: any;
+  appointment: any;
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -67,21 +71,23 @@ export class AgendaComponent implements OnInit {
     this.loadPermissions();
     this.loadId();
     this.loadRol();
-    this.loadData();
-    this.getAllAppointments(); // Cargar eventos desde la API al iniciar
+   /*  this.loadData(); */
+    // Cargar eventos desde la API al iniciar
     this.getAllSubsidiary();  // Cargar sucursales
   }
 
   loadData(){
-    if(this.hasPermissions('see_client')){
-      if(this.rol == 'Owner' || this.rol == 'Superadmin', this.rol === 'Admin' || this.rol == 'Recepcionista'){
+    if(this.hasPermissions('get_client')){
+      if(this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista'){
         this.getClients();
         this.getDoctors();
+        this.getAllAppointments();
       }else{
         this.getMyClients();
         this.getMyInfo();
         this.loadDoctor();
         this.getOrdersByDoctor();
+        this.getAllAppointments();
       }
     }
   }
@@ -114,6 +120,7 @@ export class AgendaComponent implements OnInit {
     this.permissionsService.getRol().subscribe(
       (resp: any)=>{
         this.rol = resp;
+        this.loadData();
       },
       (error)=>{
         console.log(error);
@@ -277,15 +284,25 @@ export class AgendaComponent implements OnInit {
       this.eventForm.service.trim() !== ''
     );
   }
-
-
   getDayEvents(): Event[] {
-    return this.events.filter(event => new Date(event.start).toDateString() === this.currentDate.toDateString());
+    return this.events
+      .filter(event => new Date(event.start).toDateString() === this.currentDate.toDateString())
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   }
+  
+
+  /* getDayEvents(): Event[] {
+    return this.events.filter(event => new Date(event.start).toDateString() === this.currentDate.toDateString());
+  } */
 
   getEventsForDay(day: Date): Event[] {
     return this.events.filter(event => new Date(event.start).toDateString() === day.toDateString());
   }
+
+  isPast(event: Event): boolean {
+    return new Date(event.start).getTime() < new Date().getTime();
+  }
+  
 
   openModal(day: Date | null = null, event?: MouseEvent) {
     if (!day) return; // No hacer nada si no se selecciona un día
@@ -460,7 +477,7 @@ export class AgendaComponent implements OnInit {
   }
 
   open(content: TemplateRef<any>) {
-		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
+		this.modalService.open(content,{ ariaLabelledBy: 'modal-basic-title', size: 'xl'}).result.then(
 			(result) => {
 				this.closeResult.set(`Closed with: ${result}`);
 			},
@@ -481,25 +498,74 @@ export class AgendaComponent implements OnInit {
 		}
 	}
 
-  @HostListener('window:keypress', ['$event'])
-  handleKeyPress(event: KeyboardEvent) {
-    // Reinicia si no escribe en menos de 300ms
-    if (this.timeout) clearTimeout(this.timeout);
-
-    if (event.key === 'Enter') {
-      console.log('Código escaneado:', this.buffer);
-      // Aquí puedes hacer lo que quieras con el valor
-      this.procesarCodigo(this.buffer);
-      this.buffer = '';
-    } else {
-      this.buffer += event.key;
-      this.timeout = setTimeout(() => this.buffer = '', 300); // limpia si se tarda mucho
+  onBarcodeInput(value: string) {
+    this.barcodeBuffer = value;
+  
+    if (this.barcodeTimer) {
+      clearTimeout(this.barcodeTimer);
     }
+  
+    this.barcodeTimer = setTimeout(() => {
+      const code = this.barcodeBuffer.trim();
+      if (code) {
+        console.log('Código leído automáticamente:', code);
+        this.procesarCodigo(code);
+      }
+      this.barcodeBuffer = '';
+    }, 100); // espera 100ms sin escritura antes de procesar
+  }
+  
+  procesarCodigo(codigo: string) {
+    this.getByBarcode(codigo);
+  }
+  
+  getByBarcode(code: string) {
+    this.api.getDataById('appointment/getbybarcode', code).subscribe(
+      (resp: any) => {
+        this.appointment = resp.data[0];
+       
+      },
+      (error) => {
+        console.error('Error en getByBarcode:', error);
+      }
+    );
   }
 
-  procesarCodigo(codigo: string) {
-    // Aquí va tu lógica con el código de barras
-    console.log('Procesado:', codigo);
+  checkAppointment(id: string, code: string){
+     Swal.fire({
+          title: "Cangear servicio",
+          icon: 'info',
+          text: `¿Desea cangear el servicio "${code}"?`,
+          confirmButtonColor: '#198754',
+          cancelButtonColor: '#d33',
+          showConfirmButton: true,
+          showCancelButton: true
+        }).then((resp) => {
+          if (resp.isConfirmed) {
+            this.api.deleteData('appointment/delete', id).subscribe(
+              (data: any) => {
+                console.log(data);
+                Swal.fire({
+                  title: 'Cangeado',
+                  icon: 'success',
+                  text: data.msg,
+                  confirmButtonColor: '#198754'
+                }).then(() => {
+                  this.getAllAppointments(); // 🔄 Recarga las citas para actualizar el calendario
+                });
+              },
+              (error) => {
+                Swal.fire({
+                  title: 'Error',
+                  icon: 'error',
+                  text: error.error.msg,
+                  confirmButtonColor: '#198754'
+                });
+              }
+            );
+          }
+        });
+        this.loadData();
   }
 
 }

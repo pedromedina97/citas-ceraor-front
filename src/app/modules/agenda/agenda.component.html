@@ -8,9 +8,9 @@
   <div class="view-toggle btn-group text-center" role="group">
     <button class="btn btn-secondary" (click)="changeView('month')">Mes</button>
     <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
-    <button class="btn btn-secondary" (click)="changeView('day')">Día</button>    
+    <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
   </div>
-  <div class="container">
+  <div class="container" *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
     <div class="row justify-content-center">
       <div class="col-2">
         <button class="btn btn-dark" (click)="open(content)"><i class="bi bi-upc-scan"></i> Escanear Cita</button>
@@ -67,10 +67,20 @@
       <span class="day-number">{{ day | date: 'EEEE d' }}</span>
 
       <div class="events-container">
-        <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
+        <div *ngFor="let event of getEventsForDay(day)" 
+          class="event" 
+          [style.backgroundColor]="event.color"
+          [ngClass]="{ 'past-event': isPast(event) }"
+          (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
+        <span>{{ event.title }}</span>
+        <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+      </div>
+
+        
+        <!-- <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
           <span>{{ event.title }}</span>
           <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
-        </div>
+        </div> -->
 
       </div>
     </div>
@@ -124,7 +134,8 @@
         <label>Orden ligada</label>
         <select name="id_order" id="" class="form-control mb-2" [(ngModel)]="eventForm.id_order">
           <option value="" selected>Seleccione un orden</option>
-          <option *ngFor="let order of catalogOrders" value="{{order.id}}">{{order.patient}} - {{order.created_at}}</option>
+          <option *ngFor="let order of catalogOrders" value="{{order.id}}">{{order.patient}} - {{order.created_at}}
+          </option>
         </select>
 
         <label>Sucursal</label>
@@ -147,7 +158,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()" [disabled]="!isFormValid()">Guardar</button>
+        <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()"
+          [disabled]="!isFormValid()">Guardar</button>
 
       </div>
     </div>
@@ -156,16 +168,45 @@
 </div>
 
 <ng-template #content let-modal>
-	<div class="modal-header">
-		<h4 class="modal-title" id="modal-basic-title">BARCODE</h4>
-    <input type="text" #codigoInput (keydown.enter)="procesarCodigo(codigoInput.value); codigoInput.value=''" autofocus>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">BARCODE</h4>
+    <input type="text" #codigoInput (input)="onBarcodeInput(codigoInput.value)" autocomplete="off" autofocus />
 
-		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-	</div>
-	<div class="modal-body">
-		
-	</div>
-	<div class="modal-footer">
-		<button type="button" class="btn btn-outline-secondary" (click)="modal.close('Save click')">Save</button>
-	</div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Doctor</th>
+            <th>Sucursal</th>
+            <th>Service</th>
+            <th>Folio</th>
+            <th>Cita</th>
+            <th>Doctor</th>
+            <th>Creación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{appointment?.client}}</td>
+            <td>{{appointment?.personal}}</td>
+            <td>{{appointment?.subsidiary_name}}</td>
+            <td>{{appointment?.service_name}}</td>
+            <td>{{appointment?.code}}</td>
+            <td>{{ appointment?.appointment | date:"EEEE d 'de' MMMM 'de' y, h:mm a" }}</td>
+            <td>{{appointment?.doctor}}</td>
+            <td>{{appointment?.created_at | date:'short'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="checkAppointment(appointment.appointment_id, appointment.code)">Cangear</button>
+  </div>
 </ng-template>

@@ -1,3 +1,3 @@
 export const Environment = {
-    url: "http://localhost:4445/"
+    url: "http://apiceraor.api/"
 };

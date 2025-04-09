@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { NgForm } from '@angular/forms';
 import { PermissionsService } from '../../services/permissions.service';
 import * as bootstrap from 'bootstrap';
+import { Environment } from '../../Env/env';
 
 @Component({
   selector: 'app-orders',
@@ -34,6 +35,7 @@ export class OrdersComponent implements OnInit{
     user: string = localStorage.getItem('userName');
     rol: string;
     rols: any;
+    env = Environment;
   
     constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) {}
   

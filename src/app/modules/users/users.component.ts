@@ -144,7 +144,7 @@ export class UsersComponent implements OnInit{
         this.closeModal('#createModal');
   
         // Actualizar la lista de usuarios
-        this.getData();
+        this.setPermissions();
       },
       (error) => {
         Swal.fire({

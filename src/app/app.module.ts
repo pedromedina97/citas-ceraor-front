@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID,   NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { NavComponent } from './components/shared/nav/nav.component';
@@ -23,7 +23,10 @@ import { SetPermissionsComponent } from './modules/rols-permissions/set-permissi
 import { OrdersComponent } from './modules/orders/orders.component';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { CreateOrderComponent } from './modules/orders/create-order/create-order.component';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 
+registerLocaleData(localeEs, 'es');
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,6 +58,7 @@ import { CreateOrderComponent } from './modules/orders/create-order/create-order
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthService, multi: true},
+    {provide: LOCALE_ID, useValue: 'es' },
     provideClientHydration()
   ],
   bootstrap: [AppComponent]
