@@ -1,0 +1,10 @@
+input:focus, .form-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  button.btn-primary:hover {
+    background-color: #0b5ed7;
+    transition: background-color 0.3s ease;
+  }
+  

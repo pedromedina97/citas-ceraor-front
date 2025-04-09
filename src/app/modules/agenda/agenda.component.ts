@@ -386,7 +386,7 @@ export class AgendaComponent implements OnInit {
   }
 
   getDoctors() {
-    this.api.getDataById('user/getbyidrol', 77).subscribe(
+    this.api.getDataById('user/getbyidrol', 5).subscribe(
       (resp: any) => {
         console.log(resp.data);
         this.doctors = resp.data;
