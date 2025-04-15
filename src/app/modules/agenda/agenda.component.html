@@ -100,7 +100,7 @@
 
 
 
-  <ng-template #eventModal let-modal>
+  <ng-template #eventModal let-modal *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Agregar Cita</h5>

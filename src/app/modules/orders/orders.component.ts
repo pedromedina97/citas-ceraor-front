@@ -50,7 +50,6 @@ export class OrdersComponent implements OnInit{
       if(this.rol == 'Owner' || this.rol == 'Superadmin'){
         this.getData();
       }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
-        console.log("entra");
         this.getData();
       }
     }
@@ -90,7 +89,6 @@ export class OrdersComponent implements OnInit{
       this.api.getData('order/getall').subscribe(
         (data: any) => {
           this.users = data.data;
-          console.log(this.users);
           this.filtered = [...this.users]; // Inicializa con todos los usuarios
         },
         (error) => {
@@ -230,7 +228,6 @@ export class OrdersComponent implements OnInit{
         if(resp.isConfirmed){
           this.api.deleteData('user/deleteuser', id).subscribe(
             (data: any) => {
-              console.log(data);
               Swal.fire({
                 title: 'Usuario Borrado',
                 icon: 'success',
@@ -282,9 +279,7 @@ export class OrdersComponent implements OnInit{
     getClients(){
       this.api.getDataById('user/getmyusers', this.idUser).subscribe(
         (resp: any) =>{
-          console.log(resp);
           this.users = resp.data;
-          console.log(this.users);
           this.filtered = [...this.users];
         },
         (error)=>{

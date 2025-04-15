@@ -71,25 +71,25 @@ export class AgendaComponent implements OnInit {
     this.loadPermissions();
     this.loadId();
     this.loadRol();
-   /*  this.loadData(); */
     // Cargar eventos desde la API al iniciar
     this.getAllSubsidiary();  // Cargar sucursales
   }
 
   loadData(){
-    if(this.hasPermissions('get_client')){
+
       if(this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista'){
         this.getClients();
         this.getDoctors();
         this.getAllAppointments();
-      }else{
+      }
+      else{
         this.getMyClients();
         this.getMyInfo();
         this.loadDoctor();
         this.getOrdersByDoctor();
         this.getAllAppointments();
       }
-    }
+  
   }
 
   loadId(){
@@ -156,8 +156,6 @@ export class AgendaComponent implements OnInit {
   getAllAppointments() {
     this.api.getData('appointment/getall').subscribe(
       (resp: any) => {
-        console.log('Eventos cargados:', resp.data); // Verificar si el color viene desde la API
-
         this.events = resp.data.map((event: any) => ({
           id: event.id,
           title: event.client,
@@ -352,7 +350,7 @@ export class AgendaComponent implements OnInit {
     
     this.api.createData('appointment/setappointment', eventData).subscribe(
       (resp: any) => {
-        console.log('Evento guardado:', resp);
+  
         this.getAllAppointments(); // Recargar la lista de eventos después de guardar
         this.modalService.dismissAll();
       },
@@ -376,7 +374,6 @@ export class AgendaComponent implements OnInit {
   getOrdersByDoctor(){
     this.api.getDataById('order/getbydoctor', this.name+' '+this.lastname).subscribe(
       (resp: any) =>{
-        console.log(resp);
         this.catalogOrders = resp.data;
       },
       (error)=>{
@@ -388,7 +385,7 @@ export class AgendaComponent implements OnInit {
   getDoctors() {
     this.api.getDataById('user/getbyidrol', 5).subscribe(
       (resp: any) => {
-        console.log(resp.data);
+
         this.doctors = resp.data;
       },
       (error) => {
@@ -411,7 +408,6 @@ export class AgendaComponent implements OnInit {
   getClients() {
     this.api.getDataById('user/getbyidrol', 4).subscribe(
       (resp: any) => {
-        console.log(resp.data);
         this.clients = resp.data;
       },
       (error) => {
@@ -429,7 +425,6 @@ export class AgendaComponent implements OnInit {
   getAllSubsidiary() {
     this.api.getData('subsidiary/getall').subscribe(
       (resp: any) => {
-        console.log('Sucursales cargadas:', resp.data);
         this.subsidiaries = resp.data;
       },
       (error) => {
@@ -442,7 +437,6 @@ export class AgendaComponent implements OnInit {
     this.services = []; // Limpiar servicios anteriores
     this.api.getDataById('service/getbysubsidiary', id).subscribe(
       (resp: any) => {
-        console.log('Servicios cargados:', resp.data);
         this.services = resp.data;
       },
       (error) => {
@@ -508,7 +502,6 @@ export class AgendaComponent implements OnInit {
     this.barcodeTimer = setTimeout(() => {
       const code = this.barcodeBuffer.trim();
       if (code) {
-        console.log('Código leído automáticamente:', code);
         this.procesarCodigo(code);
       }
       this.barcodeBuffer = '';
@@ -544,7 +537,6 @@ export class AgendaComponent implements OnInit {
           if (resp.isConfirmed) {
             this.api.deleteData('appointment/delete', id).subscribe(
               (data: any) => {
-                console.log(data);
                 Swal.fire({
                   title: 'Cangeado',
                   icon: 'success',

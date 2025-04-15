@@ -70,10 +70,8 @@ export class LoadserviceComponent implements OnInit{
 
   onSubmit(): void {
     if (this.form.valid) {
-      console.log(this.form.value.items);
       this.api.createData('service/create', this.form.value.items).subscribe(
         (resp: any) => {
-          console.log(resp);
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
@@ -81,7 +79,6 @@ export class LoadserviceComponent implements OnInit{
           });
         },
         error => {
-          console.log(error);
           Swal.fire({
             icon: 'error',
             title: 'Error',

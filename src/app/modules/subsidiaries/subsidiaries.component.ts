@@ -23,7 +23,6 @@ export class SubsidiariesComponent implements OnInit, AfterViewInit{
     address: ''
   }
   ngOnInit(): void {
-    console.log(this.userId);
     this.getData();
   }
 
@@ -62,7 +61,6 @@ export class SubsidiariesComponent implements OnInit, AfterViewInit{
   getData(){
     this.api.getData('subsidiary/getall').subscribe(
       (resp: any)=>{
-        console.log(resp);
         this.subsidiaries = resp.data;
         this.filtered = [...this.subsidiaries];
       },
@@ -87,7 +85,6 @@ export class SubsidiariesComponent implements OnInit, AfterViewInit{
     editInstance(form: any) {
       this.api.updateData('subsidiary/update', this.id, this.dataInstance).subscribe(
         (data: any) => {
-          console.log(data);
           Swal.fire({
             title: 'Actualizado',
             icon: 'success',
@@ -109,13 +106,11 @@ export class SubsidiariesComponent implements OnInit, AfterViewInit{
     }
   
     create(form: any){
-      console.log(form.value);
       let data = [
         this.dataInstance
       ];
       this.api.createData('subsidiary/create', data).subscribe(
         (data: any) => {
-          console.log(data);
           Swal.fire({
             title: 'Creado',
             icon: 'success',
@@ -150,7 +145,6 @@ export class SubsidiariesComponent implements OnInit, AfterViewInit{
         if(resp.isConfirmed){
           this.api.deleteData('subsidiary/delete', id).subscribe(
             (data: any) => {
-              console.log(data);
               Swal.fire({
                 title: 'Borrado',
                 icon: 'success',

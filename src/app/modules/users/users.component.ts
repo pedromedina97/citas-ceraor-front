@@ -49,7 +49,6 @@ export class UsersComponent implements OnInit{
     if(this.rol == 'Owner' || this.rol == 'SuperAdmin'){
       this.getData();
     }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
-      console.log("entra");
       this.getClients();
     }
   }
@@ -89,7 +88,6 @@ export class UsersComponent implements OnInit{
     this.api.getData('user/getall').subscribe(
       (data: any) => {
         this.users = data.data;
-        console.log(this.users);
         this.filtered = [...this.users]; // Inicializa con todos los usuarios
       },
       (error) => {
@@ -229,7 +227,6 @@ export class UsersComponent implements OnInit{
       if(resp.isConfirmed){
         this.api.deleteData('user/deleteuser', id).subscribe(
           (data: any) => {
-            console.log(data);
             Swal.fire({
               title: 'Usuario Borrado',
               icon: 'success',

@@ -17,7 +17,6 @@ export class PermissionsService {
 
   setPermissions(permissions: any) {
     this.data = this.getDecodedAccessToken(permissions);
-    console.log(this.data);
     localStorage.setItem('userId', this.data.id);
     localStorage.setItem('rol', this.data.permissions.role_name);
     localStorage.setItem('name', this.data.name);

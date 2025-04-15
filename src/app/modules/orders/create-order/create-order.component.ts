@@ -101,7 +101,6 @@ export class CreateOrderComponent {
 
     this.api.createData('order/create', this.order).subscribe(
       (resp: any)=>{
-        console.log(resp);
         Swal.fire({
           icon: 'success',
           title: 'Orden Creada',

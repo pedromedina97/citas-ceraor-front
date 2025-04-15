@@ -46,7 +46,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   getSubsidiaries() {
     this.api.getData('subsidiary/getall').subscribe(
       (resp: any) => {
-        console.log(resp);
         this.subsidiaries = resp.data;
       },
       (error) => {
@@ -56,13 +55,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   search(form: NgForm) {
-    console.log(form.value);
     let id = form.value.id_subsidiary;
     Swal.showLoading();
     this.api.getDataById('service/getbysubsidiary', id).subscribe(
       (resp: any) => {
         Swal.close();
-        console.log(resp);
         this.services = resp.data;
         this.remainingId = resp.data.id;
         this.filtered = [...this.services];
@@ -83,7 +80,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.api.getDataById('service/getbysubsidiary', this.remainingId).subscribe(
       (resp: any) => {
         Swal.close();
-        console.log(resp);
         this.services = resp.data;
         this.remainingId = resp.data.id;
         this.filtered = [...this.services];
@@ -95,10 +91,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   editInstance(form: any) {
-    console.log(this.dataInstance);
     this.api.updateData('service/update', this.id, this.dataInstance).subscribe(
       (data: any) => {
-        console.log(data);
         Swal.fire({
           title: 'Actualizado',
           icon: 'success',
@@ -131,7 +125,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       if (resp.isConfirmed) {
         this.api.deleteData('service/delete', id).subscribe(
           (data: any) => {
-            console.log(data);
             Swal.fire({
               title: 'Borrado',
               icon: 'success',

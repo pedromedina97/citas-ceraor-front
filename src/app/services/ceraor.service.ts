@@ -18,13 +18,13 @@ export class CeraorService {
 
   getData(endpoint: string) {
     const url = `${Environment.url}${endpoint}`;
-    console.log(url);
+   /*  console.log(url); */
     return this.http.get(url);
   }
 
   getDataById(endpoint: string, id: any) {
     const url = Environment.url + `${endpoint}/` + id;
-    console.log(url); 
+   /*  console.log(url);  */
     return this.http.get(url);
   }
 
@@ -35,19 +35,19 @@ export class CeraorService {
 
   deleteData(endpoint: string, id: string) {
     const url = Environment.url + `${endpoint}/${id}`;
-    console.log(url);
+    /* console.log(url); */
     return this.http.delete(url);
   }
 
   updateData(endpoint: string, id: string, data: object) {
     const url = Environment.url + `${endpoint}/${id}`;
-    console.log(url);
+   /*  console.log(url); */
     return this.http.put(url, data);
   }
 
   createData(endpoint: string, data: object) {
     const url = Environment.url + `${endpoint}`;
-    console.log(url);
+   /*  console.log(url); */
     return this.http.post(url, data);
   }
 
@@ -128,7 +128,6 @@ export class CeraorService {
     /*  if (this.userToken.length <= 2) {
        return false;
      } */
-    console.log("entra");
     const expira = Number(localStorage.getItem('expira'));
     const expiraDate = new Date();
     expiraDate.setTime(expira);

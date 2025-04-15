@@ -21,7 +21,6 @@ export class PermissionsComponent {
     address: ''
   }
   ngOnInit(): void {
-    console.log(this.userId);
     this.getData();
   }
 
@@ -30,7 +29,6 @@ export class PermissionsComponent {
   getData(){
     this.api.getData('permission/getall').subscribe(
       (resp: any)=>{
-        console.log(resp);
         this.permissions = resp.data;
         this.filtered = [...this.permissions];
       },
@@ -55,7 +53,6 @@ export class PermissionsComponent {
     editInstance(form: any) {
       this.api.updateData('subsidiary/update', this.id, this.dataInstance).subscribe(
         (data: any) => {
-          console.log(data);
           Swal.fire({
             title: 'Actualizado',
             icon: 'success',
@@ -77,13 +74,11 @@ export class PermissionsComponent {
     }
   
     create(form: any){
-      console.log(form.value);
       let data = [
         this.dataInstance
       ];
       this.api.createData('subsidiary/create', data).subscribe(
         (data: any) => {
-          console.log(data);
           Swal.fire({
             title: 'Creado',
             icon: 'success',
@@ -119,7 +114,6 @@ export class PermissionsComponent {
         if(resp.isConfirmed){
           this.api.deleteData('subsidiary/delete', id).subscribe(
             (data: any) => {
-              console.log(data);
               Swal.fire({
                 title: 'Borrado',
                 icon: 'success',

@@ -20,7 +20,6 @@ export class RolsComponent {
     description: ''
   }
   ngOnInit(): void {
-    console.log(this.userId);
     this.getData();
   }
 
@@ -29,7 +28,6 @@ export class RolsComponent {
   getData() {
     this.api.getData('rol/getall').subscribe(
       (resp: any) => {
-        console.log(resp);
         this.rols = resp.data;
         this.filtered = [...this.rols];
       },
@@ -54,7 +52,6 @@ export class RolsComponent {
   editInstance(form: any) {
     this.api.updateData('rol/update', this.id, this.dataInstance).subscribe(
       (data: any) => {
-        console.log(data);
         Swal.fire({
           title: 'Actualizado',
           icon: 'success',
@@ -76,13 +73,11 @@ export class RolsComponent {
   }
 
   create(form: any) {
-    console.log(form.value);
     let data = [
       this.dataInstance
     ];
     this.api.createData('rol/create', data).subscribe(
       (data: any) => {
-        console.log(data);
         Swal.fire({
           title: 'Creado',
           icon: 'success',
@@ -118,7 +113,6 @@ export class RolsComponent {
       if (resp.isConfirmed) {
         this.api.deleteData('rol/delete', id).subscribe(
           (data: any) => {
-            console.log(data);
             Swal.fire({
               title: 'Borrado',
               icon: 'success',
