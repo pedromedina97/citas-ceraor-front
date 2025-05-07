@@ -1,4 +1,3 @@
-<app-nav></app-nav>
 <div class="calendar-container mt-5 text-center">
   <div class="calendar-header mt-5">
     <button class="btn btn-outline-primary" (click)="prev()">Anterior</button>
@@ -100,7 +99,7 @@
 
 
 
-  <ng-template #eventModal let-modal *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
+  <ng-template #eventModal let-modal *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Agregar Cita</h5>
@@ -125,9 +124,9 @@
 
 
         <label>Doctor Afiliado</label>
-        <select name="personal" id="" class="form-control mb-2" [(ngModel)]="eventForm.personal">
+        <select name="personal" id="" class="form-control mb-2"  (change)="onDoctorChange($event)">
           <option value="" selected>Seleccione un doctor</option>
-          <option *ngFor="let doctor of doctors" value="{{doctor.name}} {{doctor.lastname}}">{{doctor.name}}
+          <option *ngFor="let doctor of doctors" value="{{doctor | json}}">{{doctor.name}}
             {{doctor.lastname}}</option>
         </select>
 

@@ -14,25 +14,14 @@ import { Environment } from '../../Env/env';
   styleUrl: './orders.component.scss'
 })
 export class OrdersComponent implements OnInit{
-  permissions: any;
-    users: any[] = [];
+    permissions: any;
+    orders: any[] = [];
     filtered: any[] = [];
     filterText: string = '';
-    dataInstance = {
-      parentId: '',
-      name: '',
-      lastname: '',
-      email: '',
-      password: '',
-      birthday: '',
-      phone: '',
-      related: '',
-      address: '',
-      id_rol: null
-    }
     id: string;
     idUser: string;
-    user: string = localStorage.getItem('userName');
+    name: String;
+    lastname: String;
     rol: string;
     rols: any;
     env = Environment;
@@ -47,10 +36,11 @@ export class OrdersComponent implements OnInit{
     }
   
     setPetitions(){
-      if(this.rol == 'Owner' || this.rol == 'Superadmin'){
+      if(this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol == 'Admin'){
         this.getData();
-      }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
-        this.getData();
+      }if(this.rol == 'Doctor'){
+        let complete = this.name + " " + this.lastname;
+        this.getOrdersByDoctor(complete);
       }
     }
   
@@ -68,6 +58,16 @@ export class OrdersComponent implements OnInit{
     
       this.permissionsService.getPermissions().subscribe(value => {
         this.permissions = value;
+        this.cd.detectChanges(); 
+      });
+
+      this.permissionsService.getName().subscribe(value=>{
+        this.name = value;
+        this.cd.detectChanges(); 
+      });
+
+      this.permissionsService.getLastname().subscribe(value=>{
+        this.lastname = value;
         this.cd.detectChanges(); 
       });
     }
@@ -88,8 +88,8 @@ export class OrdersComponent implements OnInit{
     getData() {
       this.api.getData('order/getall').subscribe(
         (data: any) => {
-          this.users = data.data;
-          this.filtered = [...this.users]; // Inicializa con todos los usuarios
+          this.orders = data.data;
+          this.filtered = [...this.orders]; // Inicializa con todos los usuarios
         },
         (error) => {
           console.log(error.error);
@@ -99,63 +99,29 @@ export class OrdersComponent implements OnInit{
   
     filter() {
       const searchText = this.filterText.toLowerCase();
-      this.filtered = this.users.filter(user =>
-        user.email.toLowerCase().includes(searchText) ||
-        user.name.toLowerCase().includes(searchText) ||
-        user.lastname.toLowerCase().includes(searchText)
+      this.filtered = this.orders.filter(order =>
+        order.patient.toLowerCase().includes(searchText) ||
+        order.appointment_code.toLowerCase().includes(searchText) 
       );
     }
   
-    getInstance(user: any, id: string) {
+   /*  getInstance(user: any, id: string) {
       this.dataInstance = user;
       this.id = id;
+    } */
+
+    getOrdersByDoctor(name: String){
+          this.api.getDataById('order/getbydoctor', name).subscribe(
+            (resp: any)=>{
+              this.orders = resp.data;
+              this.filtered = this.orders;
+              console.log(this.orders);
+            },
+            (error)=>{
+              console.log(error);
+            }
+          );
     }
-  
-  
-    create(form: NgForm) {
-      if (form.invalid) {
-        Swal.fire({
-          title: 'Formulario inválido',
-          icon: 'error',
-          text: 'Por favor, complete todos los campos correctamente antes de enviar.',
-          confirmButtonColor: '#198754'
-        });
-        return;
-      }
-    
-      this.dataInstance.parentId = this.idUser;
-      this.dataInstance.related = this.user;
-    
-      this.api.createData('user/register', this.dataInstance).subscribe(
-        (data: any) => {
-          Swal.fire({
-            title: 'Usuario Creado',
-            icon: 'success',
-            text: data.message,
-            confirmButtonColor: '#198754'
-          });
-    
-          // Restablecer formulario
-          form.resetForm();
-          this.resetForm();
-    
-          // Cerrar modal
-          this.closeModal('#createModal');
-    
-          // Actualizar la lista de usuarios
-          this.getData();
-        },
-        (error) => {
-          Swal.fire({
-            title: 'Error',
-            icon: 'error',
-            text: error.error.message,
-            confirmButtonColor: '#198754'
-          });
-        }
-      );
-    }
-    
     editInstance(form: NgForm) {
       if (form.invalid) {
         Swal.fire({
@@ -176,9 +142,6 @@ export class OrdersComponent implements OnInit{
             confirmButtonColor: '#198754'
           });
     
-          // Restablecer formulario
-          form.resetForm();
-          this.resetForm();
     
           // Cerrar modal
           this.closeModal('#editModal');
@@ -249,21 +212,7 @@ export class OrdersComponent implements OnInit{
       });
      
     }
-  
-    resetForm() {
-      this.dataInstance = {
-        parentId: '',
-        name: '',
-        lastname: '',
-        email: '',
-        password: '',
-        birthday: '',
-        phone: '',
-        related: '',
-        address: '',
-        id_rol: null
-      }
-    }
+
   
     getRols(){
       this.api.getData('rol/getall').subscribe(
@@ -272,23 +221,6 @@ export class OrdersComponent implements OnInit{
         },
         (error)=>{
           console.log(error);
-        }
-      );
-    }
-  
-    getClients(){
-      this.api.getDataById('user/getmyusers', this.idUser).subscribe(
-        (resp: any) =>{
-          this.users = resp.data;
-          this.filtered = [...this.users];
-        },
-        (error)=>{
-          console.log(error);
-          Swal.fire({
-            icon: 'warning',
-            title: 'Sin usuarios',
-            text: error.error.msg
-          });
         }
       );
     }

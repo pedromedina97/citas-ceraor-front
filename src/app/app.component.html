@@ -1,3 +1,23 @@
-<div ngClass="{'login-background': isLoginPage}">
+<!-- <div [ngClass]="{'login-background': isLoginPage}">
+    <div class="layout" [ngClass]="{ 'sidebar-open': sidebarOpen }">
+        <app-nav [sidebarOpen]="sidebarOpen" (toggle)="toggleSidebar()"></app-nav>
     <router-outlet></router-outlet>
-</div>  
+</div> -->
+<div [ngClass]="{ 'login-background': isLoginPage }">
+    <div class="layout" [ngClass]="{ 'sidebar-open': sidebarOpen }">
+  
+      <!-- Sidebar solo si NO es login -->
+      <aside *ngIf="!isLoginPage" class="sidebar" [ngClass]="{ 'open': sidebarOpen }">
+        <!-- tu contenido del sidebar aquí -->
+      </aside>
+  
+      <!-- Navbar solo si NO es login -->
+      <app-nav *ngIf="!isLoginPage" [sidebarOpen]="sidebarOpen" (toggle)="toggleSidebar()"></app-nav>
+  
+      <!-- Contenido dinámico -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+  

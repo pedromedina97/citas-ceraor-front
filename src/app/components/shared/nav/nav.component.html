@@ -1,75 +1,62 @@
-<nav class="navbar fixed-top navbar-expand-lg bg-white shadow-sm rounded-4 px-3">
-  <div class="container-fluid">
-    <a class="btn btn-primary rounded-circle" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
-      <i class="bi bi-list"></i>
-    </a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-      </ul>
-      <div class="d-flex" role="search">
-        
-              <p class="pt-3">{{user}}</p>
-        <img src="../../../assets/logo_ceraor.svg" class="text-center" width="60" height="auto" alt="">
+<header class="navbar">
+  <div class="navbar-content">
+    <div class="spacer"></div> <!-- empuja el usuario a la derecha -->
+    <div class="user-menu">
+      <div class="user-name" (click)="toggleDropdown()">
+        👤 {{ user }} ▾
       </div>
+      <ul class="dropdown" [class.show]="dropdownVisible">
+        <li><a href="#">Perfil</a></li>
+        <li><a href="#">Configuración</a></li>
+        <li><a href="#">Cerrar sesión</a></li>
+      </ul>
     </div>
-  </div>
-</nav>
+    
 
-<div class="offcanvas offcanvas-start rounded-top-4" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-  <div class="offcanvas-header">
-    <h2 class="m-0">Citas Ceraor3D</h2>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-  <div class="offcanvas-body">
-    <ul class="list-group list-group-flush">
-      <a style="text-decoration: none;" [routerLink]="['/home']">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-house-door-fill"></i> Home
-        </li>
-      </a>
-      <a *ngIf="canShow('see_user')" [routerLink]="['/users']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-people-fill"></i> Usuarios
-        </li>
-      </a>
-      <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-ui-radios"></i> Roles/Permisos
-        </li>
-      </a>
-      <a *ngIf="canShow('see_service')" [routerLink]="['/services']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-list-check"></i> Servicios
-        </li>
-      </a>
-      <a *ngIf="canShow('see_subsidiary')" [routerLink]="['/subsidiaries']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-building"></i> Sucursales
-        </li>
-      </a>
-      <a *ngIf="canShow('see_client')" [routerLink]="['/clients']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-person-video2"></i> Clientes
-        </li>
-      </a>
-      <a [routerLink]="['/agenda']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-calendar-date-fill"></i> Agenda
-        </li>
-      </a>
-      <a *ngIf="canShow('see_order')" [routerLink]="['/orders']" style="text-decoration: none;">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2">
-          <i class="bi bi-list-ul"></i> Ordenes
-        </li>
-      </a>
-      <a style="text-decoration: none; cursor: pointer;" (click)="logout()">
-        <li class="list-group-item item-hover rounded-3 shadow p-3 bg-body-tertiary rounded mb-2 text-danger">
-          <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
-        </li>
-      </a>
-    </ul>
+</header>
+<button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+<aside class="sidebar" [ngClass]="{ 'open': sidebarOpen }">
+  <div class="header" style="margin-top: 100px;">
+    <img src="../../../assets/logo_ceraor.svg" width="60" height="auto"/>
   </div>
-</div>
+  <nav>
+    <a [routerLink]="['/home']">
+      <i class="bi bi-house-door-fill"></i>
+      <p>Home</p>
+    </a>
+    <a *ngIf="canShow('see_user')" [routerLink]="['/users']">
+      <i class="bi bi-people-fill"></i>
+      <p>Usuarios</p>
+    </a>
+    <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']">
+      <i class="bi bi-ui-radios"></i>
+      <p>Roles/Permisos</p>
+    </a>
+    <a *ngIf="canShow('see_service')" [routerLink]="['/services']">
+      <i class="bi bi-list-check"></i>
+      <p>Servicios</p>
+    </a>
+    <a *ngIf="canShow('see_subsidiary')" [routerLink]="['/subsidiaries']">
+      <i class="bi bi-building"></i>
+      <p>Sucursales</p>
+    </a>
+    <a *ngIf="canShow('see_client')" [routerLink]="['/clients']">
+      <i class="bi bi-person-video2"></i>
+      <p>Clientes</p>
+    </a>
+    <a [routerLink]="['/agenda']">
+      <i class="bi bi-calendar-date-fill"></i>
+      <p>Agenda</p>
+    </a>
+    <a *ngIf="canShow('see_order')" [routerLink]="['/orders']">
+      <i class="bi bi-list-ul"></i>
+      <p>Ordenes</p>
+
+    </a>
+    <a (click)="logout()">
+      <i class="bi bi-box-arrow-left"></i>
+      <p>Cerrar Sesión</p>
+    </a>
+  </nav>
+</aside>

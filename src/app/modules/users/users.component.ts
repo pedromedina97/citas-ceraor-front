@@ -96,6 +96,12 @@ export class UsersComponent implements OnInit{
     );
   }
 
+  clearFilter(): void {
+    this.filterText = '';
+    this.filter(); // Opcional: vuelve a mostrar todo
+  }
+  
+
   filter() {
     const searchText = this.filterText.toLowerCase();
     this.filtered = this.users.filter(user =>
@@ -137,7 +143,7 @@ export class UsersComponent implements OnInit{
         // Restablecer formulario
         form.resetForm();
         this.resetForm();
-  
+        this.setPetitions();
         // Cerrar modal
         this.closeModal('#createModal');
   

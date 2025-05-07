@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class CreateOrderComponent {
   defaultNavActiveId = 1;
-
+  patient: any;
   order = {
     patient: "",
     birthdate: "",
@@ -85,11 +85,13 @@ export class CreateOrderComponent {
 
   clients: any[] = [];
   id: string;
+  instance: any;
 
   constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadId();
+    this.getInstance();
     this.getMyClients();
     this.cd.detectChanges();
   }
@@ -129,6 +131,15 @@ export class CreateOrderComponent {
     );
   }
 
+  onSelectChange(event: Event) {
+    let value = (event.target as HTMLSelectElement).value;
+    this.patient = JSON.parse(value);
+    this.order.patient = this.patient.name + " " +this.patient.lastname;
+    this.order.email = this.patient.email; 
+    this.order.phone = this.patient.phone;
+    this.order.birthdate = this.patient.birthday;
+  }
+
   getMyClients() {
     this.api.getDataById('user/getmyusers', this.id).subscribe(
       (resp: any) => {
@@ -136,6 +147,19 @@ export class CreateOrderComponent {
         
       },
       (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  getInstance(){
+    this.api.getDataById('user/getinstance', this.id).subscribe(
+      (resp: any)=>{
+        this.instance = resp.data[0];
+        this.order.doctor = this.instance.name + " " + this.instance.lastname;
+        this.order.address = this.instance.address;
+      },
+      (error)=>{
         console.log(error);
       }
     );

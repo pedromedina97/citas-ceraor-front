@@ -25,6 +25,7 @@ import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { CreateOrderComponent } from './modules/orders/create-order/create-order.component';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { FooterComponent } from './components/shared/footer/footer.component';
 
 registerLocaleData(localeEs, 'es');
 @NgModule({
@@ -45,7 +46,9 @@ registerLocaleData(localeEs, 'es');
     RolsComponent,
     SetPermissionsComponent,
     OrdersComponent,
-    CreateOrderComponent
+    CreateOrderComponent,
+    FooterComponent,
+
   ],
   imports: [
     BrowserModule,

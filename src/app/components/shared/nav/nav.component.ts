@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, NgZone, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CeraorService } from '../../../services/ceraor.service';
@@ -10,21 +10,41 @@ import { PermissionsService } from '../../../services/permissions.service';
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss'
 })
-export class NavComponent implements OnInit{
+export class NavComponent implements OnInit {
 
   permissions: any;
   user: string;
+  dropdownVisible: boolean = false;
+  @Input() sidebarOpen: boolean = false;
+  @Output() toggle = new EventEmitter<void>();
 
-  constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone){}
-  
-  
+  constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) { }
+
+
   ngOnInit(): void {
     this.loadPermissions();
     this.user = localStorage.getItem('userName') || ''; // Asigna el valor en ngOnInit
   }
-  
 
-  logout(){
+  toggleSidebar() {
+    this.toggle.emit();
+  }
+
+  toggleDropdown(): void {
+    this.dropdownVisible = !this.dropdownVisible;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-menu')) {
+      this.dropdownVisible = false;
+    }
+  }
+
+
+
+  logout() {
     Swal.fire({
       title: "Cerrar Sesión",
       icon: 'info',
@@ -33,8 +53,8 @@ export class NavComponent implements OnInit{
       cancelButtonColor: '#d33',
       showConfirmButton: true,
       showCancelButton: true
-    }).then((resp)=>{
-      if(resp.isConfirmed){
+    }).then((resp) => {
+      if (resp.isConfirmed) {
         Swal.fire({
           title: 'Hasta Pronto',
           icon: 'success',
@@ -44,14 +64,14 @@ export class NavComponent implements OnInit{
         this.router.navigateByUrl('/login');
       }
     });
-    
+
   }
 
-  loadPermissions(){
+  loadPermissions() {
     this.permissionsService.getPermissions().subscribe(
-      value=>{
+      value => {
         this.zone.run(
-          ()=>{
+          () => {
             this.permissions = value;
             this.cd.detectChanges();
           }
@@ -60,7 +80,7 @@ export class NavComponent implements OnInit{
     );
   }
 
-  updatePermissions(token: string){
+  updatePermissions(token: string) {
     this.permissionsService.setPermissions(token);
   }
 
@@ -68,7 +88,7 @@ export class NavComponent implements OnInit{
     return this.permissions && this.permissions.includes(permission);
   }
 
-  canShow(option: string): boolean{
+  canShow(option: string): boolean {
     return this.hasPermissions(option);
   }
 

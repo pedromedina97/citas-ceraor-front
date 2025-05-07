@@ -1,1 +1,90 @@
-<app-nav></app-nav>
+<!-- <app-nav></app-nav> -->
+<div class="dashboard-container">
+    <!-- Títulos -->
+    <h2 class="dashboard-title">Panel de Control</h2>
+
+    <!-- Tarjetas -->
+    <div class="card-grid">
+      <div class="dashboard-card">
+        <h3>Pacientes activos</h3>
+        <p>152</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>Citas del día</h3>
+        <p>23</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>Consultas realizadas</h3>
+        <p>98</p>
+      </div>
+    </div>
+
+    <div class="table-desktop">
+      <h3 class="table-title">Últimas citas</h3>
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Médico</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Juan Pérez</td>
+            <td>2025-05-01</td>
+            <td>10:00 AM</td>
+            <td>Dr. García</td>
+            <td><span class="badge badge-success">Completado</span></td>
+          </tr>
+          <tr>
+            <td>Ana Torres</td>
+            <td>2025-05-01</td>
+            <td>11:30 AM</td>
+            <td>Dr. Ramírez</td>
+            <td><span class="badge badge-warning">Pendiente</span></td>
+          </tr>
+          <tr>
+            <td>Marco Ruiz</td>
+            <td>2025-05-01</td>
+            <td>01:00 PM</td>
+            <td>Dr. López</td>
+            <td><span class="badge badge-danger">Cancelada</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cards para móviles -->
+    <div class="cards-mobile">
+      <h3 class="table-title">Últimas citas</h3>
+
+      <div class="mobile-card">
+        <p><strong>Paciente:</strong> Juan Pérez</p>
+        <p><strong>Fecha:</strong> 2025-05-01</p>
+        <p><strong>Hora:</strong> 10:00 AM</p>
+        <p><strong>Médico:</strong> Dr. García</p>
+        <p><strong>Estado:</strong> <span class="badge badge-success">Completado</span></p>
+      </div>
+
+      <div class="mobile-card">
+        <p><strong>Paciente:</strong> Ana Torres</p>
+        <p><strong>Fecha:</strong> 2025-05-01</p>
+        <p><strong>Hora:</strong> 11:30 AM</p>
+        <p><strong>Médico:</strong> Dr. Ramírez</p>
+        <p><strong>Estado:</strong> <span class="badge badge-warning">Pendiente</span></p>
+      </div>
+
+      <div class="mobile-card">
+        <p><strong>Paciente:</strong> Marco Ruiz</p>
+        <p><strong>Fecha:</strong> 2025-05-01</p>
+        <p><strong>Hora:</strong> 01:00 PM</p>
+        <p><strong>Médico:</strong> Dr. López</p>
+        <p><strong>Estado:</strong> <span class="badge badge-danger">Cancelada</span></p>
+      </div>
+    </div>
+
+  </div>
+<app-footer></app-footer>

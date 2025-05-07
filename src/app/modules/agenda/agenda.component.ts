@@ -8,6 +8,7 @@ interface Event {
   id_order: string;
   title: string;
   start: string;
+  end?: string;
   color: string;
   personal: string;
   id_subsidiary: string;
@@ -64,6 +65,7 @@ export class AgendaComponent implements OnInit {
   barcodeBuffer: string = '';
   barcodeTimer: any;
   appointment: any;
+  doctor: any;
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -101,6 +103,13 @@ export class AgendaComponent implements OnInit {
         console.log(error);
       }
     );
+  }
+
+  onDoctorChange(event: any) {
+    let value = (event.target as HTMLSelectElement).value;
+    this.doctor = JSON.parse(value);
+    this.eventForm.personal = this.doctor.name + " " + this.doctor.lastname;
+    this.getOrders(this.doctor.name, this.doctor.lastname);
   }
 
   loadDoctor(){
@@ -160,6 +169,7 @@ export class AgendaComponent implements OnInit {
           id: event.id,
           title: event.client,
           start: event.appointment,
+          end: event.end_appointment,
           personal: event.personal,
           id_subsidiary: event.id_subsidiary,
           service: event.service,
@@ -333,6 +343,57 @@ export class AgendaComponent implements OnInit {
   saveEvent() {
     const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
     const endDate = new Date(`${this.eventForm.start}T${this.eventForm.endTime}`);
+  
+    // Validar traslape
+    const conflict = this.events.some(event => {
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(eventStart); // Suponemos duración similar, 30 mins o end_appointment si lo tienes
+      eventEnd.setMinutes(eventEnd.getMinutes() + 30); // Ajusta según tu lógica
+  
+      // Verificamos si hay traslape y mismo doctor o sucursal
+      return (
+        event.personal === this.eventForm.personal &&
+        startDate < eventEnd && endDate > eventStart
+      );
+    });
+  
+    if (conflict) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Conflicto de horario',
+        text: 'Ya existe una cita registrada en este horario para este doctor.',
+      });
+      return;
+    }
+  
+    // Si no hay conflicto, procedemos a guardar
+    this.eventForm.color = this.generateRandomColor();
+    const eventData = {
+      id_order: this.eventForm.id_order,
+      client: this.eventForm.title,
+      personal: this.eventForm.personal,
+      id_subsidiary: this.eventForm.id_subsidiary,
+      service: this.eventForm.service,
+      appointment: `${this.eventForm.start} ${this.eventForm.startTime}:00`,
+      end_appointment: `${this.eventForm.start} ${this.eventForm.endTime}:00`,
+      color: this.eventForm.color
+    };
+  
+    this.api.createData('appointment/setappointment', eventData).subscribe(
+      (resp: any) => {
+        this.getAllAppointments(); // Recargar
+        this.modalService.dismissAll();
+      },
+      (error) => {
+        console.error('Error al guardar evento:', error);
+      }
+    );
+  }
+  
+
+  /* saveEvent() {
+    const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
+    const endDate = new Date(`${this.eventForm.start}T${this.eventForm.endTime}`);
 
     // 🟢 Generar un color aleatorio siempre antes de guardar
     this.eventForm.color = this.generateRandomColor();
@@ -358,7 +419,7 @@ export class AgendaComponent implements OnInit {
         console.error('Error al guardar evento:', error);
       }
     );
-  }
+  } */
 
   getMyInfo(){
     this.api.getDataById('user/getbyid', this.id).subscribe(
@@ -381,11 +442,20 @@ export class AgendaComponent implements OnInit {
       }
     );
   }
+  getOrders(name: String, lastname :String){
+    this.api.getDataById('order/getbydoctor', name+' '+ lastname).subscribe(
+      (resp: any) =>{
+        this.catalogOrders = resp.data;
+      },
+      (error)=>{
+        console.log(error.error);
+      }
+    );
+  }
 
   getDoctors() {
-    this.api.getDataById('user/getbyidrol', 5).subscribe(
+    this.api.getData('catalog/getdoctors').subscribe(
       (resp: any) => {
-
         this.doctors = resp.data;
       },
       (error) => {
@@ -406,7 +476,7 @@ export class AgendaComponent implements OnInit {
   }
 
   getClients() {
-    this.api.getDataById('user/getbyidrol', 4).subscribe(
+    this.api.getData('catalog/getclients').subscribe(
       (resp: any) => {
         this.clients = resp.data;
       },

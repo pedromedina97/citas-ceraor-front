@@ -1,6 +1,4 @@
-<app-nav></app-nav>
-
-<div class="container-fluid mt-5">
+<div class="container-fluid mt-5" style="max-width: 90% !important;">
   <div class="row">
     <div class="col mt-5">
       <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
@@ -21,8 +19,9 @@
                     <h4>Datos del paciente</h4>
                     <div class="col-md-6">
                       <label class="form-label">Nombre del paciente</label>
-                      <select name="patient" id="" class="form-control" [(ngModel)]="order.patient">
-                        <option *ngFor="let client of clients" value="{{client.name}} {{client.lastname}}">
+                      <select name="patient" id="" class="form-control"  (change)="onSelectChange($event)">
+                        <option value="" selected>Seleccione un paciente</option>
+                        <option *ngFor="let client of clients" value="{{client | json}}">
                           {{client.name}}
                           {{client.lastname}}</option>
                       </select>

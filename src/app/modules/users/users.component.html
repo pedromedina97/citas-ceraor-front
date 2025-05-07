@@ -1,27 +1,117 @@
-<app-nav></app-nav>
-
-<div class="container mt-5">
+<div class="container mt-5" style="max-width: 90% !important;">
   <div class="row justify-content-center">
     <!-- Buscador y botón de creación -->
-    <div class="col-lg-6 col-md-8 col-sm-12 mt-5">
-      <div class="card shadow-lg p-4 rounded-lg fade-in">
-        <div class="card-body">
-          <form>
-            <div class="input-group">
-              <input type="text" class="form-control input-ios" [ngModelOptions]="{standalone: true}" autocomplete="off"
-                [(ngModel)]="filterText" (input)="filter()" placeholder="Buscar usuario...">
-              <button *ngIf="canShow('create_user')" class="btn btn-primary btn-ios" type="button"
-                data-bs-toggle="modal" data-bs-target="#createModal" (click)="resetForm()">
-                <i class="bi bi-plus-circle"></i> Crear
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <!-- Buscador y botón de creación -->
+<div class="col-lg-6 col-md-8 col-sm-12 mt-4">
+  <div class="card shadow-lg p-4 rounded-lg fade-in">
+    <div class="card-body">
+      <form (submit)="filter()" role="search" aria-label="Buscar usuario">
+        <div class="input-group">
+          <!-- Input de búsqueda -->
+          <input
+            type="search"
+            class="form-control input-ios"
+            [ngModelOptions]="{ standalone: true }"
+            autocomplete="off"
+            [(ngModel)]="filterText"
+            (input)="filter()"
+            placeholder="Buscar usuario por nombre, email o teléfono..."
+          />
 
-    <!-- Tabla de Usuarios -->
-    <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
+          <!-- Botón limpiar (si hay texto) -->
+          <button
+            *ngIf="filterText"
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="clearFilter()"
+            aria-label="Limpiar búsqueda"
+          >
+            <i class="bi bi-x-circle"></i>
+          </button>
+
+          <!-- Botón crear (si tiene permiso) -->
+          <button
+            *ngIf="canShow('create_user')"
+            class="btn btn-primary"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#createModal"
+            (click)="resetForm()"
+          >
+            <i class="bi bi-plus-circle me-1"></i> Crear
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+    <!-- 📦 Escritorio -->
+<div class="table-desktop">
+  <h3 class="table-title">Usuarios</h3>
+  <div class="dashboard-table-wrapper">
+    <table class="dashboard-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+          <th>Usuario Relacionado</th>
+          <th>Dirección</th>
+          <th>Creado</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filtered">
+          <td>{{ user.email }}</td>
+          <td>{{ user.name }} {{ user.lastname }}</td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.related }}</td>
+          <td>{{ user.address }}</td>
+          <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
+              data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+              (click)="delete(user.id, user.name)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 📱 Móviles -->
+<div class="cards-mobile">
+  <h3 class="table-title">Usuarios</h3>
+  <div class="mobile-card" *ngFor="let user of filtered">
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Nombre:</strong> {{ user.name }} {{ user.lastname }}</p>
+    <p><strong>Teléfono:</strong> {{ user.phone }}</p>
+    <p><strong>Relacionado:</strong> {{ user.related }}</p>
+    <p><strong>Dirección:</strong> {{ user.address }}</p>
+    <p><strong>Creado:</strong> {{ user.created_at | date:'dd/MM/yyyy' }}</p>
+    <div class="d-flex justify-content-start gap-2 mt-2">
+      <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm"
+        data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+        <i class="bi bi-pencil-square"></i>
+      </button>
+      <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+        (click)="delete(user.id, user.name)">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+    
+    <!-- <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
       <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <div class="table-responsive">
@@ -61,7 +151,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 
