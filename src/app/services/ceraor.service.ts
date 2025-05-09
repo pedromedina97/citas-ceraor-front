@@ -9,7 +9,7 @@ export class CeraorService {
   userToken: string;
   permissions: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(public http: HttpClient) { }
 
   saveUserDataInLocalStorage(userName: string) {
     localStorage.setItem('userName', userName);

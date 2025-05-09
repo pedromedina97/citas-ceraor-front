@@ -168,12 +168,12 @@ export class AgendaComponent implements OnInit {
         this.events = resp.data.map((event: any) => ({
           id: event.id,
           title: event.client,
-          start: event.appointment,
-          end: event.end_appointment,
+          start: event.appointment,               // cadena "YYYY-MM-DD HH:mm:ss"
+          end: event.end_appointment,             // cadena "YYYY-MM-DD HH:mm:ss"
           personal: event.personal,
           id_subsidiary: event.id_subsidiary,
           service: event.service,
-          color: event.color ? event.color : this.generateRandomColor(), // 🟢 Si no hay color en la BD, genera uno aleatorio
+          color: event.color || this.generateRandomColor()
         }));
       },
       (error) => {
@@ -297,15 +297,23 @@ export class AgendaComponent implements OnInit {
       .filter(event => new Date(event.start).toDateString() === this.currentDate.toDateString())
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   }
-  
-
-  /* getDayEvents(): Event[] {
-    return this.events.filter(event => new Date(event.start).toDateString() === this.currentDate.toDateString());
-  } */
 
   getEventsForDay(day: Date): Event[] {
-    return this.events.filter(event => new Date(event.start).toDateString() === day.toDateString());
+    return this.events.filter(event => {
+      const eventDate = new Date(event.start);
+      return (
+        eventDate.getFullYear() === day.getFullYear() &&
+        eventDate.getMonth() === day.getMonth() &&
+        eventDate.getDate() === day.getDate()
+      );
+    });
   }
+  
+  
+
+  /* getEventsForDay(day: Date): Event[] {
+    return this.events.filter(event => new Date(event.start).toDateString() === day.toDateString());
+  } */
 
   isPast(event: Event): boolean {
     return new Date(event.start).getTime() < new Date().getTime();

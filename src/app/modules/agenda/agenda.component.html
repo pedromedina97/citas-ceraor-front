@@ -27,14 +27,24 @@
         [ngClass]="{'current-day': day && isToday(day)}">
 
         <span *ngIf="day" class="day-number">{{ day | date: 'd' }}</span>
-
         <div class="events-container" *ngIf="day">
+          <div *ngFor="let event of getEventsForDay(day)" 
+               class="event" 
+               [style.backgroundColor]="event.color"
+               (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
+            <span>{{ event.title }}</span><br>
+            <small>{{ event.start | date:'shortTime' }}</small>
+            <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+          </div>
+        </div>
+        
+        <!-- <div class="events-container" *ngIf="day">
           <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
             (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
             <span>{{ event.title }}</span>
             <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

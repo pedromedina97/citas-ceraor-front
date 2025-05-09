@@ -50,12 +50,21 @@
                       data-bs-toggle="modal" data-bs-target="#editModal">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <a *ngIf="order.appointment_code !== null" href="{{env.url}}file/getfile/download/{{order.appointment_code}}.pdf" download _blank class="btn btn-outline-danger btn-sm">
+                    <!-- Con appointment_code -->
+                    <button *ngIf="order.appointment_code !== null"
+                      (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
+                      class="btn btn-outline-danger btn-sm">
                       <i class="bi bi-file-earmark-pdf-fill"></i>
-                    </a>
-                    <a *ngIf="order.appointment_code == null" href="{{env.url}}file/getfile/downloadbyid/{{order.id}}.pdf" download _blank class="btn btn-outline-primary btn-sm">
+                    </button>
+
+                    <!-- Sin appointment_code (usa el ID) -->
+                    <button *ngIf="order.appointment_code == null"
+                      (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
+                      class="btn btn-outline-primary btn-sm">
                       <i class="bi bi-file-earmark-pdf-fill"></i>
-                    </a>
+                    </button>
+
+
                     <button *ngIf="canShow('delete_order')" class="btn btn-outline-danger btn-sm"
                       (click)="delete(order.id, order.name)">
                       <i class="bi bi-trash"></i>
