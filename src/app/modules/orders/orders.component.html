@@ -46,10 +46,10 @@
                   <td>{{ order.address }}</td>
                   <td>{{ order.created_at | date:'dd/MM/yyyy' }}</td>
                   <td>
-                    <button *ngIf="canShow('update_order')" class="btn btn-outline-warning btn-sm me-2"
+                    <!-- <button *ngIf="canShow('update_order')" class="btn btn-outline-warning btn-sm me-2"
                       data-bs-toggle="modal" data-bs-target="#editModal">
                       <i class="bi bi-pencil-square"></i>
-                    </button>
+                    </button> -->
                     <!-- Con appointment_code -->
                     <button *ngIf="order.appointment_code !== null"
                       (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
@@ -65,10 +65,10 @@
                     </button>
 
 
-                    <button *ngIf="canShow('delete_order')" class="btn btn-outline-danger btn-sm"
+                    <!-- <button *ngIf="canShow('delete_order')" class="btn btn-outline-danger btn-sm"
                       (click)="delete(order.id, order.name)">
                       <i class="bi bi-trash"></i>
-                    </button>
+                    </button> -->
                   </td>
                 </tr>
               </tbody>
