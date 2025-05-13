@@ -13,6 +13,8 @@ interface Event {
   personal: string;
   id_subsidiary: string;
   service: string;
+  service_name?: string;
+  subsidiary_name?: string;
 }
 
 // Nueva interfaz para el formulario
@@ -59,13 +61,14 @@ export class AgendaComponent implements OnInit {
   name: any;
   lastname: any;
   catalogOrders: any;
-	closeResult: WritableSignal<string> = signal('');
+  closeResult: WritableSignal<string> = signal('');
   private buffer: string = '';
   private timeout: any;
   barcodeBuffer: string = '';
   barcodeTimer: any;
   appointment: any;
   doctor: any;
+  selectedSubsidiary: string = '';
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -77,29 +80,28 @@ export class AgendaComponent implements OnInit {
     this.getAllSubsidiary();  // Cargar sucursales
   }
 
-  loadData(){
+  loadData() {
 
-      if(this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista'){
-        this.getClients();
-        this.getDoctors();
-        this.getAllAppointments();
-      }
-      else{
-        this.getMyClients();
-        this.getMyInfo();
-        this.loadDoctor();
-        this.getOrdersByDoctor();
-        this.getAllAppointments();
-      }
-  
+    if (this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista') {
+      this.getClients();
+      this.getDoctors();
+    }
+    else {
+      this.getMyClients();
+      this.getMyInfo();
+      this.loadDoctor();
+      this.getOrdersByDoctor();
+      this.getAllAppointments();
+    }
+
   }
 
-  loadId(){
+  loadId() {
     this.permissionsService.getId().subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.id = resp;
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
     );
@@ -112,26 +114,26 @@ export class AgendaComponent implements OnInit {
     this.getOrders(this.doctor.name, this.doctor.lastname);
   }
 
-  loadDoctor(){
+  loadDoctor() {
     this.permissionsService.getName().subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.name = resp;
       }
     );
     this.permissionsService.getLastname().subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.lastname = resp;
       }
     );
   }
 
-  loadRol(){
+  loadRol() {
     this.permissionsService.getRol().subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.rol = resp;
         this.loadData();
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
     );
@@ -308,8 +310,8 @@ export class AgendaComponent implements OnInit {
       );
     });
   }
-  
-  
+
+
 
   /* getEventsForDay(day: Date): Event[] {
     return this.events.filter(event => new Date(event.start).toDateString() === day.toDateString());
@@ -318,7 +320,7 @@ export class AgendaComponent implements OnInit {
   isPast(event: Event): boolean {
     return new Date(event.start).getTime() < new Date().getTime();
   }
-  
+
 
   openModal(day: Date | null = null, event?: MouseEvent) {
     if (!day) return; // No hacer nada si no se selecciona un día
@@ -351,20 +353,20 @@ export class AgendaComponent implements OnInit {
   saveEvent() {
     const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
     const endDate = new Date(`${this.eventForm.start}T${this.eventForm.endTime}`);
-  
+
     // Validar traslape
     const conflict = this.events.some(event => {
       const eventStart = new Date(event.start);
       const eventEnd = new Date(eventStart); // Suponemos duración similar, 30 mins o end_appointment si lo tienes
       eventEnd.setMinutes(eventEnd.getMinutes() + 30); // Ajusta según tu lógica
-  
+
       // Verificamos si hay traslape y mismo doctor o sucursal
       return (
         event.personal === this.eventForm.personal &&
         startDate < eventEnd && endDate > eventStart
       );
     });
-  
+
     if (conflict) {
       Swal.fire({
         icon: 'warning',
@@ -373,7 +375,7 @@ export class AgendaComponent implements OnInit {
       });
       return;
     }
-  
+
     // Si no hay conflicto, procedemos a guardar
     this.eventForm.color = this.generateRandomColor();
     const eventData = {
@@ -386,7 +388,7 @@ export class AgendaComponent implements OnInit {
       end_appointment: `${this.eventForm.start} ${this.eventForm.endTime}:00`,
       color: this.eventForm.color
     };
-  
+
     this.api.createData('appointment/setappointment', eventData).subscribe(
       (resp: any) => {
         this.getAllAppointments(); // Recargar
@@ -397,7 +399,7 @@ export class AgendaComponent implements OnInit {
       }
     );
   }
-  
+
 
   /* saveEvent() {
     const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
@@ -429,33 +431,33 @@ export class AgendaComponent implements OnInit {
     );
   } */
 
-  getMyInfo(){
+  getMyInfo() {
     this.api.getDataById('user/getbyid', this.id).subscribe(
-      (resp: any) =>{
+      (resp: any) => {
         this.doctors = resp.data
       },
-      (error)=>{
+      (error) => {
         console.log(error.error);
       }
     );
   }
 
-  getOrdersByDoctor(){
-    this.api.getDataById('order/getbydoctor', this.name+' '+this.lastname).subscribe(
-      (resp: any) =>{
+  getOrdersByDoctor() {
+    this.api.getDataById('order/getbydoctor', this.name + ' ' + this.lastname).subscribe(
+      (resp: any) => {
         this.catalogOrders = resp.data;
       },
-      (error)=>{
+      (error) => {
         console.log(error.error);
       }
     );
   }
-  getOrders(name: String, lastname :String){
-    this.api.getDataById('order/getbydoctor', name+' '+ lastname).subscribe(
-      (resp: any) =>{
+  getOrders(name: String, lastname: String) {
+    this.api.getDataById('order/getbydoctor', name + ' ' + lastname).subscribe(
+      (resp: any) => {
         this.catalogOrders = resp.data;
       },
-      (error)=>{
+      (error) => {
         console.log(error.error);
       }
     );
@@ -549,34 +551,34 @@ export class AgendaComponent implements OnInit {
   }
 
   open(content: TemplateRef<any>) {
-		this.modalService.open(content,{ ariaLabelledBy: 'modal-basic-title', size: 'xl'}).result.then(
-			(result) => {
-				this.closeResult.set(`Closed with: ${result}`);
-			},
-			(reason) => {
-				this.closeResult.set(`Dismissed ${this.getDismissReason(reason)}`);
-			},
-		);
-	}
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', size: 'xl' }).result.then(
+      (result) => {
+        this.closeResult.set(`Closed with: ${result}`);
+      },
+      (reason) => {
+        this.closeResult.set(`Dismissed ${this.getDismissReason(reason)}`);
+      },
+    );
+  }
 
-	private getDismissReason(reason: any): string {
-		switch (reason) {
-			case ModalDismissReasons.ESC:
-				return 'by pressing ESC';
-			case ModalDismissReasons.BACKDROP_CLICK:
-				return 'by clicking on a backdrop';
-			default:
-				return `with: ${reason}`;
-		}
-	}
+  private getDismissReason(reason: any): string {
+    switch (reason) {
+      case ModalDismissReasons.ESC:
+        return 'by pressing ESC';
+      case ModalDismissReasons.BACKDROP_CLICK:
+        return 'by clicking on a backdrop';
+      default:
+        return `with: ${reason}`;
+    }
+  }
 
   onBarcodeInput(value: string) {
     this.barcodeBuffer = value;
-  
+
     if (this.barcodeTimer) {
       clearTimeout(this.barcodeTimer);
     }
-  
+
     this.barcodeTimer = setTimeout(() => {
       const code = this.barcodeBuffer.trim();
       if (code) {
@@ -585,16 +587,16 @@ export class AgendaComponent implements OnInit {
       this.barcodeBuffer = '';
     }, 100); // espera 100ms sin escritura antes de procesar
   }
-  
+
   procesarCodigo(codigo: string) {
     this.getByBarcode(codigo);
   }
-  
+
   getByBarcode(code: string) {
     this.api.getDataById('appointment/getbybarcode', code).subscribe(
       (resp: any) => {
         this.appointment = resp.data[0];
-       
+
       },
       (error) => {
         console.error('Error en getByBarcode:', error);
@@ -602,40 +604,70 @@ export class AgendaComponent implements OnInit {
     );
   }
 
-  checkAppointment(id: string, code: string){
-     Swal.fire({
-          title: "Cangear servicio",
-          icon: 'info',
-          text: `¿Desea cangear el servicio "${code}"?`,
-          confirmButtonColor: '#198754',
-          cancelButtonColor: '#d33',
-          showConfirmButton: true,
-          showCancelButton: true
-        }).then((resp) => {
-          if (resp.isConfirmed) {
-            this.api.deleteData('appointment/delete', id).subscribe(
-              (data: any) => {
-                Swal.fire({
-                  title: 'Cangeado',
-                  icon: 'success',
-                  text: data.msg,
-                  confirmButtonColor: '#198754'
-                }).then(() => {
-                  this.getAllAppointments(); // 🔄 Recarga las citas para actualizar el calendario
-                });
-              },
-              (error) => {
-                Swal.fire({
-                  title: 'Error',
-                  icon: 'error',
-                  text: error.error.msg,
-                  confirmButtonColor: '#198754'
-                });
-              }
-            );
+  checkAppointment(id: string, code: string) {
+    Swal.fire({
+      title: "Cangear servicio",
+      icon: 'info',
+      text: `¿Desea cangear el servicio "${code}"?`,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#d33',
+      showConfirmButton: true,
+      showCancelButton: true
+    }).then((resp) => {
+      if (resp.isConfirmed) {
+        this.api.deleteData('appointment/delete', id).subscribe(
+          (data: any) => {
+            Swal.fire({
+              title: 'Cangeado',
+              icon: 'success',
+              text: data.msg,
+              confirmButtonColor: '#198754'
+            }).then(() => {
+              this.getAllAppointments(); // 🔄 Recarga las citas para actualizar el calendario
+            });
+          },
+          (error) => {
+            Swal.fire({
+              title: 'Error',
+              icon: 'error',
+              text: error.error.msg,
+              confirmButtonColor: '#198754'
+            });
           }
-        });
-        this.loadData();
+        );
+      }
+    });
+    this.loadData();
+  }
+
+  onSubsidiaryChange() {
+    if (this.selectedSubsidiary) {
+      this.getAppointmentsBySubsidiary(this.selectedSubsidiary);
+    } else {
+      this.events = []; // Limpiar eventos si se deselecciona
+    }
+  }
+
+  getAppointmentsBySubsidiary(id: string) {
+    this.api.getDataById('appointment/getbysubsidiary', id).subscribe(
+      (resp: any) => {
+        this.events = resp.data.map((event: any) => ({
+          id: event.id,
+          title: event.client,
+          start: event.appointment,
+          end: event.end_appointment,
+          personal: event.personal,
+          id_subsidiary: event.id_subsidiary,
+          service: event.service,
+          service_name: event.service_name,
+          subsidiary_name: event.subsidiary_name,
+          color: event.color || this.generateRandomColor()
+        }));
+      },
+      (error) => {
+        console.error('Error al cargar citas por sucursal:', error);
+      }
+    );
   }
 
 }

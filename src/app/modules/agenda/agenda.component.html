@@ -9,6 +9,16 @@
     <button class="btn btn-secondary" (click)="changeView('week')">Semana</button>
     <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
   </div>
+  <div class="row justify-content-center mb-3">
+  <div class="col-6 col-md-4">
+    <label for="subsidiarySelect">Selecciona una sucursal</label>
+    <select class="form-control" id="subsidiarySelect" [(ngModel)]="selectedSubsidiary" (change)="onSubsidiaryChange()">
+      <option value="" disabled selected>-- Elige una sucursal --</option>
+      <option *ngFor="let s of subsidiaries" [value]="s.id">{{ s.name }}</option>
+    </select>
+  </div>
+</div>
+
   <div class="container" *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
     <div class="row justify-content-center">
       <div class="col-2">
@@ -50,25 +60,26 @@
   </div>
 
   <ng-template #eventDetailsModal let-modal>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalles del Evento</h5>
-        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
-      </div>
-      <div class="modal-body" *ngIf="selectedEvent">
-        <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
-        <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
-        <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
-        <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
-        <p><strong>Sucursal:</strong> {{ selectedEvent.id_subsidiary }}</p>
-        <p><strong>Servicio:</strong> {{ selectedEvent.service }}</p>
-        <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
-      </div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Detalles del Evento</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
     </div>
-  </ng-template>
+    <div class="modal-body" *ngIf="selectedEvent">
+      <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
+      <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
+      <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
+      <p><strong>Sucursal:</strong> {{ selectedEvent.subsidiary_name }}</p> <!-- ✅ ya actualizado -->
+      <p><strong>Servicio:</strong> {{ selectedEvent.service_name }}</p> <!-- ✅ ya actualizado -->
+      <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
+    </div>
+  </div>
+</ng-template>
+
 
   <div *ngIf="view === 'week'" class="week-view">
     <div *ngFor="let day of getDaysOfWeek()" class="week-day" (click)="openModal(day)"

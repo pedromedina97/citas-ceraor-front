@@ -2,23 +2,44 @@
   <div class="navbar-content">
     <div class="spacer"></div> <!-- empuja el usuario a la derecha -->
     <div class="user-menu">
-      <div class="user-name" (click)="toggleDropdown()">
-        <i class="bi bi-person-bounding-box"></i> {{ user }} ▾
-      </div>
+     <div class="user-name d-flex align-items-center gap-2" (click)="toggleDropdown()" style="cursor: pointer;">
+  <img [src]="userProfileImage"
+       alt="Foto de perfil"
+       width="32"
+       height="32"
+       class="rounded-circle border"
+       style="object-fit: cover;">
+  <span>{{ user }} ▾</span>
+</div>
+
       <ul class="dropdown" [class.show]="dropdownVisible">
-        <li><a href="#"><i class="bi bi-person-vcard-fill"></i> Perfil</a></li>
-        <li><a href="#"><i class="bi bi-gear-wide-connected"></i> Configuración</a></li>
-        <li><a style="text-decoration: none; cursor: pointer;" (click)="logout()"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</a></li>
+        <li>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+            <i class="bi bi-person-vcard-fill"></i> Perfil
+          </a>
+        </li>
+        <li>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#editUserModal" (click)="getUser()">
+            <i class="bi bi-gear-wide-connected"></i> Configuración
+          </a>
+
+        </li>
+        <li>
+          <a style="text-decoration: none; cursor: pointer;" (click)="logout()">
+            <i class="bi bi-box-arrow-left"></i>
+            Cerrar sesión
+          </a>
+        </li>
       </ul>
     </div>
-    
+
 
   </div>
 </header>
 <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
 <aside class="sidebar" [ngClass]="{ 'open': sidebarOpen }">
   <div class="header" style="margin-top: 100px;">
-    <img src="../../../assets/logo_ceraor.svg" width="60" height="auto"/>
+    <img src="../../../assets/logo_ceraor.svg" width="60" height="auto" />
   </div>
   <nav>
     <a [routerLink]="['/home']">
@@ -41,10 +62,10 @@
       <i class="bi bi-building"></i>
       <p>Sucursales</p>
     </a>
-    <a *ngIf="canShow('see_client')" [routerLink]="['/clients']">
+    <!-- <a *ngIf="canShow('see_client')" [routerLink]="['/clients']">
       <i class="bi bi-person-video2"></i>
       <p>Clientes</p>
-    </a>
+    </a> -->
     <a [routerLink]="['/agenda']">
       <i class="bi bi-calendar-date-fill"></i>
       <p>Agenda</p>
@@ -56,3 +77,96 @@
     </a>
   </nav>
 </aside>
+
+<!-- Modal de Perfil -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow rounded">
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileModalLabel"><i class="bi bi-person-circle"></i> Perfil de Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img *ngIf="userEdit.image" [src]="userEdit.image" alt="Foto de perfil" class="rounded-circle mb-3"
+          style="width: 120px; height: 120px; object-fit: cover;">
+        <div *ngIf="!userEdit.image" class="mb-3">
+          <i class="bi bi-person-circle" style="font-size: 100px;"></i>
+        </div>
+        <h5 class="mb-1">{{ user }}</h5>
+        <p class="text-muted">Rol: {{ userRole || 'No especificado' }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Configuración / Edición de Usuario -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow rounded">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalLabel"><i class="bi bi-pencil-square"></i> Editar Perfil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form (ngSubmit)="updateUser()" #editForm="ngForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="userEdit.name" name="name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Apellido</label>
+              <input type="text" class="form-control" [(ngModel)]="userEdit.lastname" name="lastname" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-control" [(ngModel)]="userEdit.email" name="email" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Teléfono</label>
+              <input type="text" class="form-control" [(ngModel)]="userEdit.phone" name="phone">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-control" [(ngModel)]="userEdit.address" name="address">
+            </div>
+            <!-- Dentro del modal de edición -->
+            <!-- Input para cargar imagen -->
+            <div class="col-12">
+              <label class="form-label">Imagen de perfil</label>
+              <input type="file" class="form-control" (change)="onImageSelected($event)">
+            </div>
+            <!-- Barra de carga -->
+            <div class="col-12 mt-2" *ngIf="loadingImage">
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="uploadProgress">
+                  {{ uploadProgress }}%
+                </div>
+              </div>
+            </div>
+            <!-- Vista previa de imagen -->
+            <div class="col-12 text-center mt-3">
+              <p class="text-muted">Vista previa:</p>
+              <img [src]="previewImage" alt="Preview" class="rounded mb-2" width="120" height="120"
+                style="object-fit: cover;" />
+              <div *ngIf="previewImage !== 'assets/profile.png'">
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeImage()">
+                  <i class="bi bi-x-circle"></i> Quitar imagen
+                </button>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Guardar Cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
