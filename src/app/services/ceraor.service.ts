@@ -122,6 +122,9 @@ export class CeraorService {
     localStorage.removeItem('permissions');
     localStorage.removeItem('userName');
     localStorage.removeItem('userId');
+    localStorage.removeItem('lastname');
+    localStorage.removeItem('name');
+    localStorage.removeItem('rol');
   }
 
   estadoAutenticado() {

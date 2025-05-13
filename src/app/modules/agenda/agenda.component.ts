@@ -4,7 +4,7 @@ import { CeraorService } from '../../services/ceraor.service';
 import { PermissionsService } from '../../services/permissions.service';
 import Swal from 'sweetalert2';
 interface Event {
-  id: number;
+  id: string;
   id_order: string;
   title: string;
   start: string;
@@ -41,7 +41,7 @@ export class AgendaComponent implements OnInit {
   doctors: any;
   clients: any;
   eventForm: EventForm = {
-    id: 0,
+    id: '',
     id_order: '',
     title: '',
     start: '',
@@ -334,7 +334,7 @@ export class AgendaComponent implements OnInit {
     const isoDate = day.toISOString().slice(0, 10); // Formato YYYY-MM-DD
 
     this.eventForm = {
-      id: Date.now(),
+      id: '',
       id_order: '',
       title: '',
       start: isoDate,
@@ -496,10 +496,48 @@ export class AgendaComponent implements OnInit {
     );
   }
 
-  deleteEvent(id: number, event: MouseEvent) {
-    event.stopPropagation();
-    this.events = this.events.filter(e => e.id !== id);
-  }
+  deleteEvent(id: string, event: MouseEvent) {
+  event.stopPropagation();
+
+  Swal.fire({
+    title: '¿Eliminar cita?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.api.deleteData('appointment/delete', id).subscribe(
+        (resp: any) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cita eliminada',
+            text: resp.msg,
+            confirmButtonColor: '#198754'
+          }).then(() => {
+            if (this.selectedSubsidiary) {
+              this.getAppointmentsBySubsidiary(this.selectedSubsidiary); // 🔄 Cargar nuevamente por sucursal
+            } else {
+              this.getAllAppointments(); // Fallback
+            }
+          });
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.error.msg || 'No se pudo eliminar la cita.',
+            confirmButtonColor: '#198754'
+          });
+        }
+      );
+    }
+  });
+}
+
 
   // 🟢 Cargar todas las sucursales desde la API
   getAllSubsidiary() {

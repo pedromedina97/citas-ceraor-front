@@ -44,7 +44,7 @@
                (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
             <span>{{ event.title }}</span><br>
             <small>{{ event.start | date:'shortTime' }}</small>
-            <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+            <button *ngIf="canShow('delete_appointment')" class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
           </div>
         </div>
         
