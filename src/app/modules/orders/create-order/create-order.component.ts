@@ -158,6 +158,7 @@ export class CreateOrderComponent {
         this.instance = resp.data[0];
         this.order.doctor = this.instance.name + " " + this.instance.lastname;
         this.order.address = this.instance.address;
+        this.order.professional_id = this.instance.professional_id;
       },
       (error)=>{
         console.log(error);

@@ -69,6 +69,7 @@ export class AgendaComponent implements OnInit {
   appointment: any;
   doctor: any;
   selectedSubsidiary: string = '';
+  isManualClient: boolean = false;
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -391,45 +392,24 @@ export class AgendaComponent implements OnInit {
 
     this.api.createData('appointment/setappointment', eventData).subscribe(
       (resp: any) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cita agendada',
+          text: resp.msg
+        });
         this.getAllAppointments(); // Recargar
         this.modalService.dismissAll();
       },
       (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al agendar',
+          text: error.msg
+        });
         console.error('Error al guardar evento:', error);
       }
     );
   }
-
-
-  /* saveEvent() {
-    const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
-    const endDate = new Date(`${this.eventForm.start}T${this.eventForm.endTime}`);
-
-    // 🟢 Generar un color aleatorio siempre antes de guardar
-    this.eventForm.color = this.generateRandomColor();
-
-    const eventData = {
-      id_order: this.eventForm.id_order,
-      client: this.eventForm.title,
-      personal: this.eventForm.personal,
-      id_subsidiary: this.eventForm.id_subsidiary,
-      service: this.eventForm.service,
-      appointment: startDate.toISOString(),
-      end_appointment: endDate.toISOString(),
-      color: this.eventForm.color  // 🟢 Ahora enviamos siempre un color aleatorio
-    };
-    
-    this.api.createData('appointment/setappointment', eventData).subscribe(
-      (resp: any) => {
-  
-        this.getAllAppointments(); // Recargar la lista de eventos después de guardar
-        this.modalService.dismissAll();
-      },
-      (error) => {
-        console.error('Error al guardar evento:', error);
-      }
-    );
-  } */
 
   getMyInfo() {
     this.api.getDataById('user/getbyid', this.id).subscribe(

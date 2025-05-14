@@ -1,51 +1,53 @@
 <div class="container mt-5" style="max-width: 90% !important;">
   <div class="row justify-content-center">
-    <!-- Buscador y botón de creación -->
-    <!-- Buscador y botón de creación -->
-<div class="col-lg-6 col-md-8 col-sm-12 mt-4">
+    <div class="col-lg-6 col-md-8 col-sm-12 mt-4">
   <div class="card shadow-lg p-4 rounded-lg fade-in">
     <div class="card-body">
       <form (submit)="filter()" role="search" aria-label="Buscar usuario">
-        <div class="input-group">
+        <div class="row g-2">
           <!-- Input de búsqueda -->
-          <input
-            type="search"
-            class="form-control input-ios"
-            [ngModelOptions]="{ standalone: true }"
-            autocomplete="off"
-            [(ngModel)]="filterText"
-            (input)="filter()"
-            placeholder="Buscar usuario por nombre, email o teléfono..."
-          />
+          <div class="col-12">
+            <input
+              type="search"
+              class="form-control input-ios"
+              [ngModelOptions]="{ standalone: true }"
+              autocomplete="off"
+              [(ngModel)]="filterText"
+              (input)="filter()"
+              placeholder="Buscar usuario por nombre, email o teléfono..."
+            />
+          </div>
 
-          <!-- Botón limpiar (si hay texto) -->
-          <button
-            *ngIf="filterText"
-            type="button"
-            class="btn btn-outline-secondary"
-            (click)="clearFilter()"
-            aria-label="Limpiar búsqueda"
-          >
-            <i class="bi bi-x-circle"></i>
-          </button>
+          <!-- Botones en columna para móviles, en fila para escritorio -->
+          <div class="col-12 d-flex flex-column flex-md-row justify-content-between gap-2">
+            <!-- Botón limpiar -->
+            <button
+              *ngIf="filterText"
+              type="button"
+              class="btn btn-outline-secondary w-100 w-md-auto"
+              (click)="clearFilter()"
+              aria-label="Limpiar búsqueda"
+            >
+              <i class="bi bi-x-circle"></i> Limpiar
+            </button>
 
-          <!-- Botón crear (si tiene permiso) -->
-          <button
-            *ngIf="canShow('create_user')"
-            class="btn btn-primary"
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#createModal"
-            (click)="resetForm()"
-          >
-            <i class="bi bi-plus-circle me-1"></i> Crear
-          </button>
+            <!-- Botón crear -->
+            <button
+              *ngIf="canShow('create_user')"
+              class="btn btn-primary w-100 w-md-auto"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#createModal"
+              (click)="resetForm()"
+            >
+              <i class="bi bi-plus-circle me-1"></i> Crear
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 </div>
-
 
     <!-- 📦 Escritorio -->
 <div class="table-desktop">

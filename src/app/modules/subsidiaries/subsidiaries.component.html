@@ -2,37 +2,46 @@
   <div class="row justify-content-center">
 
     <!-- 🔍 Buscador + botón Crear -->
-    <div class="col-lg-6 col-md-8 col-sm-12 mt-4">
-      <div class="card shadow-lg p-4 rounded-lg fade-in">
-        <div class="card-body">
-          <form role="search" aria-label="Buscar sucursal">
-            <div class="input-group">
-              <input
-                type="search"
-                class="form-control input-ios"
-                [ngModelOptions]="{ standalone: true }"
-                autocomplete="off"
-                [(ngModel)]="filterText"
-                (input)="filter()"
-                placeholder="Buscar sucursal por nombre o dirección..."
-              />
-              <button
-                *ngIf="canShow('create_subsidiary')"
-                class="btn btn-primary btn-ios"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#createModal"
-              >
-                <i class="bi bi-plus-circle me-1"></i> Crear
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+   <!-- 🔍 Buscador + botón Crear (responsive) -->
+<div class="col-lg-6 col-md-8 col-sm-12 mt-4">
+  <div class="card shadow-lg p-4 rounded-lg fade-in">
+    <div class="card-body">
+      <form role="search" aria-label="Buscar sucursal">
+        <div class="row g-2">
+          <!-- Input de búsqueda -->
+          <div class="col-12">
+            <input
+              type="search"
+              class="form-control input-ios"
+              [ngModelOptions]="{ standalone: true }"
+              autocomplete="off"
+              [(ngModel)]="filterText"
+              (input)="filter()"
+              placeholder="Buscar sucursal por nombre o dirección..."
+            />
+          </div>
 
-    <!-- 📋 Tabla de Resultados -->
-    <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
+          <!-- Botón Crear -->
+          <div class="col-12">
+            <button
+              *ngIf="canShow('create_subsidiary')"
+              class="btn btn-primary w-100 w-md-auto"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#createModal"
+            >
+              <i class="bi bi-plus-circle me-1"></i> Crear
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+    <!-- 🖥️ Tabla de resultados (escritorio) -->
+    <div class="col-lg-10 col-md-12 col-sm-12 mt-4 d-none d-md-block">
       <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <h4 class="text-primary mb-3 text-center">Listado de Sucursales</h4>
@@ -52,27 +61,16 @@
                   <td>{{ instance.name }}</td>
                   <td>{{ instance.address }}</td>
                   <td class="text-center">
-                    <button
-                      *ngIf="canShow('update_subsidiary')"
-                      class="btn btn-sm btn-outline-warning me-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editModal"
-                      (click)="getInstance(instance, instance.id)"
-                    >
+                    <button *ngIf="canShow('update_subsidiary')" class="btn btn-sm btn-outline-warning me-2"
+                      data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(instance, instance.id)">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button
-                      *ngIf="canShow('delete_subsidiary')"
-                      class="btn btn-sm btn-outline-danger me-2"
-                      (click)="delete(instance.id, instance.name)"
-                    >
+                    <button *ngIf="canShow('delete_subsidiary')" class="btn btn-sm btn-outline-danger me-2"
+                      (click)="delete(instance.id, instance.name)">
                       <i class="bi bi-trash"></i>
                     </button>
-                    <a
-                      *ngIf="canShow('create_service')"
-                      class="btn btn-sm btn-outline-primary"
-                      [routerLink]="[instance.id]"
-                    >
+                    <a *ngIf="canShow('create_service')" class="btn btn-sm btn-outline-primary"
+                      [routerLink]="[instance.id]">
                       <i class="bi bi-info-circle-fill"></i>
                     </a>
                   </td>
@@ -86,6 +84,30 @@
         </div>
       </div>
     </div>
+    <!-- 📱 Cards para móviles -->
+    <div class="col-12 mt-4 d-block d-md-none">
+      <h4 class="text-primary mb-3 text-center">Sucursales</h4>
+      <div *ngIf="filtered.length === 0" class="text-center text-muted">No hay sucursales encontradas.</div>
+      <div *ngFor="let instance of filtered" class="card mb-3 shadow-sm p-3 fade-in">
+        <p><strong>ID:</strong> {{ instance.id }}</p>
+        <p><strong>Nombre:</strong> {{ instance.name }}</p>
+        <p><strong>Dirección:</strong> {{ instance.address }}</p>
+        <div class="d-flex justify-content-start gap-2 mt-2 flex-wrap">
+          <button *ngIf="canShow('update_subsidiary')" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+            data-bs-target="#editModal" (click)="getInstance(instance, instance.id)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          <button *ngIf="canShow('delete_subsidiary')" class="btn btn-sm btn-outline-danger"
+            (click)="delete(instance.id, instance.name)">
+            <i class="bi bi-trash"></i>
+          </button>
+          <a *ngIf="canShow('create_service')" class="btn btn-sm btn-outline-primary" [routerLink]="[instance.id]">
+            <i class="bi bi-info-circle-fill"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 </div>
@@ -99,22 +121,10 @@
       <div class="modal-body">
         <form #form="ngForm">
           <div class="mb-3">
-            <input
-              type="text"
-              name="name"
-              class="form-control input-ios mb-3"
-              placeholder="Nombre"
-              [(ngModel)]="dataInstance.name"
-              required
-            />
-            <input
-              type="text"
-              name="address"
-              class="form-control input-ios"
-              placeholder="Dirección"
-              [(ngModel)]="dataInstance.address"
-              required
-            />
+            <input type="text" name="name" class="form-control input-ios mb-3" placeholder="Nombre"
+              [(ngModel)]="dataInstance.name" required />
+            <input type="text" name="address" class="form-control input-ios" placeholder="Dirección"
+              [(ngModel)]="dataInstance.address" required />
           </div>
         </form>
       </div>
@@ -135,22 +145,10 @@
       <div class="modal-body">
         <form #form="ngForm">
           <div class="mb-3">
-            <input
-              type="text"
-              name="name"
-              class="form-control input-ios mb-3"
-              placeholder="Nombre"
-              [(ngModel)]="dataInstance.name"
-              required
-            />
-            <input
-              type="text"
-              name="address"
-              class="form-control input-ios"
-              placeholder="Dirección"
-              [(ngModel)]="dataInstance.address"
-              required
-            />
+            <input type="text" name="name" class="form-control input-ios mb-3" placeholder="Nombre"
+              [(ngModel)]="dataInstance.name" required />
+            <input type="text" name="address" class="form-control input-ios" placeholder="Dirección"
+              [(ngModel)]="dataInstance.address" required />
           </div>
         </form>
       </div>

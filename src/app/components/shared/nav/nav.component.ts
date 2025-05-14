@@ -27,6 +27,7 @@ export class NavComponent implements OnInit {
     phone: '',
     address: '',
     image: null,
+    professional_id: null,
     /*  previewImage: '' */
   };
   previewImage: string = '';

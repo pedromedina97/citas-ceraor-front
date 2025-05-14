@@ -115,7 +115,6 @@ export class OrdersComponent implements OnInit {
       (resp: any) => {
         this.orders = resp.data;
         this.filtered = this.orders;
-        console.log(this.orders);
       },
       (error) => {
         console.log(error);

@@ -10,14 +10,15 @@
     <button class="btn btn-secondary" (click)="changeView('day')">Día</button>
   </div>
   <div class="row justify-content-center mb-3">
-  <div class="col-6 col-md-4">
-    <label for="subsidiarySelect">Selecciona una sucursal</label>
-    <select class="form-control" id="subsidiarySelect" [(ngModel)]="selectedSubsidiary" (change)="onSubsidiaryChange()">
-      <option value="" disabled selected>-- Elige una sucursal --</option>
-      <option *ngFor="let s of subsidiaries" [value]="s.id">{{ s.name }}</option>
-    </select>
+    <div class="col-6 col-md-4">
+      <label for="subsidiarySelect">Selecciona una sucursal</label>
+      <select class="form-control" id="subsidiarySelect" [(ngModel)]="selectedSubsidiary"
+        (change)="onSubsidiaryChange()">
+        <option value="" disabled selected>-- Elige una sucursal --</option>
+        <option *ngFor="let s of subsidiaries" [value]="s.id">{{ s.name }}</option>
+      </select>
+    </div>
   </div>
-</div>
 
   <div class="container" *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
     <div class="row justify-content-center">
@@ -38,16 +39,15 @@
 
         <span *ngIf="day" class="day-number">{{ day | date: 'd' }}</span>
         <div class="events-container" *ngIf="day">
-          <div *ngFor="let event of getEventsForDay(day)" 
-               class="event" 
-               [style.backgroundColor]="event.color"
-               (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
+          <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
+            (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
             <span>{{ event.title }}</span><br>
             <small>{{ event.start | date:'shortTime' }}</small>
-            <button *ngIf="canShow('delete_appointment')" class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+            <button *ngIf="canShow('delete_appointment')" class="btn-delete"
+              (click)="deleteEvent(event.id, $event)">×</button>
           </div>
         </div>
-        
+
         <!-- <div class="events-container" *ngIf="day">
           <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
             (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
@@ -60,25 +60,25 @@
   </div>
 
   <ng-template #eventDetailsModal let-modal>
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Detalles del Evento</h5>
-      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Evento</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedEvent">
+        <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
+        <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
+        <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
+        <p><strong>Sucursal:</strong> {{ selectedEvent.subsidiary_name }}</p> <!-- ✅ ya actualizado -->
+        <p><strong>Servicio:</strong> {{ selectedEvent.service_name }}</p> <!-- ✅ ya actualizado -->
+        <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
+      </div>
     </div>
-    <div class="modal-body" *ngIf="selectedEvent">
-      <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
-      <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
-      <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
-      <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
-      <p><strong>Sucursal:</strong> {{ selectedEvent.subsidiary_name }}</p> <!-- ✅ ya actualizado -->
-      <p><strong>Servicio:</strong> {{ selectedEvent.service_name }}</p> <!-- ✅ ya actualizado -->
-      <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
-    </div>
-  </div>
-</ng-template>
+  </ng-template>
 
 
   <div *ngIf="view === 'week'" class="week-view">
@@ -87,16 +87,14 @@
       <span class="day-number">{{ day | date: 'EEEE d' }}</span>
 
       <div class="events-container">
-        <div *ngFor="let event of getEventsForDay(day)" 
-          class="event" 
-          [style.backgroundColor]="event.color"
+        <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
           [ngClass]="{ 'past-event': isPast(event) }"
           (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
-        <span>{{ event.title }}</span>
-        <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
-      </div>
+          <span>{{ event.title }}</span>
+          <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
+        </div>
 
-        
+
         <!-- <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
           <span>{{ event.title }}</span>
           <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
@@ -120,18 +118,33 @@
 
 
 
-  <ng-template #eventModal let-modal *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
+  <ng-template #eventModal let-modal
+    *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Agregar Cita</h5>
         <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
       </div>
       <div class="modal-body">
+        <div class="form-check form-switch mb-2">
+          <input class="form-check-input" type="checkbox" id="manualClientSwitch" [(ngModel)]="isManualClient">
+          <label class="form-check-label" for="manualClientSwitch">Escribir cliente manualmente</label>
+        </div>
+
         <label>Cliente</label>
-        <select name="title" id="" class="form-control mb-2" [(ngModel)]="eventForm.title">
-          <option *ngFor="let client of clients" value="{{client.name}} {{client.lastname}}">{{client.name}}
-            {{client.lastname}}</option>
+
+        <!-- Select de clientes -->
+        <select name="title" class="form-control mb-2" [(ngModel)]="eventForm.title" [disabled]="isManualClient">
+          <option *ngFor="let client of clients" [value]="client.name + ' ' + client.lastname">
+            {{ client.name }} {{ client.lastname }}
+          </option>
         </select>
+
+        <!-- Input manual -->
+        <input *ngIf="isManualClient" type="text" class="form-control mb-2" placeholder="Nombre completo del cliente"
+          name="manualClient" [(ngModel)]="eventForm.title" [required]="isManualClient" />
+
+
 
         <label>Fecha</label>
         <input type="date" class="form-control mb-2" [(ngModel)]="eventForm.start" required />
@@ -145,7 +158,7 @@
 
 
         <label>Doctor Afiliado</label>
-        <select name="personal" id="" class="form-control mb-2"  (change)="onDoctorChange($event)">
+        <select name="personal" id="" class="form-control mb-2" (change)="onDoctorChange($event)">
           <option value="" selected>Seleccione un doctor</option>
           <option *ngFor="let doctor of doctors" value="{{doctor | json}}">{{doctor.name}}
             {{doctor.lastname}}</option>
@@ -223,10 +236,11 @@
         </tbody>
       </table>
     </div>
-    
-    
+
+
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="checkAppointment(appointment.appointment_id, appointment.code)">Cangear</button>
+    <button type="button" class="btn btn-outline-secondary"
+      (click)="checkAppointment(appointment.appointment_id, appointment.code)">Cangear</button>
   </div>
 </ng-template>

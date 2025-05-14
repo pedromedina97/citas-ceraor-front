@@ -24,7 +24,7 @@ export class CeraorService {
 
   getDataById(endpoint: string, id: any) {
     const url = Environment.url + `${endpoint}/` + id;
-    console.log(url); 
+   /*  console.log(url);  */
     return this.http.get(url);
   }
 
