@@ -4,12 +4,12 @@
     <div class="col-12 mt-4">
       <div class="card shadow-lg p-4 rounded-lg">
         <div class="card-body">
-          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container mt-3">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container-fluid mt-3">
 
             <div formArrayName="items">
               <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row justify-content-center mb-3">
                 
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <input 
                     formControlName="name" 
                     class="form-control input-ios" 
@@ -19,7 +19,7 @@
                   <div *ngIf="isFieldInvalid(i, 'name')" class="invalid-feedback">El nombre es obligatorio.</div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <input 
                     formControlName="description" 
                     class="form-control input-ios" 

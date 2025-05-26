@@ -1,384 +1,448 @@
-<div class="container-fluid mt-5" style="max-width: 90% !important;">
+<div class="container-fluid mt-5" style="max-width: 95% !important;">
   <div class="row">
     <div class="col mt-5">
-      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+      <button [routerLink]="['../']" class="btn btn-primary"
+        style="margin-left: 25px; margin-bottom: 25px;">Regresar</button>
+      <div class="card shadow p-3 mb-5 bg-body-tertiary rounded" style="margin-left: 25px; margin-bottom: 25px;">
         <div class="card-title">
           <div class="card-header">
             <h2>Crear Orden de Estudios</h2>
           </div>
         </div>
         <div class="card-body">
-          <form #form="ngForm" (ngSubmit)="create()">
-          <ul ngbNav #defaultNav="ngbNav" [(activeId)]="defaultNavActiveId" class="nav-tabs">
-            <li [ngbNavItem]="1">
-              <a ngbNavLink><label class="form-label fw-bold">Datos del Paciente</label></a>
-              <ng-template ngbNavContent>
-                <div class="container-fluid">
-                  <div class="row">
-                    <!-- Datos del paciente -->
-                    <h4>Datos del paciente</h4>
-                    <div class="col-md-6">
-                      <label class="form-label">Nombre del paciente</label>
-                      <select name="patient" id="" class="form-control"  (change)="onSelectChange($event)">
-                        <option value="" selected>Seleccione un paciente</option>
-                        <option *ngFor="let client of clients" value="{{client | json}}">
-                          {{client.name}}
-                          {{client.lastname}}</option>
-                      </select>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Fecha de nacimiento</label>
-                      <input type="date" class="form-control" name="birthdate" [(ngModel)]="order.birthdate" />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Correo electrónico</label>
-                      <input type="email" class="form-control" name="email" [(ngModel)]="order.email" />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Teléfono</label>
-                      <input type="text" class="form-control" name="phone" [(ngModel)]="order.phone" />
-                    </div>
-                  </div>
-                </div>
-
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="2">
-              <a ngbNavLink><label class="form-label fw-bold">Datos del Doctor</label></a>
-              <ng-template ngbNavContent>
-                <div class="container-fluid">
-                  <div class="row">
-                    <h4>Datos del doctor</h4>
-                    <div class="col-4">
-                      <label class="form-label">Doctor</label>
-                      <input type="text" class="form-control" name="doctor" [(ngModel)]="order.doctor" />
-                    </div>
-
-                    <div class="col-4">
-                      <label class="form-label">Dirección</label>
-                      <input type="text" class="form-control" name="address" [(ngModel)]="order.address" />
-                    </div>
-
-                    <div class="col-4">
-                      <label class="form-label">Cédula profesional</label>
-                      <input type="text" class="form-control" name="professional_id"
-                        [(ngModel)]="order.professional_id" />
-                    </div>
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="3">
-              <a ngbNavLink><label class="form-label fw-bold">Radiografías</label></a>
-              <ng-template ngbNavContent>
-                <div class="container-fluid">
-                  <div class="row">
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox" name="acetate_print" [(ngModel)]="order.acetate_print">
-                      <label class="form-check-label">Impresión en acetato</label>
-                    </div>
-
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox" name="paper_print" [(ngModel)]="order.paper_print">
-                      <label class="form-check-label">Impresión en papel</label>
-                    </div>
-
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox" name="send_email" [(ngModel)]="order.send_email">
-                      <label class="form-check-label">Enviar por correo</label>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <hr class="mt-4" />
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox"
-                        name="rx_panoramic" [(ngModel)]="order.rx_panoramic"><label class="form-check-label">Rx
-                        Panorámica</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox"
-                        name="rx_arc_panoramic" [(ngModel)]="order.rx_arc_panoramic"><label class="form-check-label">Rx Arco
-                        Panorámico</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox"
-                        name="rx_lateral_skull" [(ngModel)]="order.rx_lateral_skull"><label class="form-check-label">Rx Lateral
-                        Cráneo</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch">
-                      <input class="form-check-input" type="checkbox"
-                        name="ap_skull" [(ngModel)]="order.ap_skull"><label class="form-check-label">AP Cráneo</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="pa_skull" [(ngModel)]="order.pa_skull"><label class="form-check-label">PA Cráneo</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="paranasal_sinuses" [(ngModel)]="order.paranasal_sinuses"><label class="form-check-label">Senos
-                        Paranasales</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="atm_open_close" [(ngModel)]="order.atm_open_close"><label class="form-check-label">ATM
-                        Abre/Cierra</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="profilogram"[(ngModel)]="order.profilogram"><label class="form-check-label">Profilograma</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="watters_skull" [(ngModel)]="order.watters_skull"><label class="form-check-label">Watters</label>
-                    </div>
-                    <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
-                        name="palmar_digit" [(ngModel)]="order.palmar_digit"><label class="form-check-label">Dígito
-                        Palmar</label>
-                    </div>
-                    <div class="col-md-8">
-                      <label class="form-label">Otras radiografías</label>
-                      <input type="text" class="form-control" name="others_radiography" [(ngModel)]="order.others_radiography" />
-                    </div>
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="4">
-              <a ngbNavLink><label class="form-label fw-bold">Intraorales</label></a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="complete_periapical" [(ngModel)]="order.complete_periapical"><label class="form-check-label" >Periapical Completa</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="individual_periapical" [(ngModel)]="order.individual_periapical"><label class="form-check-label" >Periapical Individual</label>
-                  </div>
-
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="superior" [(ngModel)]="order.superior"><label class="form-check-label" >Superior</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="inferior" [(ngModel)]="order.inferior"><label class="form-check-label" >Inferior</label>
-                  </div>
-
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="occlusal_xray" [(ngModel)]="order.occlusal_xray"><label class="form-check-label" >Oclusal</label>
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="5">
-              <a ngbNavLink>
-                <label class="form-label fw-bold">Análisis Cefalométricos</label>
-              </a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch" >
-                    <input class="form-check-input" type="checkbox"
-                      name="rickets" [(ngModel)]="order.rickets"><label class="form-check-label">Rickets</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="mcnamara" [(ngModel)]="order.mcnamara"><label class="form-check-label" >McNamara</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="downs" [(ngModel)]="order.downs"><label class="form-check-label">Downs</label></div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="jaraback" [(ngModel)]="order.jaraback"><label class="form-check-label">Jaraback</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                      name="steiner" [(ngModel)]="order.steiner"><label class="form-check-label">Steiner</label></div>
-                  <div class="col-md-8">
-                    <label class="form-label">Otros análisis</label>
-                    <input type="text" class="form-control" name="others_analysis" [(ngModel)]="order.others_analysis" />
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="6">
-              <a ngbNavLink>
-                <label class="form-label fw-bold">Modelos de Estudio</label>
-              </a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="risina" [(ngModel)]="order.risina">
-                    <label class="form-check-label">Resina</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="dentalprint" [(ngModel)]="order.dentalprint">
-                    <label class="form-check-label">Impresión
-                      Dental</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="3d_risina" [(ngModel)]="order.risina_3d">
-                    <label class="form-check-label">Resina 3D</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="surgical_guide" [(ngModel)]="order.surgical_guide">
-                    <label class="form-check-label">Guía Quirúrgica</label>
-                  </div>
-                  <div class="col-md-8">
-                    <label class="form-label">Pieza de estudio</label>
-                    <input type="text" class="form-control" name="studio_piece"[(ngModel)]="order.studio_piece" />
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="7">
-              <a ngbNavLink>
-                <label class="form-label fw-bold">Tomografías 3D</label>
-              </a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="complete_tomography" [(ngModel)]="order.complete_tomography">
-                    <label class="form-check-label">Tomografía Completa</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="two_jaws_tomography" [(ngModel)]="order.two_jaws_tomography">
-                    <label class="form-check-label">Tomografía Ambos Maxilares</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="maxilar_tomography" [(ngModel)]="order.maxilar_tomography">
-                    <label class="form-check-label">Tomografía Maxilar</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="jaw_tomography" [(ngModel)]="order.jaw_tomography">
-                    <label class="form-check-label">Tomografía Madíbula</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="snp_tomography" [(ngModel)]="order.snp_tomography">
-                    <label class="form-check-label">Tomografía SNP</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="ear_tomography" [(ngModel)]="order.ear_tomography">
-                      <label class="form-check-label">Tomografía Oído</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="atm_tomography_open_close" [(ngModel)]="order.atm_tomography_open_close">
-                    <label class="form-check-label">Tomografía ATM Boca Abierta/Cerrada</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="lateral_left_tomography_open_close" [(ngModel)]="order.lateral_left_tomography_open_close">
-                    <label class="form-check-label">Tomografía ATM Boca Abierta</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="lateral_right_tomography_open_close" [(ngModel)]="order.lateral_right_tomography_open_close">
-                    <label class="form-check-label">Tomografía ATM Boca Cerrada</label>
-                    </div>
-
-                  <div class="col-md-4 form-check">
-                    <input class="form-check-input" type="checkbox" name="ondemand" [(ngModel)]="order.ondemand"><label
-                      class="form-check-label">Ondemand</label>
-                    <br>
-                    <input class="form-check-input" type="checkbox" name="dicom" [(ngModel)]="order.dicom"><label
-                      class="form-check-label">DICOM</label>
-                    <br>
-
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Pieza:</label>
-                    <input type="text" class="form-control" name="tomography_piece" [(ngModel)]="order.tomography_piece" />
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Implante:</label>
-                    <input type="text" class="form-control" name="implant"  [(ngModel)]="order.implant" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Diente Retenido:</label>
-                    <input type="text" class="form-control" name="impacted_tooth" [(ngModel)]="order.impacted_tooth" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Otros:</label>
-                    <input type="text" class="form-control" name="others_tomography" />
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="8">
-              <a ngbNavLink>
-                <label class="form-label fw-bold">Escaneo Intraoral</label>
-              </a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="stl" [(ngModel)]="order.stl">
-                    <label class="form-check-label">STL</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="obj" [(ngModel)]="order.obj">
-                    <label class="form-check-label">OBJ</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="ply" [(ngModel)]="order.ply">
-                    <label class="form-check-label">PLY</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="invisaligh" [(ngModel)]="order.invisaligh">
-                    <label class="form-check-label">INVISALIGH</label>
-                  </div>
-                  <div class="col-md-8">
-                    <label class="form-label">Otros</label>
-                    <input type="text" class="form-control" name="others_scanners" [(ngModel)]="order.others_scanners" />
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="9">
-              <a ngbNavLink>
-                <label class="form-label fw-bold">Estereolitografía</label>
-              </a>
-              <ng-template ngbNavContent>
-                <div class="row">
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="maxilar_superior" [(ngModel)]="order.maxilar_superior">
-                    <label class="form-check-label">Maxilar Superior</label>
-                    </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="maxilar_inferior" [(ngModel)]="order.maxilar_inferior">
-                    <label class="form-check-label">Maxilar Inferior</label>
-                  </div>
-                  <div class="col-md-4 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="maxilar_both" [(ngModel)]="order.maxilar_both">
-                    <label class="form-check-label">Maxilar Ambos</label>
-                    </div>
-                  <div class="col-md-8">
-                    <label class="form-label">Otros</label>
-                    <input type="text" class="form-control" name="maxilar_others" [(ngModel)]="order.maxilar_others" />
-                  </div>
-                </div>
-              </ng-template>
-            </li>
-          </ul>
-          <div [ngbNavOutlet]="defaultNav" class="border border-top-0 p-3"></div>
-          <p class="mt-2">Pestaña: {{ defaultNavActiveId }}</p>
-          <div class="col-3 form-check">
-            <label for="">Interpretación Odontológica</label>
-            <input type="checkbox" name="dental_interpretation" [(ngModel)]="order.dental_interpretation" class="form-check-input" id="">
-            
-          </div>
-          <div class="col-3 form-check">
-            <label for="">Fotografía Clínica</label>
-            <input type="checkbox" name="clinical_photography" [(ngModel)]="order.clinical_photography" class="form-check-input" id="">
-          </div>
-       
           <div class="container-fluid">
-            <div class="row justify-content-end">
-              <div class="col-3">
-                <div class="d-grid gap-2">
-                  <button type="submit" class="btn btn-primary">Crear</button>
-                </div>
+            <div class="row justify-content-center">
+              <div class="col-4  form-check form-switch mb-4" style="">
+                <input class="form-check-input" type="checkbox" id="basicSwitch" [(ngModel)]="basicEnabled"
+                  (change)="toggleBasic()" name="basicSwitch">
+                <label class="form-check-label fw-bold" for="basicSwitch">Básico</label>
+              </div>
+              <div class="col-4  form-check form-switch mb-4" style="">
+                <input class="form-check-input" type="checkbox" id="basicDigitalSwitch"
+                  [(ngModel)]="basicDigitalEnabled" (change)="toggleBasicDigital()" name="basicDigitalSwitch">
+                <label class="form-check-label fw-bold" for="basicDigitalSwitch">Básico Digital</label>
+              </div>
+              <div class="col-4  form-check form-switch mb-4" style="">
+                <input class="form-check-input" type="checkbox" id="basicDigitalSwitch" [(ngModel)]="switch3DEnabled"
+                  (change)="toggle3D()" name="switch3DEnabled">
+                <label class="form-check-label fw-bold" for="switch3DEnabled">3D (Para tomografía)</label>
               </div>
             </div>
           </div>
+
+          <form #form="ngForm" (ngSubmit)="create()">
+            <ul ngbNav #defaultNav="ngbNav" [(activeId)]="defaultNavActiveId" class="nav-tabs">
+              <li [ngbNavItem]="1">
+                <a ngbNavLink><label class="form-label fw-bold">Datos del Paciente</label></a>
+                <ng-template ngbNavContent>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <!-- Datos del paciente -->
+                      <h4>Datos del paciente</h4>
+                      <div class="col-md-6">
+                        <label class="form-label">Nombre del paciente</label>
+                        <select name="patient" id="" class="form-control" (change)="onSelectChange($event)">
+                          <option value="" selected>Seleccione un paciente</option>
+                          <option *ngFor="let client of clients" value="{{client | json}}">
+                            {{client.name}}
+                            {{client.lastname}}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">Fecha de nacimiento</label>
+                        <input type="date" class="form-control" name="birthdate" [(ngModel)]="order.birthdate" />
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" name="email" [(ngModel)]="order.email" />
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" name="phone" [(ngModel)]="order.phone" />
+                      </div>
+                    </div>
+                  </div>
+
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="2">
+                <a ngbNavLink><label class="form-label fw-bold">Datos del Doctor</label></a>
+                <ng-template ngbNavContent>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <h4>Datos del doctor</h4>
+                      <div class="col-4">
+                        <label class="form-label">Doctor</label>
+                        <input type="text" class="form-control" name="doctor" [(ngModel)]="order.doctor" />
+                      </div>
+
+                      <div class="col-4">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" name="address" [(ngModel)]="order.address" />
+                      </div>
+
+                      <div class="col-4">
+                        <label class="form-label">Cédula profesional</label>
+                        <input type="text" class="form-control" name="professional_id"
+                          [(ngModel)]="order.professional_id" />
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="3">
+                <a ngbNavLink><label class="form-label fw-bold">Radiografías</label></a>
+                <ng-template ngbNavContent>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="acetate_print"
+                          [(ngModel)]="order.acetate_print">
+                        <label class="form-check-label">Impresión en acetato</label>
+                      </div>
+
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="paper_print"
+                          [(ngModel)]="order.paper_print">
+                        <label class="form-check-label">Impresión en papel</label>
+                      </div>
+
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="send_email"
+                          [(ngModel)]="order.send_email">
+                        <label class="form-check-label">Enviar por correo</label>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <hr class="mt-4" />
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="rx_panoramic"
+                          [(ngModel)]="order.rx_panoramic"><label class="form-check-label">Rx
+                          Panorámica</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="rx_arc_panoramic"
+                          [(ngModel)]="order.rx_arc_panoramic"><label class="form-check-label">Rx Arco
+                          Panorámico</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="rx_lateral_skull"
+                          [(ngModel)]="order.rx_lateral_skull"><label class="form-check-label">Rx Lateral
+                          Cráneo</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="ap_skull"
+                          [(ngModel)]="order.ap_skull"><label class="form-check-label">AP Cráneo</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="pa_skull" [(ngModel)]="order.pa_skull"><label class="form-check-label">PA Cráneo</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="paranasal_sinuses" [(ngModel)]="order.paranasal_sinuses"><label
+                          class="form-check-label">Senos
+                          Paranasales</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="atm_open_close" [(ngModel)]="order.atm_open_close"><label class="form-check-label">ATM
+                          Abre/Cierra</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="profilogram" [(ngModel)]="order.profilogram"><label
+                          class="form-check-label">Profilograma</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="watters_skull" [(ngModel)]="order.watters_skull"><label
+                          class="form-check-label">Watters</label>
+                      </div>
+                      <div class="col-md-4 form-check form-switch"><input class="form-check-input" type="checkbox"
+                          name="palmar_digit" [(ngModel)]="order.palmar_digit"><label class="form-check-label">Dígito
+                          Palmar</label>
+                      </div>
+                      <div class="col-md-8">
+                        <label class="form-label">Otras radiografías</label>
+                        <input type="text" class="form-control" name="others_radiography"
+                          [(ngModel)]="order.others_radiography" />
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="4">
+                <a ngbNavLink><label class="form-label fw-bold">Intraorales</label></a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="complete_periapical"
+                        [(ngModel)]="order.complete_periapical"><label class="form-check-label">Periapical
+                        Completa</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="individual_periapical"
+                        [(ngModel)]="order.individual_periapical"><label class="form-check-label">Periapical
+                        Individual</label>
+                    </div>
+
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="superior"
+                        [(ngModel)]="order.superior"><label class="form-check-label">Superior</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="inferior"
+                        [(ngModel)]="order.inferior"><label class="form-check-label">Inferior</label>
+                    </div>
+
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="occlusal_xray"
+                        [(ngModel)]="order.occlusal_xray"><label class="form-check-label">Oclusal</label>
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="5">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Análisis Cefalométricos</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="rickets" [(ngModel)]="order.rickets"><label
+                        class="form-check-label">Rickets</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="mcnamara"
+                        [(ngModel)]="order.mcnamara"><label class="form-check-label">McNamara</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="downs" [(ngModel)]="order.downs"><label
+                        class="form-check-label">Downs</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="jaraback"
+                        [(ngModel)]="order.jaraback"><label class="form-check-label">Jaraback</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="steiner" [(ngModel)]="order.steiner"><label
+                        class="form-check-label">Steiner</label>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label">Otros análisis</label>
+                      <input type="text" class="form-control" name="others_analysis"
+                        [(ngModel)]="order.others_analysis" />
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="6">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Modelos de Estudio</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="risina" [(ngModel)]="order.risina">
+                      <label class="form-check-label">Resina</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="dentalprint"
+                        [(ngModel)]="order.dentalprint">
+                      <label class="form-check-label">Impresión
+                        Dental</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="3d_risina" [(ngModel)]="order.risina_3d">
+                      <label class="form-check-label">Resina 3D</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="surgical_guide"
+                        [(ngModel)]="order.surgical_guide">
+                      <label class="form-check-label">Guía Quirúrgica</label>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label">Pieza de estudio</label>
+                      <input type="text" class="form-control" name="studio_piece" [(ngModel)]="order.studio_piece" />
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="7">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Tomografías 3D</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="complete_tomography"
+                        [(ngModel)]="order.complete_tomography">
+                      <label class="form-check-label">Tomografía Completa</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="two_jaws_tomography"
+                        [(ngModel)]="order.two_jaws_tomography">
+                      <label class="form-check-label">Tomografía Ambos Maxilares</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="maxilar_tomography"
+                        [(ngModel)]="order.maxilar_tomography">
+                      <label class="form-check-label">Tomografía Maxilar</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="jaw_tomography"
+                        [(ngModel)]="order.jaw_tomography">
+                      <label class="form-check-label">Tomografía Madíbula</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="snp_tomography"
+                        [(ngModel)]="order.snp_tomography">
+                      <label class="form-check-label">Tomografía SNP</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="ear_tomography"
+                        [(ngModel)]="order.ear_tomography">
+                      <label class="form-check-label">Tomografía Oído</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="atm_tomography_open_close"
+                        [(ngModel)]="order.atm_tomography_open_close">
+                      <label class="form-check-label">Tomografía ATM Boca Abierta/Cerrada</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="lateral_left_tomography_open_close"
+                        [(ngModel)]="order.lateral_left_tomography_open_close">
+                      <label class="form-check-label">Tomografía ATM Boca Abierta</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="lateral_right_tomography_open_close"
+                        [(ngModel)]="order.lateral_right_tomography_open_close">
+                      <label class="form-check-label">Tomografía ATM Boca Cerrada</label>
+                    </div>
+
+                    <div class="col-md-4 form-check">
+                      <input class="form-check-input" type="checkbox" name="ondemand"
+                        [(ngModel)]="order.ondemand"><label class="form-check-label">Ondemand</label>
+                      <br>
+                      <input class="form-check-input" type="checkbox" name="dicom" [(ngModel)]="order.dicom"><label
+                        class="form-check-label">DICOM</label>
+                      <br>
+
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Pieza:</label>
+                      <input type="text" class="form-control" name="tomography_piece"
+                        [(ngModel)]="order.tomography_piece" />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Implante:</label>
+                      <input type="text" class="form-control" name="implant" [(ngModel)]="order.implant" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Diente Retenido:</label>
+                      <input type="text" class="form-control" name="impacted_tooth"
+                        [(ngModel)]="order.impacted_tooth" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Otros:</label>
+                      <input type="text" class="form-control" name="others_tomography" />
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="8">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Escaneo Intraoral</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="stl" [(ngModel)]="order.stl">
+                      <label class="form-check-label">STL</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="obj" [(ngModel)]="order.obj">
+                      <label class="form-check-label">OBJ</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="ply" [(ngModel)]="order.ply">
+                      <label class="form-check-label">PLY</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="invisaligh" [(ngModel)]="order.invisaligh">
+                      <label class="form-check-label">INVISALIGH</label>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label">Otros</label>
+                      <input type="text" class="form-control" name="others_scanners"
+                        [(ngModel)]="order.others_scanners" />
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="9">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Estereolitografía</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="maxilar_superior"
+                        [(ngModel)]="order.maxilar_superior">
+                      <label class="form-check-label">Maxilar Superior</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="maxilar_inferior"
+                        [(ngModel)]="order.maxilar_inferior">
+                      <label class="form-check-label">Maxilar Inferior</label>
+                    </div>
+                    <div class="col-md-4 form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="maxilar_both"
+                        [(ngModel)]="order.maxilar_both">
+                      <label class="form-check-label">Maxilar Ambos</label>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label">Otros</label>
+                      <input type="text" class="form-control" name="maxilar_others"
+                        [(ngModel)]="order.maxilar_others" />
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+              <li [ngbNavItem]="10">
+                <a ngbNavLink>
+                  <label class="form-label fw-bold">Fotografía Clínica</label>
+                </a>
+                <ng-template ngbNavContent>
+                  <div class="row">
+                    <div class="col-3 form-check">
+                      <label for="">Fotografía Clínica</label>
+                      <input type="checkbox" name="clinical_photography" [(ngModel)]="order.clinical_photography"
+                        class="form-check-input" id="">
+                    </div>
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+            <div [ngbNavOutlet]="defaultNav" class="border border-top-0 p-3"></div>
+            <p class="mt-2">Pestaña: {{ defaultNavActiveId }}</p>
+            <div class="col-3 form-check">
+              <label for="">Interpretación Odontológica</label>
+              <input type="checkbox" name="dental_interpretation" [(ngModel)]="order.dental_interpretation"
+                class="form-check-input" id="">
+
+            </div>
+
+
+            <div class="container-fluid">
+              <div class="row justify-content-end">
+                <div class="col-3">
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       </div>

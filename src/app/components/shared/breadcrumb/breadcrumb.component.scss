@@ -1,0 +1,17 @@
+.breadcrumb {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+
+  a {
+    text-decoration: none;
+    color: #0d6efd;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .active {
+    color: #6c757d;
+  }
+}

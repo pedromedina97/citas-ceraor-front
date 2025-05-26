@@ -26,6 +26,7 @@ import { CreateOrderComponent } from './modules/orders/create-order/create-order
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { FooterComponent } from './components/shared/footer/footer.component';
+import { BreadcrumbComponent } from './components/shared/breadcrumb/breadcrumb.component';
 
 registerLocaleData(localeEs, 'es');
 @NgModule({
@@ -48,6 +49,7 @@ registerLocaleData(localeEs, 'es');
     OrdersComponent,
     CreateOrderComponent,
     FooterComponent,
+    BreadcrumbComponent,
 
   ],
   imports: [

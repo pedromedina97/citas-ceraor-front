@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Location } from '@angular/common';
 import { CeraorService } from '../../../services/ceraor.service';
 import { PermissionsService } from '../../../services/permissions.service';
 import Swal from 'sweetalert2';
@@ -67,7 +68,7 @@ export class CreateOrderComponent {
     lateral_right_tomography_open_close: 0,
     ondemand: "",
     dicom: "",
-    tomography_piece : "",
+    tomography_piece: "",
     implant: "",
     impacted_tooth: "",
     others_tomography: "",
@@ -81,13 +82,16 @@ export class CreateOrderComponent {
     maxilar_both: 0,
     maxilar_others: "",
     dental_interpretation: 0
-}
+  }
 
   clients: any[] = [];
   id: string;
   instance: any;
+  basicEnabled: boolean = false;
+  basicDigitalEnabled: boolean = false;
+  switch3DEnabled: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef) {}
+  constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private location: Location) { }
 
   ngOnInit(): void {
     this.loadId();
@@ -99,17 +103,18 @@ export class CreateOrderComponent {
 
 
   create() {
-        const orderCopy = { ...this.order };
+    const orderCopy = { ...this.order };
 
     this.api.createData('order/create', this.order).subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         Swal.fire({
           icon: 'success',
           title: 'Orden Creada',
           text: resp.msg
         });
+        this.back();
       },
-      (error)=>{
+      (error) => {
         console.log(error);
         Swal.fire({
           icon: 'error',
@@ -118,24 +123,69 @@ export class CreateOrderComponent {
         });
       }
     );
+
   }
 
-  loadId(){
+  back(): void {
+    this.location.back();
+  }
+
+  loadId() {
     this.permissionsService.getId().subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.id = resp;
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
     );
   }
 
+  toggleBasic() {
+    const value = this.basicEnabled ? 1 : 0;
+    this.order.rx_panoramic = value;
+    this.order.rx_lateral_skull = value;
+    this.order.risina = value;
+    this.order.clinical_photography = value;
+    this.order.dentalprint = value;
+  }
+
+  toggleBasicDigital() {
+    const value = this.basicDigitalEnabled ? 1 : 0;
+
+    this.order.clinical_photography = value;
+    this.order.rx_panoramic = value;
+    this.order.rx_lateral_skull = value;
+
+    // Activar análisis cefalométricos
+    this.order.rickets = value;
+    this.order.mcnamara = value;
+    this.order.downs = value;
+    this.order.jaraback = value;
+    this.order.steiner = value;
+  }
+
+  toggle3D() {
+    const value = this.switch3DEnabled ? 1 : 0;
+
+    this.order.rx_arc_panoramic = value;
+    this.order.rx_lateral_skull = value;
+    this.order.clinical_photography = value;
+    this.order.rickets = value;
+    this.order.mcnamara = value;
+    this.order.downs = value;
+    this.order.jaraback = value;
+    this.order.steiner = value;
+    this.order.risina = value;
+    this.order.complete_tomography = value;
+    this.order.stl = value;
+  }
+
   onSelectChange(event: Event) {
     let value = (event.target as HTMLSelectElement).value;
     this.patient = JSON.parse(value);
-    this.order.patient = this.patient.name + " " +this.patient.lastname;
-    this.order.email = this.patient.email; 
+    this.order.patient = this.patient.name + " " + this.patient.lastname;
+    this.order.email = this.patient.email;
     this.order.phone = this.patient.phone;
     this.order.birthdate = this.patient.birthday;
   }
@@ -144,7 +194,7 @@ export class CreateOrderComponent {
     this.api.getDataById('user/getmyusers', this.id).subscribe(
       (resp: any) => {
         this.clients = resp.data;
-        
+
       },
       (error) => {
         console.log(error);
@@ -152,15 +202,15 @@ export class CreateOrderComponent {
     );
   }
 
-  getInstance(){
+  getInstance() {
     this.api.getDataById('user/getinstance', this.id).subscribe(
-      (resp: any)=>{
+      (resp: any) => {
         this.instance = resp.data[0];
         this.order.doctor = this.instance.name + " " + this.instance.lastname;
         this.order.address = this.instance.address;
         this.order.professional_id = this.instance.professional_id;
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
     );
