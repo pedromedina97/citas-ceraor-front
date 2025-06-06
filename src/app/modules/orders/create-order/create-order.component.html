@@ -11,6 +11,10 @@
         </div>
         <div class="card-body">
           <div class="container-fluid">
+            <div class="text-center">
+              <h3>Estudios Ortodónticos</h3>
+            </div>
+            
             <div class="row justify-content-center">
               <div class="col-4  form-check form-switch mb-4" style="">
                 <input class="form-check-input" type="checkbox" id="basicSwitch" [(ngModel)]="basicEnabled"
@@ -25,9 +29,10 @@
               <div class="col-4  form-check form-switch mb-4" style="">
                 <input class="form-check-input" type="checkbox" id="basicDigitalSwitch" [(ngModel)]="switch3DEnabled"
                   (change)="toggle3D()" name="switch3DEnabled">
-                <label class="form-check-label fw-bold" for="switch3DEnabled">3D (Para tomografía)</label>
+                <label class="form-check-label fw-bold" for="switch3DEnabled">3D (Con Tomografía)</label>
               </div>
             </div>
+
           </div>
 
           <form #form="ngForm" (ngSubmit)="create()">
@@ -177,7 +182,7 @@
                   <div class="row">
                     <div class="col-md-4 form-check form-switch">
                       <input class="form-check-input" type="checkbox" name="complete_periapical"
-                        [(ngModel)]="order.complete_periapical"><label class="form-check-label">Periapical
+                        [(ngModel)]="order.complete_periapical"><label class="form-check-label">Serie Periapical
                         Completa</label>
                     </div>
                     <div class="col-md-4 form-check form-switch">
@@ -188,23 +193,23 @@
 
                     <div class="col-md-4 form-check form-switch">
                       <input class="form-check-input" type="checkbox" name="superior"
-                        [(ngModel)]="order.superior"><label class="form-check-label">Superior</label>
+                        [(ngModel)]="order.superior"><label class="form-check-label">Oclusal Superior</label>
                     </div>
                     <div class="col-md-4 form-check form-switch">
                       <input class="form-check-input" type="checkbox" name="inferior"
-                        [(ngModel)]="order.inferior"><label class="form-check-label">Inferior</label>
+                        [(ngModel)]="order.inferior"><label class="form-check-label">Oclusal Inferior</label>
                     </div>
 
                     <div class="col-md-4 form-check form-switch">
                       <input class="form-check-input" type="checkbox" name="occlusal_xray"
-                        [(ngModel)]="order.occlusal_xray"><label class="form-check-label">Oclusal</label>
+                        [(ngModel)]="order.occlusal_xray"><label class="form-check-label">Oclusal Completa</label>
                     </div>
                   </div>
                 </ng-template>
               </li>
               <li [ngbNavItem]="5">
                 <a ngbNavLink>
-                  <label class="form-label fw-bold">Análisis Cefalométricos</label>
+                  <label class="form-label fw-bold">Análisis Cefalométricos <span>(A Elegir)</span></label>
                 </a>
                 <ng-template ngbNavContent>
                   <div class="row">
@@ -347,6 +352,9 @@
                       <label class="form-label">Otros:</label>
                       <input type="text" class="form-control" name="others_tomography" />
                     </div>
+                    <div class="col-12">
+                      <img src="/assets/img/tomografia.jpg" width="25%" height="auto" alt="">
+                    </div>
                   </div>
                 </ng-template>
               </li>
@@ -444,6 +452,39 @@
               </div>
             </div>
           </form>
+          <div class="row">
+            <div *ngIf="basicEnabled || basicDigitalEnabled || switch3DEnabled" class="text-center">
+              <h4>Incluye:</h4>
+            </div>
+              <div *ngIf="basicEnabled" class="col-4">
+                  <ul >
+                    <li>Rx Panorámica</li>
+                    <li>Rx Lateral Cráneo</li>
+                    <li>Modelos de Estudio en Resina</li>
+                    <li>Fotografía Clínica Intraoral y Extraoral</li>
+                  </ul>
+                </div>
+                <div *ngIf="basicDigitalEnabled" class="col-4">
+                  <ul >
+                    <li>Fotografía Clínica Intraoral y Extraoral</li>
+                    <li>Rx Panorámica</li>
+                    <li>Rx Lateral de Cráneo</li>
+                    <li>1 Análisis Cefalométrico a Elegir</li>
+                  </ul>
+                </div>
+                <div *ngIf="switch3DEnabled" class="col-4">
+                  <ul >
+                    <li>Rx Panorámica 3D</li>
+                    <li>Rx Lateral De Cráneo</li>
+                    <li>Fotografía Clínica Digital Intraoral y Extraoral</li>
+                    <li>Análisis Cefalométrico (a Elegir)</li>
+                    <li>Modelos De Estudio En Resina</li>
+                    <li>Tomografía Completa Para Ortodoncia</li>
+                    <li>Archivo STL</li>
+                    <li>Escaneo Facial</li>
+                  </ul>
+                </div>
+            </div>  
         </div>
       </div>
     </div>

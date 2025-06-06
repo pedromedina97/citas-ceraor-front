@@ -151,6 +151,9 @@ export class CreateOrderComponent {
   }
 
   toggleBasicDigital() {
+    if (this.basicDigitalEnabled) {
+      this.defaultNavActiveId = 5; // Cambia 5 por el ID real del tab "Análisis Cefalométricos"
+    }
     const value = this.basicDigitalEnabled ? 1 : 0;
 
     this.order.clinical_photography = value;
@@ -158,24 +161,27 @@ export class CreateOrderComponent {
     this.order.rx_lateral_skull = value;
 
     // Activar análisis cefalométricos
-    this.order.rickets = value;
+    /* this.order.rickets = value;
     this.order.mcnamara = value;
     this.order.downs = value;
     this.order.jaraback = value;
-    this.order.steiner = value;
+    this.order.steiner = value; */
   }
 
   toggle3D() {
+    if (this.switch3DEnabled) {
+      this.defaultNavActiveId = 5; // Cambia 5 por el ID real del tab "Análisis Cefalométricos"
+    }
     const value = this.switch3DEnabled ? 1 : 0;
 
     this.order.rx_arc_panoramic = value;
     this.order.rx_lateral_skull = value;
     this.order.clinical_photography = value;
-    this.order.rickets = value;
+    /* this.order.rickets = value;
     this.order.mcnamara = value;
     this.order.downs = value;
     this.order.jaraback = value;
-    this.order.steiner = value;
+    this.order.steiner = value; */
     this.order.risina = value;
     this.order.complete_tomography = value;
     this.order.stl = value;
