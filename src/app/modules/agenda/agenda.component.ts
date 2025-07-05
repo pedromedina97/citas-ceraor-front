@@ -70,6 +70,8 @@ export class AgendaComponent implements OnInit {
   doctor: any;
   selectedSubsidiary: string = '';
   isManualClient: boolean = false;
+  idCashcut: String;
+  isSaving: boolean = false;
 
   constructor(private modalService: NgbModal, private api: CeraorService, private permissionsService: PermissionsService, private zone: NgZone, private cd: ChangeDetectorRef) { }
 
@@ -77,8 +79,8 @@ export class AgendaComponent implements OnInit {
     this.loadPermissions();
     this.loadId();
     this.loadRol();
-    // Cargar eventos desde la API al iniciar
-    this.getAllSubsidiary();  // Cargar sucursales
+    this.getAllSubsidiary();
+    this.updateEndTime(); // Prevención global
   }
 
   loadData() {
@@ -171,13 +173,16 @@ export class AgendaComponent implements OnInit {
         this.events = resp.data.map((event: any) => ({
           id: event.id,
           title: event.client,
-          start: event.appointment,               // cadena "YYYY-MM-DD HH:mm:ss"
-          end: event.end_appointment,             // cadena "YYYY-MM-DD HH:mm:ss"
+          start: event.appointment,
+          end: event.end_appointment,
           personal: event.personal,
           id_subsidiary: event.id_subsidiary,
           service: event.service,
+          service_name: event.service_name,           // ✅ nuevo
+          subsidiary_name: event.subsidiary_name,     // ✅ nuevo
           color: event.color || this.generateRandomColor()
         }));
+
       },
       (error) => {
         console.error('Error al cargar eventos:', error);
@@ -307,9 +312,19 @@ export class AgendaComponent implements OnInit {
       return (
         eventDate.getFullYear() === day.getFullYear() &&
         eventDate.getMonth() === day.getMonth() &&
-        eventDate.getDate() === day.getDate()
+        eventDate.getDate() === day.getDate() &&
+        (!this.selectedSubsidiary || event.id_subsidiary === this.selectedSubsidiary)
       );
     });
+
+    /* return this.events.filter(event => {
+      const eventDate = new Date(event.start);
+      return (
+        eventDate.getFullYear() === day.getFullYear() &&
+        eventDate.getMonth() === day.getMonth() &&
+        eventDate.getDate() === day.getDate()
+      );
+    }); */
   }
 
 
@@ -340,18 +355,20 @@ export class AgendaComponent implements OnInit {
       title: '',
       start: isoDate,
       startTime: '12:00',
-      endTime: '13:00',
+      endTime: '',
       color: this.generateRandomColor(), // 🟢 Color aleatorio siempre
       personal: '',
       id_subsidiary: '',
       service: ''
     };
-
+    this.updateEndTime(); // ✅ Cálculo automático al abrir modal
     this.editing = false;
     this.modalService.open(this.eventModal); // 🟢 Ahora se abre sin importar si ya hay eventos en el día
   }
 
   saveEvent() {
+    if (this.isSaving) return;
+    this.isSaving = true;
     const startDate = new Date(`${this.eventForm.start}T${this.eventForm.startTime}`);
     const endDate = new Date(`${this.eventForm.start}T${this.eventForm.endTime}`);
 
@@ -359,7 +376,7 @@ export class AgendaComponent implements OnInit {
     const conflict = this.events.some(event => {
       const eventStart = new Date(event.start);
       const eventEnd = new Date(eventStart); // Suponemos duración similar, 30 mins o end_appointment si lo tienes
-      eventEnd.setMinutes(eventEnd.getMinutes() + 30); // Ajusta según tu lógica
+      eventEnd.setMinutes(eventEnd.getMinutes() + 15);
 
       // Verificamos si hay traslape y mismo doctor o sucursal
       return (
@@ -409,6 +426,7 @@ export class AgendaComponent implements OnInit {
         console.error('Error al guardar evento:', error);
       }
     );
+    this.isSaving = false;
   }
 
   getMyInfo() {
@@ -477,46 +495,46 @@ export class AgendaComponent implements OnInit {
   }
 
   deleteEvent(id: string, event: MouseEvent) {
-  event.stopPropagation();
+    event.stopPropagation();
 
-  Swal.fire({
-    title: '¿Eliminar cita?',
-    text: 'Esta acción no se puede deshacer.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#6c757d',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.api.deleteData('appointment/delete', id).subscribe(
-        (resp: any) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Cita eliminada',
-            text: resp.msg,
-            confirmButtonColor: '#198754'
-          }).then(() => {
-            if (this.selectedSubsidiary) {
-              this.getAppointmentsBySubsidiary(this.selectedSubsidiary); // 🔄 Cargar nuevamente por sucursal
-            } else {
-              this.getAllAppointments(); // Fallback
-            }
-          });
-        },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.error.msg || 'No se pudo eliminar la cita.',
-            confirmButtonColor: '#198754'
-          });
-        }
-      );
-    }
-  });
-}
+    Swal.fire({
+      title: '¿Eliminar cita?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.api.deleteData('appointment/delete', id).subscribe(
+          (resp: any) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Cita eliminada',
+              text: resp.msg,
+              confirmButtonColor: '#198754'
+            }).then(() => {
+              if (this.selectedSubsidiary) {
+                this.getAppointmentsBySubsidiary(this.selectedSubsidiary); // 🔄 Cargar nuevamente por sucursal
+              } else {
+                this.getAllAppointments(); // Fallback
+              }
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error.msg || 'No se pudo eliminar la cita.',
+              confirmButtonColor: '#198754'
+            });
+          }
+        );
+      }
+    });
+  }
 
 
   // 🟢 Cargar todas las sucursales desde la API
@@ -579,6 +597,140 @@ export class AgendaComponent implements OnInit {
     );
   }
 
+  cashcut() {
+    Swal.fire({
+      title: "Cortar Caja",
+      icon: 'info',
+      text: '¿Desea cortar caja?',
+      showDenyButton: true,
+      confirmButtonText: "Sí",
+      denyButtonText: "No"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const currentDate = `${yyyy}-${mm}-${dd}`;
+
+        // Generar opciones dinámicas para el select
+        const options = this.subsidiaries.map(sub => `
+        <option value="${sub.id}">${sub.name}</option>
+      `).join('');
+
+        Swal.fire({
+          title: 'Datos del Corte',
+          html: `
+          <label for="subsidiary">Sucursal:</label>
+          <select id="subsidiary" class="swal2-input">
+            <option value="" disabled selected>Seleccione una sucursal</option>
+            ${options}
+          </select>
+          <label for="start_time">Hora Inicio:</label>
+          <input type="time" id="start_time" class="swal2-input" />
+          <label for="end_time">Hora Fin:</label>
+          <input type="time" id="end_time" class="swal2-input" />
+        `,
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: 'Guardar Corte',
+          cancelButtonText: 'Cancelar',
+          preConfirm: () => {
+            const subsidiary = (document.getElementById('subsidiary') as HTMLSelectElement).value;
+            const start_time = (document.getElementById('start_time') as HTMLInputElement).value;
+            const end_time = (document.getElementById('end_time') as HTMLInputElement).value;
+
+            if (!subsidiary || !start_time || !end_time) {
+              Swal.showValidationMessage('Todos los campos son obligatorios');
+              return false;
+            }
+
+            const start_date = `${currentDate}T${start_time}:00`;
+            const end_date = `${currentDate}T${end_time}:00`;
+
+            if (start_date >= end_date) {
+              Swal.showValidationMessage('La hora de fin debe ser mayor a la de inicio');
+              return false;
+            }
+
+            return { subsidiary, start_date, end_date };
+          }
+        }).then((formResult) => {
+          if (formResult.isConfirmed && formResult.value) {
+            const cash_cut = {
+              id_user: this.id,
+              id_subsidiary: formResult.value.subsidiary,
+              start_date: formResult.value.start_date,
+              end_date: formResult.value.end_date,
+              total: 0
+            };
+
+            this.api.createData('cashcut/create', cash_cut).subscribe(
+              (resp: any) => {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Exito',
+                  text: resp.msg
+                });
+                this.idCashcut = resp.data;
+                setTimeout(() => {
+                  this.api.createData('cashcut/update-total', { id_cashcut: this.idCashcut }).subscribe(
+                    (resp: any) => {
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: resp.msg
+                      });
+                    },
+                    (error) => {
+                      console.log(error);
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.error
+                      });
+                    }
+                  );
+                }, 500);
+
+                /* this.api.createData('cashcut/update-total', {id_cashcut: this.idCashcut}).subscribe(
+                  (resp: any)=>{
+                    console.log("entra");
+                    console.log(resp);
+                    Swal.fire({
+                  icon: 'success',
+                  title: 'Éxito',
+                  text: resp.msg
+                });
+                  },
+                  (error)=>{
+                    console.log(error);
+                    Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error
+                });
+                  }
+                ); */
+              }, (error) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error
+                });
+              });
+          }
+        });
+      } else if (result.isDenied) {
+        Swal.fire("Corte Cancelado", "", "info");
+      }
+    });
+  }
+
+
+
+
+
   private getDismissReason(reason: any): string {
     switch (reason) {
       case ModalDismissReasons.ESC:
@@ -589,6 +741,8 @@ export class AgendaComponent implements OnInit {
         return `with: ${reason}`;
     }
   }
+
+
 
   onBarcodeInput(value: string) {
     this.barcodeBuffer = value;
@@ -622,41 +776,103 @@ export class AgendaComponent implements OnInit {
     );
   }
 
-  checkAppointment(id: string, code: string) {
+  checkAppointment(id: string) {
     Swal.fire({
       title: "Cangear servicio",
       icon: 'info',
-      text: `¿Desea cangear el servicio "${code}"?`,
+      html: `¿Desea cangear el servicio?`,
       confirmButtonColor: '#198754',
       cancelButtonColor: '#d33',
       showConfirmButton: true,
       showCancelButton: true
     }).then((resp) => {
       if (resp.isConfirmed) {
-        this.api.deleteData('appointment/delete', id).subscribe(
-          (data: any) => {
-            Swal.fire({
-              title: 'Cangeado',
-              icon: 'success',
-              text: data.msg,
-              confirmButtonColor: '#198754'
-            }).then(() => {
-              this.getAllAppointments(); // 🔄 Recarga las citas para actualizar el calendario
-            });
-          },
-          (error) => {
-            Swal.fire({
-              title: 'Error',
-              icon: 'error',
-              text: error.error.msg,
-              confirmButtonColor: '#198754'
-            });
+        // 🔽 Mostrar modal para seleccionar método de pago y monto
+        Swal.fire({
+          title: 'Registrar pago',
+          html: `
+          <select id="paymentMethod" class="swal2-select" style="width: 100%; margin-bottom: 1rem;">
+            <option value="" disabled selected>Seleccione método</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <input id="paymentAmount" type="number" step="0.01" class="swal2-input" placeholder="Cantidad pagada">
+        `,
+          showCancelButton: true,
+          confirmButtonText: 'Registrar pago',
+          cancelButtonText: 'Cancelar',
+          preConfirm: () => {
+            const method = (document.getElementById('paymentMethod') as HTMLSelectElement).value;
+            const amount = parseFloat((document.getElementById('paymentAmount') as HTMLInputElement).value);
+            if (!method || isNaN(amount) || amount <= 0) {
+              Swal.showValidationMessage('Debe seleccionar un método y una cantidad válida');
+              return false;
+            }
+            return { method, amount };
           }
-        );
+        }).then((result) => {
+          if (result.isConfirmed && result.value) {
+            const payment = {
+              id_appointment: id,
+              method: result.value.method,
+              amount: result.value.amount,
+              status: 'Pagado'
+            };
+
+            // Primero registrar el pago
+            this.api.createData('payment/create', [payment]).subscribe(
+              (res: any) => {
+                Swal.fire({
+                  title: 'Pago registrado',
+                  icon: 'success',
+                  text: res.msg || 'El pago fue registrado correctamente.',
+                  confirmButtonColor: '#198754'
+                }).then(() => {
+                  // Solo si el pago fue exitoso, cangear el servicio
+                  this.api.deleteData('appointment/delete', id).subscribe(
+                    (data: any) => {
+                      Swal.fire({
+                        title: 'Servicio cangeado',
+                        icon: 'success',
+                        text: data.msg,
+                        confirmButtonColor: '#198754'
+                      }).then(() => {
+                        this.getAppointmentsBySubsidiary(this.selectedSubsidiary);
+                        /* this.getAllAppointments(); */ // Recargar citas
+                      });
+                    },
+                    (error) => {
+                      Swal.fire({
+                        title: 'Error al cangear',
+                        icon: 'error',
+                        text: error.error.msg || 'No se pudo cangear el servicio.',
+                        confirmButtonColor: '#d33'
+                      });
+                    }
+                  );
+                });
+              },
+              (err) => {
+                console.log(err);
+                Swal.fire({
+                  title: 'Error al registrar el pago',
+                  icon: 'error',
+                  text: err.error.msg || 'Ocurrió un error al guardar el pago.',
+                  confirmButtonColor: '#d33'
+                });
+              }
+            );
+          }
+        });
       }
     });
+
     this.loadData();
   }
+
+
 
   onSubsidiaryChange() {
     if (this.selectedSubsidiary) {

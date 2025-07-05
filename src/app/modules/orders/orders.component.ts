@@ -25,6 +25,8 @@ export class OrdersComponent implements OnInit {
   rol: string;
   rols: any;
   env = Environment;
+  page: number = 1;
+  itemsPerPage: number = 5;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) { }
 
@@ -176,35 +178,35 @@ export class OrdersComponent implements OnInit {
   }
 
   downloadPdf(url: string, fileName: string) {
-  Swal.fire({
-    title: 'Descargando PDF...',
-    text: 'Por favor espera unos segundos.',
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
+    Swal.fire({
+      title: 'Descargando PDF...',
+      text: 'Por favor espera unos segundos.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
-  this.api.http.get(url, { responseType: 'blob' }).subscribe(
-    blob => {
-      Swal.close();
+    this.api.http.get(url, { responseType: 'blob' }).subscribe(
+      blob => {
+        Swal.close();
 
-      const downloadURL = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadURL;
-      a.download = `${fileName}.pdf`; // Nombre dinámico
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(downloadURL); // Limpia memoria
-    },
-    error => {
-      Swal.close();
-      console.error('Error al descargar el PDF:', error);
-      Swal.fire('Error', 'No se pudo descargar el PDF.', 'error');
-    }
-  );
-}
+        const downloadURL = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadURL;
+        a.download = `${fileName}.pdf`; // Nombre dinámico
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadURL); // Limpia memoria
+      },
+      error => {
+        Swal.close();
+        console.error('Error al descargar el PDF:', error);
+        Swal.fire('Error', 'No se pudo descargar el PDF.', 'error');
+      }
+    );
+  }
 
   delete(id: string, name: string) {
     Swal.fire({

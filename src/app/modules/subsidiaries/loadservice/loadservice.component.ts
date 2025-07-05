@@ -45,7 +45,8 @@ export class LoadserviceComponent implements OnInit{
     const itemForm = this.fb.group({
       name: ['', Validators.required],
       id_subsidiary: [this.id, Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      price: ['', Validators.required]
     });
 
     this.items.push(itemForm);

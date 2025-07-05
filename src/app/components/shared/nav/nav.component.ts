@@ -150,7 +150,8 @@ export class NavComponent implements OnInit {
       confirmButtonColor: '#198754',
       cancelButtonColor: '#d33',
       showConfirmButton: true,
-      showCancelButton: true
+      showCancelButton: true,
+      cancelButtonText: "Cancelar"
     }).then((resp) => {
       if (resp.isConfirmed) {
         Swal.fire({

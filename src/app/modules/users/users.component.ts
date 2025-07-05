@@ -34,6 +34,8 @@ export class UsersComponent implements OnInit{
   user: string = localStorage.getItem('userName');
   rol: string;
   rols: any;
+  page: number = 1;
+  itemsPerPage: number = 5;
   private exclude: any;
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) {}

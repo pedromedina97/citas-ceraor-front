@@ -20,12 +20,16 @@
     "@angular/router": "^19.1.0",
     "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "bootstrap": "^5.3.3",
+    "chart.js": "^4.5.0",
+    "counterup2": "^2.0.2",
     "dayjs": "^1.11.13",
     "jwt-decode": "^4.0.0",
     "ngx-bootstrap": "^19.0.2",
+    "ngx-pagination": "^6.0.3",
     "rxjs": "^7.8.1",
     "sweetalert2": "^11.18.0",
     "tslib": "^2.3.0",
+    "waypoints": "^4.0.1",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

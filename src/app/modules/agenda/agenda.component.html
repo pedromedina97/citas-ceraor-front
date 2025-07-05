@@ -25,6 +25,9 @@
       <div class="col-2">
         <button class="btn btn-dark" (click)="open(content)"><i class="bi bi-upc-scan"></i> Escanear Cita</button>
       </div>
+      <div class="col-2">
+        <button class="btn btn-warning" (click)="cashcut()"><i class="bi bi-cash-coin"></i> Cortar Caja</button>
+      </div>
     </div>
   </div>
 
@@ -75,6 +78,8 @@
         <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary"
+      (click)="checkAppointment(selectedEvent.id)">Cangear</button>
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
       </div>
     </div>
@@ -218,7 +223,7 @@
             <th>Service</th>
             <th>Folio</th>
             <th>Cita</th>
-            <th>Doctor</th>
+            <th>Costo</th>
             <th>Creación</th>
           </tr>
         </thead>
@@ -230,7 +235,7 @@
             <td>{{appointment?.service_name}}</td>
             <td>{{appointment?.code}}</td>
             <td>{{ appointment?.appointment | date:"EEEE d 'de' MMMM 'de' y, h:mm a" }}</td>
-            <td>{{appointment?.doctor}}</td>
+            <td>${{appointment?.price}}</td>
             <td>{{appointment?.created_at | date:'short'}}</td>
           </tr>
         </tbody>
@@ -241,6 +246,6 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary"
-      (click)="checkAppointment(appointment.appointment_id, appointment.code)">Cangear</button>
+      (click)="checkAppointment(appointment.appointment_id)">Cangear</button>
   </div>
 </ng-template>

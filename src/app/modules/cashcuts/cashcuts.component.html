@@ -1,0 +1,133 @@
+<div class="container mt-5" style="max-width: 90% !important;">
+  <div class="row justify-content-center">
+    <!-- 🔍 Formulario de búsqueda -->
+    <div class="col-lg-10 col-md-8 col-sm-12 mt-4">
+      <div class="card shadow-lg p-4 rounded-lg fade-in">
+        <div class="card-body">
+          <form role="search" aria-label="Buscar corte">
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-4">
+                <input type="text" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                  autocomplete="off" [(ngModel)]="filterText" (input)="filter()" placeholder="Buscar por nombre..." />
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label for="subsidiarySelect">Sucursal</label>
+                <select id="subsidiarySelect" class="form-select" [(ngModel)]="selectedSubsidiary"
+                  [ngModelOptions]="{ standalone: true }" (change)="filter()">
+                  <option value="">Todas</option>
+                  <option *ngFor="let s of subsidiaries" [value]="s.name">{{ s.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-6 col-md-2">
+                <label for="startDate">Desde</label>
+                <input id="startDate" type="date" class="form-control" [(ngModel)]="startDate"
+                  [ngModelOptions]="{ standalone: true }" (change)="filter()" />
+              </div>
+
+              <div class="col-6 col-md-2">
+                <label for="endDate">Hasta</label>
+                <input id="endDate" type="date" class="form-control" [(ngModel)]="endDate"
+                  [ngModelOptions]="{ standalone: true }" (change)="filter()" />
+              </div>
+            </div>
+          </form>
+          <!-- Fila de botones -->
+          <div class="mt-3 d-flex flex-wrap gap-2 justify-content-end">
+            <button class="btn btn-outline-success btn-ios" type="button" (click)="downloadRangoCashcuts()">
+              <i class="bi bi-file-earmark-excel-fill me-1"></i> Reporte Masivo Excel
+            </button>
+            <button class="btn btn-outline-secondary btn-ios" type="button" (click)="resetFilters()">
+              <i class="bi bi-arrow-clockwise me-1"></i> Restablecer Filtros
+            </button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 🖥️ Tabla para escritorio -->
+    <div class="table-desktop mt-4">
+      <h3 class="table-title">Cortes de Caja</h3>
+      <div class="dashboard-table-wrapper">
+        <!-- Spinner azul -->
+        <div class="text-center my-5" *ngIf="isLoading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando cortes de caja...</p>
+        </div>
+
+        <table class="dashboard-table table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>ID Corte</th>
+              <th>Usuario</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Corte</th>
+              <th>Sucursal</th>
+              <th>Total</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cashcut of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+              <td>{{ cashcut.cash_cut_id }}</td>
+              <td>{{ cashcut.user_name }}</td>
+              <td>{{ cashcut.start_date | date: 'dd/MM/yyyy, h:mm a' }}</td>
+              <td>{{ cashcut.end_date | date: 'dd/MM/yyyy, h:mm a' }}</td>
+              <td>{{ cashcut.subsidiary_name }}</td>
+              <td>${{ cashcut.total | currency:'MXN':'symbol':'1.2-2':'es-MX'}}</td>
+              <td>
+                <button
+                  (click)="downloadPdfCashcut(env.url + 'cashcut/cashcut-payments/' + cashcut.cash_cut_id, cashcut.cash_cut_id)"
+                  class="btn btn-outline-danger btn-sm">
+                  <i class="bi bi-file-earmark-pdf-fill"></i>
+                </button>
+                <button
+                  (click)="downloadXlsCashcut(env.url + 'cashcut/cashcut-payments-excel/' + cashcut.cash_cut_id, cashcut.cash_cut_id)"
+                  class="btn btn-outline-success btn-sm">
+                  <i class="bi bi-file-earmark-spreadsheet"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row" *ngIf="!isLoading && filtered.length > 0">
+          <div class="col m10 mt-5">
+            <app-custom-pagination (pageChange)="page = $any($event)"></app-custom-pagination>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 📱 Cards para móviles -->
+    <div class="cards-mobile" *ngIf="!isLoading && filtered.length > 0">
+      <h3 class="table-title">Cortes de Caja</h3>
+      <div class="card mb-3 shadow-sm p-3 fade-in" *ngFor="let cashcut of filtered">
+        <p><strong>ID Corte:</strong> {{ cashcut.cash_cut_id }}</p>
+        <p><strong>Usuario:</strong> {{ cashcut.user_name }}</p>
+        <p><strong>Fecha Inicio:</strong> {{ cashcut.start_date | date: 'dd/MM/yyyy, h:mm a' }}</p>
+        <p><strong>Fecha Corte:</strong> {{ cashcut.end_date | date: 'dd/MM/yyyy, h:mm a' }}</p>
+        <p><strong>Sucursal:</strong> {{ cashcut.subsidiary_name }}</p>
+        <p><strong>Total:</strong> ${{ cashcut.total | currency:'MXN':'symbol':'1.2-2':'es-MX'}}</p>
+        <div class="d-flex justify-content-start gap-2 mt-2">
+          <button
+            (click)="downloadPdfCashcut(env.url + 'cashcut/cashcut-payments/' + cashcut.cash_cut_id, cashcut.cash_cut_id)"
+            class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+          </button>
+          <button
+            (click)="downloadXlsCashcut(env.url + 'cashcut/cashcut-payments-excel/' + cashcut.cash_cut_id, cashcut.cash_cut_id)"
+            class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

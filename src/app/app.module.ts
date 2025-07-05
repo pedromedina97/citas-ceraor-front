@@ -27,6 +27,10 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { FooterComponent } from './components/shared/footer/footer.component';
 import { BreadcrumbComponent } from './components/shared/breadcrumb/breadcrumb.component';
+import { CashcutsComponent } from './modules/cashcuts/cashcuts.component';
+import { CustomPaginationComponent } from './components/custom-pagination/custom-pagination.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+
 
 registerLocaleData(localeEs, 'es');
 @NgModule({
@@ -50,12 +54,15 @@ registerLocaleData(localeEs, 'es');
     CreateOrderComponent,
     FooterComponent,
     BreadcrumbComponent,
+    CashcutsComponent,
+    CustomPaginationComponent,
 
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    NgxPaginationModule,
     TimepickerModule,
     ReactiveFormsModule,
     RouterModule.forRoot(ROUTES, {useHash: true}),

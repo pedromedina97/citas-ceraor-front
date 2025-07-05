@@ -1,159 +1,104 @@
 <div class="container mt-5" style="max-width: 90% !important;">
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8 col-sm-12 mt-4">
-  <div class="card shadow-lg p-4 rounded-lg fade-in">
-    <div class="card-body">
-      <form (submit)="filter()" role="search" aria-label="Buscar usuario">
-        <div class="row g-2">
-          <!-- Input de búsqueda -->
-          <div class="col-12">
-            <input
-              type="search"
-              class="form-control input-ios"
-              [ngModelOptions]="{ standalone: true }"
-              autocomplete="off"
-              [(ngModel)]="filterText"
-              (input)="filter()"
-              placeholder="Buscar usuario por nombre, email o teléfono..."
-            />
-          </div>
-
-          <!-- Botones en columna para móviles, en fila para escritorio -->
-          <div class="col-12 d-flex flex-column flex-md-row justify-content-between gap-2">
-            <!-- Botón limpiar -->
-            <button
-              *ngIf="filterText"
-              type="button"
-              class="btn btn-outline-secondary w-100 w-md-auto"
-              (click)="clearFilter()"
-              aria-label="Limpiar búsqueda"
-            >
-              <i class="bi bi-x-circle"></i> Limpiar
-            </button>
-
-            <!-- Botón crear -->
-            <button
-              *ngIf="canShow('create_user')"
-              class="btn btn-primary w-100 w-md-auto"
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#createModal"
-              (click)="resetForm()"
-            >
-              <i class="bi bi-plus-circle me-1"></i> Crear
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-    <!-- 📦 Escritorio -->
-<div class="table-desktop">
-  <h3 class="table-title">Usuarios</h3>
-  <div class="dashboard-table-wrapper">
-    <table class="dashboard-table">
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Nombre</th>
-          <th>Teléfono</th>
-          <th>Usuario Relacionado</th>
-          <th>Dirección</th>
-          <th>Creado</th>
-          <th>Opciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of filtered">
-          <td>{{ user.email }}</td>
-          <td>{{ user.name }} {{ user.lastname }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.related }}</td>
-          <td>{{ user.address }}</td>
-          <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
-              data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
-              (click)="delete(user.id, user.name)">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- 📱 Móviles -->
-<div class="cards-mobile">
-  <h3 class="table-title">Usuarios</h3>
-  <div class="mobile-card" *ngFor="let user of filtered">
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Nombre:</strong> {{ user.name }} {{ user.lastname }}</p>
-    <p><strong>Teléfono:</strong> {{ user.phone }}</p>
-    <p><strong>Relacionado:</strong> {{ user.related }}</p>
-    <p><strong>Dirección:</strong> {{ user.address }}</p>
-    <p><strong>Creado:</strong> {{ user.created_at | date:'dd/MM/yyyy' }}</p>
-    <div class="d-flex justify-content-start gap-2 mt-2">
-      <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm"
-        data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
-        <i class="bi bi-pencil-square"></i>
-      </button>
-      <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
-        (click)="delete(user.id, user.name)">
-        <i class="bi bi-trash"></i>
-      </button>
-    </div>
-  </div>
-</div>
-
-    
-    <!-- <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
       <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>Email</th>
-                  <th>Nombre</th>
-                  <th>Teléfono</th>
-                  <th>Usuario Relacionado</th>
-                  <th>Dirección</th>
-                  <th>Creado</th>
-                  <th>Opciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let user of filtered">
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.name }} {{ user.lastname }}</td>
-                  <td>{{ user.phone }}</td>
-                  <td>{{ user.related }}</td>
-                  <td>{{ user.address }}</td>
-                  <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
-                  <td>
-                    <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
-                      data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
-                      <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
-                      (click)="delete(user.id, user.name)">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <form (submit)="filter()" role="search" aria-label="Buscar usuario">
+            <div class="row g-2">
+              <!-- Input de búsqueda -->
+              <div class="col-12">
+                <input type="search" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                  autocomplete="off" [(ngModel)]="filterText" (input)="filter()"
+                  placeholder="Buscar usuario por nombre, email o teléfono..." />
+              </div>
+
+              <!-- Botones en columna para móviles, en fila para escritorio -->
+              <div class="col-12 d-flex flex-column flex-md-row justify-content-between gap-2">
+                <!-- Botón limpiar -->
+                <button *ngIf="filterText" type="button" class="btn btn-outline-secondary w-100 w-md-auto"
+                  (click)="clearFilter()" aria-label="Limpiar búsqueda">
+                  <i class="bi bi-x-circle"></i> Limpiar
+                </button>
+
+                <!-- Botón crear -->
+                <button *ngIf="canShow('create_user')" class="btn btn-primary w-100 w-md-auto" type="button"
+                  data-bs-toggle="modal" data-bs-target="#createModal" (click)="resetForm()">
+                  <i class="bi bi-plus-circle me-1"></i> Crear
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📦 Escritorio -->
+    <div class="table-desktop">
+      <h3 class="table-title">Usuarios</h3>
+      <div class="dashboard-table-wrapper">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Usuario Relacionado</th>
+              <th>Dirección</th>
+              <th>Creado</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+              <td>{{ user.email }}</td>
+              <td>{{ user.name }} {{ user.lastname }}</td>
+              <td>{{ user.phone }}</td>
+              <td>{{ user.related }}</td>
+              <td>{{ user.address }}</td>
+              <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
+                  data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+                  (click)="delete(user.id, user.name)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col m10 mt-5">
+            <app-custom-pagination (pageChange)="page = $any($event)"></app-custom-pagination>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
+
+    <!-- 📱 Móviles -->
+    <div class="cards-mobile">
+      <h3 class="table-title">Usuarios</h3>
+      <div class="mobile-card" *ngFor="let user of filtered">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Nombre:</strong> {{ user.name }} {{ user.lastname }}</p>
+        <p><strong>Teléfono:</strong> {{ user.phone }}</p>
+        <p><strong>Relacionado:</strong> {{ user.related }}</p>
+        <p><strong>Dirección:</strong> {{ user.address }}</p>
+        <p><strong>Creado:</strong> {{ user.created_at | date:'dd/MM/yyyy' }}</p>
+        <div class="d-flex justify-content-start gap-2 mt-2">
+          <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+            data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm"
+            (click)="delete(user.id, user.name)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -173,16 +118,21 @@
               <div class="form-group">
                 <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
-                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3 caracteres.</div>
+                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3
+                  caracteres.</div>
 
                 <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
-                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos 3 caracteres.</div>
+                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos
+                  3 caracteres.</div>
 
-                <input type="date" class="form-control input-ios mb-2" name="birthday" [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
-                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de nacimiento.</div>
+                <input type="date" class="form-control input-ios mb-2" name="birthday"
+                  [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
+                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de
+                  nacimiento.</div>
 
-                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required #id_rol="ngModel">
+                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required
+                  #id_rol="ngModel">
                   <option *ngFor="let rol of rols" [value]="rol.id">{{ rol.name }}</option>
                 </select>
                 <div *ngIf="id_rol.invalid && id_rol.touched" class="text-danger">Seleccione un rol.</div>
@@ -196,7 +146,8 @@
 
                 <input type="password" placeholder="Password" name="password" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.password" required minlength="8" #password="ngModel">
-                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos 8 caracteres.</div>
+                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos
+                  8 caracteres.</div>
 
                 <input type="text" placeholder="Teléfono" name="phone" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.phone" required #phone="ngModel">
@@ -204,7 +155,8 @@
 
                 <input type="text" placeholder="Dirección" name="address" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.address" required minlength="3" #address="ngModel">
-                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3 caracteres.</div>
+                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3
+                  caracteres.</div>
               </div>
             </div>
           </div>
@@ -233,16 +185,21 @@
               <div class="form-group">
                 <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
-                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3 caracteres.</div>
+                <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3
+                  caracteres.</div>
 
                 <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
-                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos 3 caracteres.</div>
+                <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos
+                  3 caracteres.</div>
 
-                <input type="date" class="form-control input-ios mb-2" name="birthday" [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
-                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de nacimiento.</div>
+                <input type="date" class="form-control input-ios mb-2" name="birthday"
+                  [(ngModel)]="dataInstance.birthday" required #birthday="ngModel">
+                <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">Seleccione una fecha de
+                  nacimiento.</div>
 
-                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required #id_rol="ngModel">
+                <select name="id_rol" class="form-select input-ios mb-2" [(ngModel)]="dataInstance.id_rol" required
+                  #id_rol="ngModel">
                   <option *ngFor="let rol of rols" [value]="rol.id">{{ rol.name }}</option>
                 </select>
                 <div *ngIf="id_rol.invalid && id_rol.touched" class="text-danger">Seleccione un rol.</div>
@@ -256,7 +213,8 @@
 
                 <input type="password" placeholder="Password" name="password" class="form-control input-ios mb-2 d-none"
                   [(ngModel)]="dataInstance.password" required minlength="8" #password="ngModel">
-                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos 8 caracteres.</div>
+                <div *ngIf="password.invalid && password.touched" class="text-danger">La contraseña debe tener al menos
+                  8 caracteres.</div>
 
                 <input type="text" placeholder="Teléfono" name="phone" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.phone" required #phone="ngModel">
@@ -264,7 +222,8 @@
 
                 <input type="text" placeholder="Dirección" name="address" class="form-control input-ios mb-2"
                   [(ngModel)]="dataInstance.address" required minlength="3" #address="ngModel">
-                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3 caracteres.</div>
+                <div *ngIf="address.invalid && address.touched" class="text-danger">La dirección debe tener al menos 3
+                  caracteres.</div>
               </div>
             </div>
           </div>

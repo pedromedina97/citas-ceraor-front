@@ -9,7 +9,7 @@
             <div formArrayName="items">
               <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row justify-content-center mb-3">
                 
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <input 
                     formControlName="name" 
                     class="form-control input-ios" 
@@ -19,12 +19,22 @@
                   <div *ngIf="isFieldInvalid(i, 'name')" class="invalid-feedback">El nombre es obligatorio.</div>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <input 
                     formControlName="description" 
                     class="form-control input-ios" 
                     placeholder="Descripción"
                     [ngClass]="{'is-invalid': isFieldInvalid(i, 'description')}"
+                  />
+                  <div *ngIf="isFieldInvalid(i, 'description')" class="invalid-feedback">La descripción es obligatoria.</div>
+                </div>
+                <div class="col-md-3">
+                  <input
+                  type="number" 
+                    formControlName="price" 
+                    class="form-control input-ios" 
+                    placeholder="Precio"
+                    [ngClass]="{'is-invalid': isFieldInvalid(i, 'price')}"
                   />
                   <div *ngIf="isFieldInvalid(i, 'description')" class="invalid-feedback">La descripción es obligatoria.</div>
                 </div>

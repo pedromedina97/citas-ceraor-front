@@ -1,19 +1,18 @@
-<div class="container mt-5">
+<div class="container mt-5" style="max-width: 90% !important;">
   <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8 col-sm-12 mt-5">
+    <!-- 🔍 Formulario de búsqueda -->
+    <div class="col-lg-6 col-md-8 col-sm-12 mt-4">
       <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <form role="search" aria-label="Buscar orden">
             <div class="row g-2">
-              <!-- Input de búsqueda -->
               <div class="col-12">
                 <input type="text" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
                   autocomplete="off" [(ngModel)]="filterText" (input)="filter()" placeholder="Buscar orden..." />
               </div>
 
-              <!-- Botón crear (responsive) -->
               <div class="col-12">
-                <a *ngIf="canShow('create_order')" class="btn btn-primary w-100 w-md-auto"
+                <a *ngIf="canShow('create_order')" class="btn btn-primary btn-ios w-100 w-md-auto"
                   [routerLink]="['create-order']">
                   <i class="bi bi-plus-circle me-1"></i> Crear
                 </a>
@@ -23,57 +22,60 @@
         </div>
       </div>
     </div>
+
     <!-- 🖥️ Tabla para escritorio -->
-    <div class="col-lg-10 col-md-12 col-sm-12 mt-4 d-none d-md-block">
-      <div class="card shadow-lg p-4 rounded-lg fade-in">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>Folio</th>
-                  <th>Paciente</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Doctor</th>
-                  <th>Dirección</th>
-                  <th>Creación</th>
-                  <th>Opciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let order of filtered">
-                  <td *ngIf="order.appointment_code == null">Sin Folio</td>
-                  <td *ngIf="order.appointment_code !== null">{{order.appointment_code}}</td>
-                  <td>{{ order.patient }}</td>
-                  <td>{{ order.email }}</td>
-                  <td>{{ order.phone }}</td>
-                  <td>{{ order.doctor }}</td>
-                  <td>{{ order.address }}</td>
-                  <td>{{ order.created_at | date:'dd/MM/yyyy' }}</td>
-                  <td>
-                    <button *ngIf="order.appointment_code !== null"
-                      (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
-                      class="btn btn-outline-danger btn-sm">
-                      <i class="bi bi-file-earmark-pdf-fill"></i>
-                    </button>
-                    <button *ngIf="order.appointment_code == null"
-                      (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
-                      class="btn btn-outline-primary btn-sm">
-                      <i class="bi bi-file-earmark-pdf-fill"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+    <div class="table-desktop mt-4">
+      <h3 class="table-title">Órdenes</h3>
+      <div class="dashboard-table-wrapper">
+        <table class="dashboard-table table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Folio</th>
+              <th>Paciente</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Doctor</th>
+              <th>Dirección</th>
+              <th>Creación</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+              <td>{{ order.appointment_code || 'Sin Folio' }}</td>
+              <td>{{ order.patient }}</td>
+              <td>{{ order.email }}</td>
+              <td>{{ order.phone }}</td>
+              <td>{{ order.doctor }}</td>
+              <td>{{ order.address }}</td>
+              <td>{{ order.created_at | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button *ngIf="order.appointment_code !== null"
+                  (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
+                  class="btn btn-outline-danger btn-sm btn-ios">
+                  <i class="bi bi-file-earmark-pdf-fill"></i>
+                </button>
+                <button *ngIf="order.appointment_code == null"
+                  (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
+                  class="btn btn-outline-primary btn-sm btn-ios">
+                  <i class="bi bi-file-earmark-pdf-fill"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col m10 mt-5">
+            <app-custom-pagination (pageChange)="page = $any($event)"></app-custom-pagination>
           </div>
         </div>
       </div>
     </div>
+
     <!-- 📱 Cards para móviles -->
-    <div class="col-12 mt-4 d-block d-md-none">
-      <h4 class="mb-3">Órdenes</h4>
-      <div *ngFor="let order of filtered" class="card mb-3 shadow-sm p-3 fade-in">
+    <div class="cards-mobile">
+      <h3 class="table-title">Órdenes</h3>
+      <div class="card mb-3 shadow-sm p-3 fade-in" *ngFor="let order of filtered">
         <p><strong>Folio:</strong> {{ order.appointment_code || 'Sin Folio' }}</p>
         <p><strong>Paciente:</strong> {{ order.patient }}</p>
         <p><strong>Email:</strong> {{ order.email }}</p>
@@ -84,18 +86,16 @@
         <div class="d-flex justify-content-start gap-2 mt-2">
           <button *ngIf="order.appointment_code !== null"
             (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
-            class="btn btn-outline-danger btn-sm">
+            class="btn btn-outline-danger btn-sm btn-ios">
             <i class="bi bi-file-earmark-pdf-fill"></i>
           </button>
           <button *ngIf="order.appointment_code == null"
             (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
-            class="btn btn-outline-primary btn-sm">
+            class="btn btn-outline-primary btn-sm btn-ios">
             <i class="bi bi-file-earmark-pdf-fill"></i>
           </button>
         </div>
       </div>
     </div>
-
-
   </div>
 </div>

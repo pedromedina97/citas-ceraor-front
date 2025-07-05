@@ -52,6 +52,10 @@
       <i class="bi bi-people-fill"></i>
       <p>Usuarios</p>
     </a>
+    <a *ngIf="canShow('see_cashcut')" [routerLink]="['/cashcuts']">
+      <i class="bi bi-wallet-fill"></i>
+      <p>Corte de Caja</p>
+    </a>
     <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']">
       <i class="bi bi-ui-radios"></i>
       <p>Roles/Permisos</p>

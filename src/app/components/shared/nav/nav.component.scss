@@ -57,9 +57,13 @@
 }
 
 .navbar {
-    position: relative;
-    z-index: 999;
+    position: fixed;  /* ← importante */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;  /* Bootstrap usa 1030 para fixed-top */
 }
+
 
 @media (max-width: 767.98px) {
   .user-menu .dropdown {
