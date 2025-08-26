@@ -48,9 +48,9 @@ export class UsersComponent implements OnInit{
   }
 
   setPetitions(){
-    if(this.rol == 'Owner' || this.rol == 'SuperAdmin'){
+    if(this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol == 'Admin' || this.rol == 'Operativo'){
       this.getData();
-    }if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
+    } else if(this.rol == 'Doctor' || this.rol == 'Recepcionista'){
       this.getClients();
     }
   }
@@ -282,9 +282,13 @@ export class UsersComponent implements OnInit{
         if (this.rol === 'Admin') {    
           this.exclude = ['Owner', 'SuperAdmin', 'Admin'];
           this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
-        } 
+        }
+        if (this.rol === 'Operativo') {    
+          this.exclude = ['Owner', 'SuperAdmin', 'Admin', 'Operativo'];
+          this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
+        }
         if (this.rol === 'Doctor' || this.rol === 'Cliente') {    
-          this.exclude = ['Owner', 'SuperAdmin', 'Admin', 'Doctor', 'Recepcionista'];
+          this.exclude = ['Owner', 'SuperAdmin', 'Admin', 'Operativo', 'Doctor', 'Recepcionista'];
           this.rols = resp.data.filter((rol: any) => !this.exclude.includes(rol.name));
         }
       },

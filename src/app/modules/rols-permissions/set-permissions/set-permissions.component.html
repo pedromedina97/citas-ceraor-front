@@ -1,28 +1,166 @@
-<div class="container mt-5">
-    <div class="row">
-        <div class="col mt-5">
-            <div class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-                <div class="card-header">
-                    <h3 class="card-title">Permisos Asignados</h3>
-                    
+<div class="permissions-container">
+    <div class="container-lg mt-4">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold text-dark">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Asignar Permisos al Rol
+                    </h3>
+                    <button class="btn btn-success btn-lg shadow-sm" (click)="savePermissions()">
+                        <i class="bi bi-floppy me-2"></i>
+                        Guardar Cambios
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="scrollable-list">
-                        <ul class="list-group list-group-flush" style="">
-                            <li class="list-group-item" *ngFor="let item of allpermissions">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" [id]="'perm-' + item.id"
-                                        [(ngModel)]="item.selected" (change)="onCheckboxChange($event, item.id)">
-                                    <label class="form-check-label" [for]="'perm-' + item.id">
-                                        {{ item.name }} - {{item.description}}
-                                    </label>
+            </div>
+        </div>
+
+        <!-- Cards de permisos agrupados por categoría -->
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-md-6 col-xl-4" *ngFor="let category of getCategoryKeys()">
+                <div class="permission-card card h-100 border-0 shadow-sm">
+                                    <div class="card-header border-0 text-white position-relative" 
+                     [ngClass]="'bg-' + getCategoryColor(category)">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i [class]="getCategoryIcon(category) + ' fs-4 me-3'"></i>
+                            <div>
+                                <h5 class="card-title mb-1 fw-bold">{{ getCategoryTitle(category) }}</h5>
+                                <small class="opacity-75">
+                                    {{ groupedPermissions[category].length }} 
+                                    {{ groupedPermissions[category].length === 1 ? 'permiso' : 'permisos' }}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones de control -->
+                        <div class="d-flex gap-2">
+                            <!-- Botón principal de toggle -->
+                            <button class="btn btn-sm shadow-sm toggle-all-btn" 
+                                    type="button"
+                                    (click)="toggleAllPermissions(category)"
+                                    [ngClass]="{
+                                        'btn-outline-light': !areAllPermissionsSelected(category),
+                                        'btn-light': areAllPermissionsSelected(category)
+                                    }"
+                                    [attr.title]="areAllPermissionsSelected(category) ? 'Deseleccionar todos' : 'Seleccionar todos'">
+                                <i [class]="areAllPermissionsSelected(category) ? 'bi bi-check-all' : 'bi bi-plus-circle'"></i>
+                                <span class="d-none d-lg-inline ms-1">
+                                    {{ areAllPermissionsSelected(category) ? 'Quitar' : 'Agregar' }}
+                                </span>
+                            </button>
+                            
+                            <!-- Dropdown para opciones adicionales -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-light dropdown-toggle shadow-sm" 
+                                        type="button" 
+                                        [id]="'dropdown-' + category" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false"
+                                        title="Más opciones">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" [attr.aria-labelledby]="'dropdown-' + category">
+                                    <li>
+                                        <button class="dropdown-item" 
+                                                type="button"
+                                                (click)="selectAllPermissions(category)"
+                                                [disabled]="areAllPermissionsSelected(category)">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            Seleccionar todos
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" 
+                                                type="button"
+                                                (click)="deselectAllPermissions(category)"
+                                                [disabled]="!hasAnyPermissionSelected(category)">
+                                            <i class="bi bi-x-circle text-danger me-2"></i>
+                                            Deseleccionar todos
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item fw-bold" 
+                                                type="button"
+                                                (click)="toggleAllPermissions(category)">
+                                            <i class="bi bi-arrow-repeat text-primary me-2"></i>
+                                            Alternar todos
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="permission-decoration"></div>
+                </div>
+                    
+                    <div class="card-body p-0">
+                        <div class="permission-list">
+                            <div class="permission-item p-3 border-bottom" 
+                                 *ngFor="let permission of groupedPermissions[category]; let last = last"
+                                 [class.border-0]="last">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="permission-info flex-grow-1">
+                                        <h6 class="permission-name mb-1 fw-semibold text-dark">
+                                            {{ permission.name }}
+                                        </h6>
+                                        <p class="permission-description mb-0 text-muted small">
+                                            {{ permission.description || 'Sin descripción' }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Switch personalizado -->
+                                    <div class="form-check form-switch form-switch-lg ms-3">
+                                        <input class="form-check-input shadow-sm" 
+                                               type="checkbox" 
+                                               role="switch"
+                                               [id]="'switch-' + permission.id"
+                                               [(ngModel)]="permission.selected" 
+                                               (change)="onSwitchChange(permission)"
+                                               [ngClass]="'switch-' + getCategoryColor(category)">
+                                        <label class="form-check-label" [for]="'switch-' + permission.id"></label>
+                                    </div>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contador de permisos activos en la card -->
+                    <div class="card-footer bg-light border-0 py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-check-circle-fill text-success me-1"></i>
+                                {{ getActivePermissionsCount(category) }} activos
+                            </small>
+                            <small class="text-muted">
+                                {{ getInactivePermissionsCount(category) }} inactivos
+                            </small>
+                        </div>
+                        
+                        <!-- Barra de progreso opcional -->
+                        <div class="progress mt-2" style="height: 4px;" *ngIf="groupedPermissions[category].length > 0">
+                            <div class="progress-bar" 
+                                 [ngClass]="'bg-' + getCategoryColor(category)"
+                                 role="progressbar" 
+                                 [style.width.%]="(getActivePermissionsCount(category) / groupedPermissions[category].length) * 100"
+                                 [attr.aria-valuenow]="getActivePermissionsCount(category)"
+                                 [attr.aria-valuemin]="0"
+                                 [attr.aria-valuemax]="groupedPermissions[category].length">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-footer text-end">
-                    <button class="btn btn-primary mt-3" (click)="savePermissions()">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <!-- Mensaje cuando no hay permisos -->
+        <div class="row justify-content-center" *ngIf="getCategoryKeys().length === 0">
+            <div class="col-12 text-center py-5">
+                <div class="empty-state">
+                    <i class="bi bi-shield-x display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay permisos disponibles</h4>
+                    <p class="text-muted">No se encontraron permisos para asignar a este rol.</p>
                 </div>
             </div>
         </div>

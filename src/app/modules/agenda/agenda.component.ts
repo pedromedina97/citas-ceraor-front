@@ -2,6 +2,7 @@ import { Component, ViewChild, TemplateRef, OnInit, NgZone, ChangeDetectorRef, i
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CeraorService } from '../../services/ceraor.service';
 import { PermissionsService } from '../../services/permissions.service';
+import { Environment } from '../../Env/env';
 import Swal from 'sweetalert2';
 interface Event {
   id: string;
@@ -15,6 +16,12 @@ interface Event {
   service: string;
   service_name?: string;
   subsidiary_name?: string;
+  // Nuevos campos del endpoint getdetailbyid
+  appointment_id?: string;
+  patient_name?: string;
+  service_price?: string;
+  appointment_datetime?: string;
+  staff_name?: string;
 }
 
 // Nueva interfaz para el formulario
@@ -34,6 +41,7 @@ interface EventForm extends Event {
 export class AgendaComponent implements OnInit {
   @ViewChild('eventModal') eventModal!: TemplateRef<any>;
   selectedEvent: Event | null = null;
+  loadingEventDetails: boolean = false;
   currentDate: Date = new Date();
   view: string = 'month';
   events: Event[] = [];
@@ -85,7 +93,7 @@ export class AgendaComponent implements OnInit {
 
   loadData() {
 
-    if (this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista') {
+    if (this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista' || this.rol === 'Operativo') {
       this.getClients();
       this.getDoctors();
     }
@@ -161,17 +169,155 @@ export class AgendaComponent implements OnInit {
     return frutigerAeroColors[Math.floor(Math.random() * frutigerAeroColors.length)];
   }
 
+  /**
+   * Obtiene los datos completos de un evento específico
+   */
+  getEventDetails(eventId: string): Promise<Event | null> {
+    return new Promise((resolve, reject) => {
+      console.log('🔍 Consultando detalles del evento con ID:', eventId);
+      console.log('🌐 Usando endpoint: appointment/getdetailbyid con parámetro:', eventId);
+      console.log('🔗 URL construida será:', `${Environment.url}appointment/getdetailbyid/${eventId}`);
+      
+      // Usar el endpoint específico appointment/getdetailbyid/{id}
+      this.api.getDataById('appointment/getdetailbyid', eventId).subscribe(
+        (resp: any) => {
+          console.log('📋 Respuesta del API appointment/getdetailbyid:', resp);
+          
+          if (resp.status === 'success' && resp.data && resp.data.length > 0) {
+            const eventData = resp.data[0];
+            console.log('📊 Datos detallados del evento:', eventData);
+            
+            // Combinar datos originales con datos detallados
+            const originalEvent = this.selectedEvent;
+            const fullEvent: Event = {
+              // Mantener datos originales básicos
+              id: originalEvent?.id || eventData.appointment_id,
+              id_order: originalEvent?.id_order || '',
+              title: eventData.patient_name || originalEvent?.title || '',
+              start: eventData.appointment_datetime || originalEvent?.start || '',
+              end: originalEvent?.end || '',
+              color: originalEvent?.color || this.generateRandomColor(),
+              personal: eventData.staff_name || originalEvent?.personal || '',
+              id_subsidiary: originalEvent?.id_subsidiary || '',
+              service: originalEvent?.service || '',
+              // Datos detallados del nuevo endpoint
+              service_name: eventData.service_name,
+              subsidiary_name: eventData.subsidiary_name,
+              appointment_id: eventData.appointment_id,
+              patient_name: eventData.patient_name,
+              service_price: eventData.service_price,
+              appointment_datetime: eventData.appointment_datetime,
+              staff_name: eventData.staff_name
+            };
+            console.log('✅ Evento completo con detalles:', fullEvent);
+            resolve(fullEvent);
+          } else {
+            console.warn('⚠️ No se encontraron detalles para el evento ID:', eventId);
+            console.log('🔄 Intentando método alternativo...');
+            this.getEventDetailsAlternative(eventId).then(resolve).catch(reject);
+          }
+        },
+        (error) => {
+          console.error('❌ Error en appointment/getdetailbyid:', error);
+          console.log('🔄 Intentando método alternativo debido al error...');
+          this.getEventDetailsAlternative(eventId).then(resolve).catch(reject);
+        }
+      );
+    });
+  }
+
+  /**
+   * Método alternativo para obtener detalles del evento
+   */
+  private getEventDetailsAlternative(eventId: string): Promise<Event | null> {
+    return new Promise((resolve, reject) => {
+      console.log('🔄 Usando método alternativo para ID:', eventId);
+      
+      const endpoint = this.selectedSubsidiary ? 
+        `appointment/getbysubsidiary` : 
+        'appointment/getall';
+      
+      const apiCall = this.selectedSubsidiary ? 
+        this.api.getDataById(endpoint, this.selectedSubsidiary) : 
+        this.api.getData(endpoint);
+      
+      apiCall.subscribe(
+        (resp: any) => {
+          console.log('📋 Respuesta del método alternativo:', resp);
+          if (resp.data && resp.data.length > 0) {
+            // Buscar el evento específico por ID
+            const eventData = resp.data.find((event: any) => event.id === eventId);
+            console.log('📊 Evento encontrado en método alternativo:', eventData);
+            
+            if (eventData) {
+              const fullEvent: Event = {
+                id: eventData.id,
+                id_order: eventData.id_order || '',
+                title: eventData.client,
+                start: eventData.appointment,
+                end: eventData.end_appointment,
+                color: eventData.color || this.generateRandomColor(),
+                personal: eventData.personal,
+                id_subsidiary: eventData.id_subsidiary,
+                service: eventData.service,
+                service_name: eventData.service_name,
+                subsidiary_name: eventData.subsidiary_name
+              };
+              console.log('✅ Evento completo desde método alternativo:', fullEvent);
+              resolve(fullEvent);
+            } else {
+              console.warn('⚠️ No se encontró el evento con ID en método alternativo:', eventId);
+              resolve(null);
+            }
+          } else {
+            console.warn('⚠️ No se encontraron datos en método alternativo');
+            resolve(null);
+          }
+        },
+        (error) => {
+          console.error('❌ Error en método alternativo:', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
   openEventDetails(event: Event, modal: any) {
-    this.selectedEvent = event; // Guardar el evento seleccionado
-    this.modalService.open(modal, { size: 'lg' }); // Abrir el modal
+    console.log('🎯 Abriendo detalles del evento:', event);
+    
+    // Mostrar loading y abrir modal inmediatamente
+    this.loadingEventDetails = true;
+    this.selectedEvent = event; // Mostrar datos básicos mientras se cargan los completos
+    const modalRef = this.modalService.open(modal, { size: 'lg' });
+    
+    // Hacer una consulta específica para obtener los datos completos del evento
+    this.getEventDetails(event.id).then((fullEvent) => {
+      console.log('📦 Datos completos obtenidos:', fullEvent);
+      this.selectedEvent = fullEvent || event; // Usar datos completos o evento original como fallback
+      this.loadingEventDetails = false;
+      this.cd.detectChanges(); // Forzar actualización de la vista
+    }).catch((error) => {
+      // En caso de error, usar el evento original
+      console.error('💥 Error al cargar detalles completos:', error);
+      this.selectedEvent = event;
+      this.loadingEventDetails = false;
+      this.cd.detectChanges();
+    });
   }
 
 
   getAllAppointments() {
     this.api.getData('appointment/getall').subscribe(
       (resp: any) => {
+        console.log('📋 Respuesta completa de getAllAppointments:', resp);
+        if (resp.data && resp.data.length > 0) {
+          console.log('📊 Primer evento de ejemplo:', resp.data[0]);
+          console.log('🔎 Campos disponibles:', Object.keys(resp.data[0]));
+        }
+        
         this.events = resp.data.map((event: any) => ({
           id: event.id,
+          id_order: event.id_order || '',
           title: event.client,
           start: event.appointment,
           end: event.end_appointment,
@@ -183,6 +329,7 @@ export class AgendaComponent implements OnInit {
           color: event.color || this.generateRandomColor()
         }));
 
+        console.log('✅ Eventos mapeados:', this.events);
       },
       (error) => {
         console.error('Error al cargar eventos:', error);
@@ -414,14 +561,23 @@ export class AgendaComponent implements OnInit {
           title: 'Cita agendada',
           text: resp.msg
         });
-        this.getAllAppointments(); // Recargar
+        
+        // Pequeño delay para asegurar que la BD se actualice antes de recargar
+        setTimeout(() => {
+          if (this.selectedSubsidiary) {
+            this.getAppointmentsBySubsidiary(this.selectedSubsidiary);
+          } else {
+            this.getAllAppointments(); // Recargar con datos completos
+          }
+        }, 300);
+        
         this.modalService.dismissAll();
       },
       (error) => {
         Swal.fire({
           icon: 'error',
           title: 'Error al agendar',
-          text: error.msg
+          text: error.error?.msg || error.msg || 'Error al crear la cita'
         });
         console.error('Error al guardar evento:', error);
       }
@@ -885,8 +1041,15 @@ export class AgendaComponent implements OnInit {
   getAppointmentsBySubsidiary(id: string) {
     this.api.getDataById('appointment/getbysubsidiary', id).subscribe(
       (resp: any) => {
+        console.log('📋 Respuesta de getAppointmentsBySubsidiary:', resp);
+        if (resp.data && resp.data.length > 0) {
+          console.log('📊 Primer evento por sucursal:', resp.data[0]);
+          console.log('🔎 Campos disponibles:', Object.keys(resp.data[0]));
+        }
+        
         this.events = resp.data.map((event: any) => ({
           id: event.id,
+          id_order: event.id_order || '',
           title: event.client,
           start: event.appointment,
           end: event.end_appointment,
@@ -897,6 +1060,8 @@ export class AgendaComponent implements OnInit {
           subsidiary_name: event.subsidiary_name,
           color: event.color || this.generateRandomColor()
         }));
+        
+        console.log('✅ Eventos por sucursal mapeados:', this.events);
       },
       (error) => {
         console.error('Error al cargar citas por sucursal:', error);

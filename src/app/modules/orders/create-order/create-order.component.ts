@@ -85,11 +85,27 @@ export class CreateOrderComponent {
   }
 
   clients: any[] = [];
+  filteredClients: any[] = [];
+  searchTerm: string = '';
+  showCreateForm: boolean = false;
+  directCreate: boolean = false;
+  newPatient = {
+    name: '',
+    lastname: '',
+    email: '',
+    phone: '',
+    birthday: '',
+    address: ''
+  };
   id: string;
+  idUser: string; // ID del usuario actual para parentId
+  user: string = localStorage.getItem('userName') || ''; // Nombre del usuario actual
   instance: any;
   basicEnabled: boolean = false;
   basicDigitalEnabled: boolean = false;
   switch3DEnabled: boolean = false;
+  rols: any[] = []; // Lista de roles disponibles
+  clienteRolId: string | null = null; // ID del rol Cliente
 
   constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private location: Location) { }
 
@@ -97,6 +113,7 @@ export class CreateOrderComponent {
     this.loadId();
     this.getInstance();
     this.getMyClients();
+    this.getRols(); // Obtener roles disponibles
     this.cd.detectChanges();
   }
 
@@ -134,6 +151,7 @@ export class CreateOrderComponent {
     this.permissionsService.getId().subscribe(
       (resp: any) => {
         this.id = resp;
+        this.idUser = resp; // También establecer idUser para la creación de pacientes
       },
       (error) => {
         console.log(error);
@@ -200,7 +218,7 @@ export class CreateOrderComponent {
     this.api.getDataById('user/getmyusers', this.id).subscribe(
       (resp: any) => {
         this.clients = resp.data;
-
+        this.filteredClients = [...this.clients];
       },
       (error) => {
         console.log(error);
@@ -220,5 +238,215 @@ export class CreateOrderComponent {
         console.log(error);
       }
     );
+  }
+
+  /**
+   * Obtiene la lista de roles disponibles y encuentra el ID del rol Cliente
+   */
+  getRols() {
+    this.api.getData('rol/getall').subscribe(
+      (resp: any) => {
+        this.rols = resp.data || [];
+        // Buscar el ID del rol "Cliente"
+        const clienteRole = this.rols.find(rol => rol.name === 'Cliente');
+        if (clienteRole) {
+          this.clienteRolId = clienteRole.id;
+          console.log('🎯 Rol Cliente encontrado con ID:', this.clienteRolId);
+        } else {
+          console.warn('⚠️ No se encontró el rol "Cliente" en la lista de roles');
+          console.log('📋 Roles disponibles:', this.rols.map(r => r.name));
+        }
+      },
+      (error) => {
+        console.error('❌ Error al obtener roles:', error);
+      }
+    );
+  }
+
+  /**
+   * Filtra los clientes basado en el término de búsqueda
+   */
+  filterClients() {
+    if (!this.searchTerm.trim()) {
+      this.filteredClients = [...this.clients];
+      return;
+    }
+
+    const searchLower = this.searchTerm.toLowerCase();
+    this.filteredClients = this.clients.filter(client => 
+      (client.name && client.name.toLowerCase().includes(searchLower)) ||
+      (client.lastname && client.lastname.toLowerCase().includes(searchLower)) ||
+      (client.email && client.email.toLowerCase().includes(searchLower)) ||
+      ((client.name + ' ' + client.lastname).toLowerCase().includes(searchLower))
+    );
+  }
+
+  /**
+   * Selecciona un cliente de la lista filtrada
+   */
+  selectClient(client: any) {
+    this.patient = client;
+    this.order.patient = client.name + " " + client.lastname;
+    this.order.email = client.email;
+    this.order.phone = client.phone;
+    this.order.birthdate = client.birthday;
+    this.searchTerm = client.name + " " + client.lastname;
+    this.filteredClients = [];
+  }
+
+  /**
+   * Muestra el formulario para crear nuevo paciente
+   */
+  showCreatePatientForm() {
+    this.showCreateForm = true;
+    this.newPatient = {
+      name: '',
+      lastname: '',
+      email: '',
+      phone: '',
+      birthday: '',
+      address: ''
+    };
+  }
+
+  /**
+   * Cancela la creación de nuevo paciente
+   */
+  cancelCreatePatient() {
+    this.showCreateForm = false;
+    this.newPatient = {
+      name: '',
+      lastname: '',
+      email: '',
+      phone: '',
+      birthday: '',
+      address: ''
+    };
+  }
+
+  /**
+   * Crea un nuevo paciente usando la misma estructura que en usuarios
+   */
+  createNewPatient() {
+    // Validaciones básicas
+    if (!this.newPatient.name || !this.newPatient.lastname || !this.newPatient.email) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos requeridos',
+        text: 'Por favor complete nombre, apellido y email'
+      });
+      return;
+    }
+
+    // Verificar que se haya obtenido el ID del rol Cliente
+    if (!this.clienteRolId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de configuración',
+        text: 'No se pudo obtener el rol de Cliente. Intente recargar la página.'
+      });
+      return;
+    }
+
+    // Crear el objeto paciente con la misma estructura que en users.component
+    const patientData = {
+      parentId: this.idUser,
+      name: this.newPatient.name,
+      lastname: this.newPatient.lastname,
+      email: this.newPatient.email,
+      password: this.generateTemporaryPassword(), // Generar contraseña temporal
+      birthday: this.newPatient.birthday,
+      phone: this.newPatient.phone,
+      related: this.user,
+      address: this.newPatient.address,
+      id_rol: this.clienteRolId // Usar ID numérico del rol Cliente
+    };
+
+    console.log('📤 Enviando datos del paciente:', patientData);
+
+    // Usar el mismo endpoint que en users.component
+    this.api.createData('user/register', patientData).subscribe(
+      (resp: any) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Paciente creado',
+          text: 'El paciente ha sido registrado exitosamente'
+        });
+
+        // Agregar el nuevo paciente a la lista local
+        const newClient = {
+          id: resp.data?.id || Date.now(), // Usar ID del response o timestamp
+          name: this.newPatient.name,
+          lastname: this.newPatient.lastname,
+          email: this.newPatient.email,
+          phone: this.newPatient.phone,
+          birthday: this.newPatient.birthday,
+          address: this.newPatient.address
+        };
+
+        this.clients.push(newClient);
+        this.selectClient(newClient);
+        this.cancelCreatePatient();
+      },
+      (error) => {
+        console.error('❌ Error al crear paciente:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.error?.msg || error.error?.message || 'Error al crear el paciente'
+        });
+      }
+    );
+  }
+
+  /**
+   * Genera una contraseña temporal para el nuevo paciente
+   */
+  generateTemporaryPassword(): string {
+    // Generar contraseña con las primeras 4 letras del nombre + las primeras 4 del apellido
+    const namePart = this.newPatient.name.replace(/\s+/g, '').substring(0, 4).toLowerCase();
+    const lastnamePart = this.newPatient.lastname.replace(/\s+/g, '').substring(0, 4).toLowerCase();
+    return namePart + lastnamePart + '123';
+  }
+
+  /**
+   * Maneja el cambio del checkbox "Crear directa"
+   */
+  onDirectCreateChange() {
+    if (this.directCreate) {
+      // Limpiar campos cuando se activa modo directo
+      this.searchTerm = '';
+      this.filteredClients = [];
+      this.patient = null;
+      this.order.patient = '';
+      this.order.email = '';
+      this.order.phone = '';
+      this.order.birthdate = '';
+    } else {
+      // Restaurar lista de clientes cuando se desactiva
+      this.filteredClients = [...this.clients];
+    }
+  }
+
+  /**
+   * Maneja el cambio en el campo de texto directo
+   */
+  onDirectPatientChange() {
+    if (this.directCreate) {
+      this.order.patient = this.searchTerm;
+    }
+  }
+
+  /**
+   * Limpia la búsqueda de clientes
+   */
+  clearSearch() {
+    this.searchTerm = '';
+    this.filteredClients = [...this.clients];
+    this.patient = null;
+    this.order.patient = '';
+    this.order.email = '';
+    this.order.phone = '';
+    this.order.birthdate = '';
   }
 }

@@ -69,17 +69,145 @@
         <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
       </div>
       <div class="modal-body" *ngIf="selectedEvent">
-        <p><strong>Título:</strong> {{ selectedEvent.title }}</p>
-        <p><strong>Fecha:</strong> {{ selectedEvent.start | date:'dd/MM/yyyy' }}</p>
-        <p><strong>Hora:</strong> {{ selectedEvent.start | date: 'shortTime' }}</p>
-        <p><strong>Personal:</strong> {{ selectedEvent.personal }}</p>
-        <p><strong>Sucursal:</strong> {{ selectedEvent.subsidiary_name }}</p> <!-- ✅ ya actualizado -->
-        <p><strong>Servicio:</strong> {{ selectedEvent.service_name }}</p> <!-- ✅ ya actualizado -->
-        <p><strong>Color:</strong> <span [style.backgroundColor]="selectedEvent.color" class="color-box"></span></p>
+        <!-- Indicador de carga -->
+        <div *ngIf="loadingEventDetails" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando detalles...</span>
+          </div>
+          <p class="mt-2 text-muted">Cargando información completa del evento...</p>
+        </div>
+        
+        <!-- Contenido del evento -->
+        <div [style.opacity]="loadingEventDetails ? '0.5' : '1'" [style.transition]="'opacity 0.3s ease'">
+          
+          <!-- Información del Paciente -->
+          <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+              <h6 class="mb-0">
+                <i class="bi bi-person-fill me-2"></i>
+                Información del Paciente
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Paciente:</strong> 
+                    <span *ngIf="selectedEvent.patient_name">{{ selectedEvent.patient_name }}</span>
+                    <span *ngIf="!selectedEvent.patient_name && selectedEvent.title">{{ selectedEvent.title }}</span>
+                    <span *ngIf="!selectedEvent.patient_name && !selectedEvent.title" class="text-muted"><em>No disponible</em></span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>ID Cita:</strong> 
+                    <span class="badge bg-info text-white">{{ selectedEvent.appointment_id || selectedEvent.id }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información de la Cita -->
+          <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+              <h6 class="mb-0">
+                <i class="bi bi-calendar-event me-2"></i>
+                Detalles de la Cita
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Fecha y Hora:</strong> 
+                    <span *ngIf="selectedEvent.appointment_datetime">
+                      {{ selectedEvent.appointment_datetime | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    <span *ngIf="!selectedEvent.appointment_datetime && selectedEvent.start">
+                      {{ selectedEvent.start | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                  </p>
+                  <p><strong>Personal:</strong> 
+                    <span *ngIf="selectedEvent.staff_name">{{ selectedEvent.staff_name }}</span>
+                    <span *ngIf="!selectedEvent.staff_name && selectedEvent.personal">{{ selectedEvent.personal }}</span>
+                    <span *ngIf="!selectedEvent.staff_name && !selectedEvent.personal" class="text-muted"><em>No disponible</em></span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Sucursal:</strong> 
+                    <span *ngIf="selectedEvent.subsidiary_name" class="badge bg-secondary">{{ selectedEvent.subsidiary_name }}</span>
+                    <span *ngIf="!selectedEvent.subsidiary_name" class="text-muted"><em>No disponible</em></span>
+                  </p>
+                  <p><strong>Estado:</strong> 
+                    <span class="badge bg-warning text-dark">Agendada</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del Servicio -->
+          <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+              <h6 class="mb-0">
+                <i class="bi bi-gear-fill me-2"></i>
+                Servicio
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <p><strong>Servicio:</strong> 
+                    <span *ngIf="selectedEvent.service_name" class="fw-bold">{{ selectedEvent.service_name }}</span>
+                    <span *ngIf="!selectedEvent.service_name" class="text-muted"><em>No disponible</em></span>
+                  </p>
+                </div>
+                <div class="col-md-4">
+                  <p><strong>Precio:</strong> 
+                    <span *ngIf="selectedEvent.service_price" class="text-success fw-bold">${{ selectedEvent.service_price }}</span>
+                    <span *ngIf="!selectedEvent.service_price" class="text-muted"><em>No disponible</em></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información Visual -->
+          <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+              <h6 class="mb-0">
+                <i class="bi bi-palette-fill me-2"></i>
+                Información Visual
+              </h6>
+            </div>
+            <div class="card-body">
+              <p><strong>Color del Evento:</strong> 
+                <span [style.backgroundColor]="selectedEvent.color" 
+                      class="color-box d-inline-block rounded" 
+                      style="width: 30px; height: 20px; border: 1px solid #ccc;">
+                </span>
+                <span class="ms-2 small text-muted">{{ selectedEvent.color }}</span>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Debug info (temporal) -->
+          <!-- <details class="mt-3">
+            <summary class="text-muted small">
+              <i class="bi bi-bug me-1"></i>
+              Debug Info (temporal)
+            </summary>
+            <div class="small text-muted mt-2">
+              <p><strong>Endpoint usado:</strong> appointment/getdetailbyid/{{ selectedEvent.appointment_id || selectedEvent.id }}</p>
+              <p><strong>Estado de carga:</strong> {{ loadingEventDetails ? 'Cargando...' : 'Completo' }}</p>
+              <div class="bg-light p-2 rounded">
+                <pre class="mb-0">{{ selectedEvent | json }}</pre>
+              </div>
+            </div>
+          </details> -->
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary"
-      (click)="checkAppointment(selectedEvent.id)">Cangear</button>
+      (click)="checkAppointment(selectedEvent.id)">Canjear</button>
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
       </div>
     </div>

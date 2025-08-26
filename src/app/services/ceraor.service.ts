@@ -51,6 +51,11 @@ export class CeraorService {
     return this.http.post(url, data);
   }
 
+  downloadPdfBlob(endpoint: string): Observable<Blob> {
+    const url = `${Environment.url}${endpoint}`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
   patchData(endpoint: string, id: string, body: any){
     const url = Environment.url + `${endpoint}` +"/"+ `${id}`;
     return this.http.patch(url, body);

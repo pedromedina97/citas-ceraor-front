@@ -195,11 +195,13 @@ export class NavComponent implements OnInit {
   getUser() {
     this.api.getDataById('user/getinstance', this.id).subscribe(
       (resp: any) => {
+        console.log(resp);
         this.userEdit.name = resp.data[0].name;
         this.userEdit.lastname = resp.data[0].lastname;
         this.userEdit.email = resp.data[0].email;
         this.userEdit.address = resp.data[0].address;
         this.userEdit.phone = resp.data[0].phone;
+        this.userEdit.professional_id = resp.data[0].professional_id;
         this.userEdit.image = resp.data[0].image;
 
         const imageFromAPI = resp.data[0].image;

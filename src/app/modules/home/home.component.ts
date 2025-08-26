@@ -55,10 +55,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   pieChart!: Chart;
   cashcuts: any;
   data: any;
+  doctorData: any;
   topServices: any[] = [];
   gainsWeek: any;
   rol: String;
-
+  permissions: any;
+  idUser: string = '';
+  userName: string = '';
+  userLastname: string = '';
 
   months: { value: string; label: string }[] = [];
   selectedMonth = new Date().toISOString().slice(0, 7);
@@ -73,16 +77,32 @@ export class HomeComponent implements OnInit, OnDestroy {
         delay: 16,      // delay entre números
       });
     });
-    this.getTopServices();
-    this.getGainsWeek();
+    // Asegurar que los permisos estén cargados antes de inicializar gráficas
+    this.permission.getPermissions().subscribe(
+      permissions => {
+        this.permissions = permissions;
+        if (this.hasPermissions('see_admingraphic')) {
+          this.getTopServices();
+          this.getGainsWeek();
+        }
+      }
+    );
   }
 
   ngOnInit(): void {
-    
     this.months = this.generateMonths(1); // Por ejemplo, últimos 12–18 meses
-    this.getData();
-    this.getGainsByMonth(this.selectedMonth);
-    this.getPercent();
+    this.loadUserInfo();
+    
+    // Cargar permisos y luego inicializar gráficas si se tienen permisos
+    this.permission.getPermissions().subscribe(
+      permissions => {
+        this.permissions = permissions;
+        if (this.hasPermissions('see_admingraphic')) {
+          this.getGainsByMonth(this.selectedMonth);
+          this.getPercent();
+        }
+      }
+    );
   }
 
   constructor(private api: CeraorService, private permission: PermissionsService) { }
@@ -275,30 +295,36 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onMonthChange(event: any) {
     this.selectedMonth = event.target.value;
-    this.getGainsByMonth(this.selectedMonth);
+    if (this.hasPermissions('see_admingraphic')) {
+      this.getGainsByMonth(this.selectedMonth);
+    }
   }
 
 
 
   getData() {
-    this.api.getData('cashcut/data-home').subscribe(
-      (resp: any) => {
-        this.data = resp.data[0];
-  // Ejecutar CounterUp después de que los datos se hayan renderizado
-        setTimeout(() => {
-          const elements = document.querySelectorAll('.counter');
-          elements.forEach(el => {
-            CounterUp(el, {
-              duration: 1000,
-              delay: 16,
+    if (this.rol === 'Doctor') {
+      this.getDoctorData();
+    } else {
+      this.api.getData('cashcut/data-home').subscribe(
+        (resp: any) => {
+          this.data = resp.data[0];
+    // Ejecutar CounterUp después de que los datos se hayan renderizado
+          setTimeout(() => {
+            const elements = document.querySelectorAll('.counter');
+            elements.forEach(el => {
+              CounterUp(el, {
+                duration: 1000,
+                delay: 16,
+              });
             });
-          });
-        }, 100); // pequeño delay para asegurar que el DOM ya tiene el valor interpolado
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+          }, 100); // pequeño delay para asegurar que el DOM ya tiene el valor interpolado
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
   }
 
 
@@ -349,6 +375,124 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
+  hasPermissions(permission: string): boolean {
+    return this.permissions && this.permissions.includes(permission);
+  }
+
+  canShow(option: string): boolean {
+    return this.hasPermissions(option);
+  }
+
+  loadUserInfo() {
+    this.permission.getId().subscribe(
+      (id) => {
+        this.idUser = id;
+        this.checkAndLoadData();
+      }
+    );
+    this.permission.getRol().subscribe(
+      (rol) => {
+        this.rol = rol;
+        this.checkAndLoadData();
+      }
+    );
+    this.permission.getName().subscribe(
+      (name) => {
+        this.userName = name;
+        this.checkAndLoadData();
+      }
+    );
+    this.permission.getLastname().subscribe(
+      (lastname) => {
+        this.userLastname = lastname;
+        this.checkAndLoadData();
+      }
+    );
+  }
+
+  private dataLoaded = false;
+
+  private checkAndLoadData() {
+    // Solo cargar datos cuando tengamos toda la información necesaria y no se hayan cargado antes
+    if (this.idUser && this.rol && this.userName && this.userLastname && !this.dataLoaded) {
+      this.dataLoaded = true;
+      this.getData();
+    }
+  }
+
+  isDoctorRole(): boolean {
+    return this.rol === 'Doctor';
+  }
+
+  getDoctorData() {
+    // Obtener pacientes del doctor
+    this.api.getDataById('user/getmyusers', this.idUser).subscribe(
+      (resp: any) => {
+        const totalPatients = resp.data ? resp.data.length : 0;
+        
+        // Obtener órdenes del doctor
+        const doctorFullName = this.userName + ' ' + this.userLastname;
+        this.api.getDataById('order/getbydoctor', doctorFullName).subscribe(
+          (ordersResp: any) => {
+            const totalOrders = ordersResp.data ? ordersResp.data.length : 0;
+            
+            // Obtener citas del doctor (asumiendo que existe un endpoint similar)
+            this.getDoctorAppointments(doctorFullName, totalPatients, totalOrders);
+          },
+          (error) => {
+            console.log('Error obteniendo órdenes del doctor:', error);
+            // Si falla, al menos mostrar pacientes y órdenes como 0
+            this.setDoctorData(totalPatients, 0, 0);
+          }
+        );
+      },
+      (error) => {
+        console.log('Error obteniendo pacientes del doctor:', error);
+        this.setDoctorData(0, 0, 0);
+      }
+    );
+  }
+
+  getDoctorAppointments(doctorFullName: string, totalPatients: number, totalOrders: number) {
+    // Por ahora, vamos a simular el número de citas o usar un endpoint si existe
+    // En una implementación real, necesitarías un endpoint específico para citas del doctor
+    this.api.getData('appointment/getall').subscribe(
+      (resp: any) => {
+        let totalAppointments = 0;
+        if (resp.data) {
+          // Filtrar citas por doctor
+          totalAppointments = resp.data.filter((appointment: any) => 
+            appointment.doctor === doctorFullName
+          ).length;
+        }
+        this.setDoctorData(totalPatients, totalAppointments, totalOrders);
+      },
+      (error) => {
+        console.log('Error obteniendo citas del doctor:', error);
+        // Si no hay endpoint de citas, usar 0
+        this.setDoctorData(totalPatients, 0, totalOrders);
+      }
+    );
+  }
+
+  setDoctorData(totalPatients: number, totalAppointments: number, totalOrders: number) {
+    this.doctorData = {
+      total_pacientes: totalPatients,
+      total_citas: totalAppointments,
+      total_ordenes: totalOrders
+    };
+
+    // Ejecutar CounterUp después de que los datos se hayan renderizado
+    setTimeout(() => {
+      const elements = document.querySelectorAll('.counter');
+      elements.forEach(el => {
+        CounterUp(el, {
+          duration: 1000,
+          delay: 16,
+        });
+      });
+    }, 100);
+  }
 
 }
 
