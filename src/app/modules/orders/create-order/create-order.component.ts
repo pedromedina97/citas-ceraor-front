@@ -248,12 +248,12 @@ export class CreateOrderComponent {
       (resp: any) => {
         this.rols = resp.data || [];
         // Buscar el ID del rol "Cliente"
-        const clienteRole = this.rols.find(rol => rol.name === 'Cliente');
+        const clienteRole = this.rols.find(rol => rol.name === 'Paciente');
         if (clienteRole) {
           this.clienteRolId = clienteRole.id;
           console.log('🎯 Rol Cliente encontrado con ID:', this.clienteRolId);
         } else {
-          console.warn('⚠️ No se encontró el rol "Cliente" en la lista de roles');
+          console.warn('⚠️ No se encontró el rol "Paciente" en la lista de roles');
           console.log('📋 Roles disponibles:', this.rols.map(r => r.name));
         }
       },
