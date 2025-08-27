@@ -833,10 +833,12 @@ export class OrdersComponent implements OnInit {
    * Obtiene la URL del PDF según el tipo de orden
    */
   private getPdfUrl(order: any): string {
-    if (order.appointment_code !== null) {
-      return `${this.env.url}file/getfile/download/${order.appointment_code}.pdf`;
+    if (order.appointment_code !== null && order.appointment_code !== '') {
+      // Usar el nuevo endpoint para órdenes con código
+      return `${this.env.url}order/generatedocumentbycode/${order.appointment_code}`;
     } else {
-      return `${this.env.url}file/getfile/downloadbyid/${order.id}.pdf`;
+      // Mantener el endpoint anterior para órdenes sin código
+      return `${this.env.url}order/generatedocumentbyorderid/${order.id}`;
     }
   }
 
