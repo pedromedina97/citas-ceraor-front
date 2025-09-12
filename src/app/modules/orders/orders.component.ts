@@ -62,7 +62,7 @@ export class OrdersComponent implements OnInit {
   }
 
   setPetitions() {
-    if (this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol == 'Admin' || this.rol == 'Operativo') {
+    if (this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol == 'Admin' || this.rol == 'Operativo' || this.rol == 'Recepcionista') {
       this.getData();
     } else if (this.rol == 'Doctor') {
       let complete = this.name + " " + this.lastname;

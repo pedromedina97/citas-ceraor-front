@@ -25,6 +25,7 @@ export class CreateOrderComponent {
     acetate_print: 0,
     paper_print: 0,
     send_email: 0,
+    packet: 0,
     rx_panoramic: 0,
     rx_arc_panoramic: 0,
     rx_lateral_skull: 0,
@@ -107,6 +108,136 @@ export class CreateOrderComponent {
   rols: any[] = []; // Lista de roles disponibles
   clienteRolId: string | null = null; // ID del rol Cliente
 
+  private readonly CHECKBOX_KEYS = [
+    // Entrega
+    'acetate_print','paper_print','send_email',
+    // Radiografías
+    'rx_panoramic','rx_arc_panoramic','rx_lateral_skull','ap_skull','pa_skull','paranasal_sinuses',
+    'atm_open_close','profilogram','watters_skull','palmar_digit',
+    // Intraorales
+    'occlusal_xray','superior','inferior','complete_periapical','individual_periapical','conductometry',
+    // Fotografía/Clínica
+    'clinical_photography','dental_interpretation',
+    // Cefalométricos
+    'rickets','mcnamara','downs','jaraback','steiner','analysis_bolton','analysis_moyers',
+    // Modelos de estudio
+    'risina','dentalprint','risina_3d','surgical_guide',
+    // Tomografías 3D
+    'complete_tomography','two_jaws_tomography','maxilar_tomography','jaw_tomography','snp_tomography',
+    'ear_tomography','atm_tomography_open_close','lateral_left_tomography_open_close',
+    'lateral_right_tomography_open_close','stl','obj','ply','invisaligh','dicom',
+    // Estereolitografía
+    'maxilar_superior','maxilar_inferior','maxilar_both'
+  ];
+
+  /** Qué casillas marca cada paquete automáticamente */
+  private readonly CEPHALO_KEYS = [
+    'rickets','mcnamara','downs','jaraback','steiner'
+  ] as const;
+
+  private readonly PACKET_INCLUDED = {
+    1: [ // Básico
+      'rx_panoramic','rx_lateral_skull','risina','clinical_photography','dentalprint'
+    ],
+    2: [ // Básico Digital
+      'clinical_photography','rx_panoramic','rx_lateral_skull'
+    ],
+    3: [ // 3D (Con Tomografía)
+      'rx_arc_panoramic','rx_lateral_skull','clinical_photography','risina','complete_tomography','stl'
+    ]
+  };
+
+  /** Limpia todos los checkboxes de estudios */
+  private resetStudyCheckboxes(): void {
+    this.CHECKBOX_KEYS.forEach(k => (this.order[k] = 0 as number));
+  }
+
+  onCephChange(changedKey: string): void {
+    const current = this.order.packet;
+    // Solo restringir si es Básico Digital (2) o 3D (3)
+    if ((current === 2 || current === 3) && this.order[changedKey]) {
+      // Dejar solo el recién marcado y desmarcar los demás
+      this.CEPHALO_KEYS
+        .filter(k => k !== changedKey)
+        .forEach(k => (this.order[k] = 0 as number));
+    }
+    // Luego valida extras como siempre
+    this.onAnyOptionChange();
+  }
+
+  /** Marca las casillas incluidas por el paquete seleccionado */
+  private applyPacketIncluded(packet: number): void {
+    const included = this.PACKET_INCLUDED[packet] || [];
+    included.forEach(k => (this.order[k] = 1 as number));
+  }
+
+  /**
+   * Se llama en cada cambio de un checkbox de estudios.
+   * Si hay algo seleccionado fuera de lo que incluye el paquete actual, pasa packet a 0.
+   */
+  onAnyOptionChange(): void {
+  const current = this.order.packet;
+  if (![1, 2, 3].includes(current)) return;
+
+  const included = new Set(this.PACKET_INCLUDED[current] || []);
+
+  // ✅ Permitir 1 cefalométrico cuando packet es 2 o 3
+  if (current === 2 || current === 3) {
+    const cephSelected = this.CEPHALO_KEYS.filter(k => !!this.order[k]);
+    if (cephSelected.length > 1) {
+      // Resguardo (debería manejarse en onCephChange, pero por si acaso):
+      cephSelected.slice(1).forEach(k => (this.order[k] = 0 as number));
+    }
+    // Si hay 1 seleccionado, considéralo permitido (no “rompe” el paquete)
+    cephSelected.forEach(k => included.add(k));
+  }
+
+  const selected = this.CHECKBOX_KEYS.filter(k => !!this.order[k]);
+  const extras = selected.filter(k => !included.has(k));
+
+  if (extras.length > 0) {
+    this.order.packet = 0; // personalizado
+  }
+}
+
+  // === Actualiza tus toggles para limpiar + aplicar correctamente ===
+  toggleBasic() {
+    if (this.basicEnabled) {
+      this.basicDigitalEnabled = false;
+      this.switch3DEnabled = false;
+    }
+    // Primero limpiar todo:
+    this.resetStudyCheckboxes();
+
+    // Fijar packet y marcar incluidas
+    this.order.packet = this.basicEnabled ? 1 : 0;
+    if (this.basicEnabled) this.applyPacketIncluded(1);
+  }
+
+  toggleBasicDigital() {
+    if (this.basicDigitalEnabled) {
+      this.basicEnabled = false;
+      this.switch3DEnabled = false;
+      this.defaultNavActiveId = 5;
+    }
+    this.resetStudyCheckboxes();
+
+    this.order.packet = this.basicDigitalEnabled ? 2 : 0;
+    if (this.basicDigitalEnabled) this.applyPacketIncluded(2);
+  }
+
+  toggle3D() {
+    if (this.switch3DEnabled) {
+      this.basicEnabled = false;
+      this.basicDigitalEnabled = false;
+      this.defaultNavActiveId = 5;
+    }
+    this.resetStudyCheckboxes();
+
+    this.order.packet = this.switch3DEnabled ? 3 : 0;
+    if (this.switch3DEnabled) this.applyPacketIncluded(3);
+  }
+
   constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private location: Location) { }
 
   ngOnInit(): void {
@@ -157,52 +288,6 @@ export class CreateOrderComponent {
         console.log(error);
       }
     );
-  }
-
-  toggleBasic() {
-    const value = this.basicEnabled ? 1 : 0;
-    this.order.rx_panoramic = value;
-    this.order.rx_lateral_skull = value;
-    this.order.risina = value;
-    this.order.clinical_photography = value;
-    this.order.dentalprint = value;
-  }
-
-  toggleBasicDigital() {
-    if (this.basicDigitalEnabled) {
-      this.defaultNavActiveId = 5; // Cambia 5 por el ID real del tab "Análisis Cefalométricos"
-    }
-    const value = this.basicDigitalEnabled ? 1 : 0;
-
-    this.order.clinical_photography = value;
-    this.order.rx_panoramic = value;
-    this.order.rx_lateral_skull = value;
-
-    // Activar análisis cefalométricos
-    /* this.order.rickets = value;
-    this.order.mcnamara = value;
-    this.order.downs = value;
-    this.order.jaraback = value;
-    this.order.steiner = value; */
-  }
-
-  toggle3D() {
-    if (this.switch3DEnabled) {
-      this.defaultNavActiveId = 5; // Cambia 5 por el ID real del tab "Análisis Cefalométricos"
-    }
-    const value = this.switch3DEnabled ? 1 : 0;
-
-    this.order.rx_arc_panoramic = value;
-    this.order.rx_lateral_skull = value;
-    this.order.clinical_photography = value;
-    /* this.order.rickets = value;
-    this.order.mcnamara = value;
-    this.order.downs = value;
-    this.order.jaraback = value;
-    this.order.steiner = value; */
-    this.order.risina = value;
-    this.order.complete_tomography = value;
-    this.order.stl = value;
   }
 
   onSelectChange(event: Event) {

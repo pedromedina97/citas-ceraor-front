@@ -24,6 +24,7 @@
               </h4>
             </div>
             <div class="card-body">
+             <!--  {{order | json}} -->
               <div class="row g-3">
                 <div class="col-md-4">
                   <div class="form-check form-check-custom">
@@ -235,21 +236,21 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="acetate_print" id="acetate_print"
-                            [(ngModel)]="order.acetate_print">
+                            [(ngModel)]="order.acetate_print" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="acetate_print">Acetato</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="paper_print" id="paper_print"
-                            [(ngModel)]="order.paper_print">
+                            [(ngModel)]="order.paper_print" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="paper_print">Papel</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="send_email" id="send_email"
-                            [(ngModel)]="order.send_email">
+                            [(ngModel)]="order.send_email" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="send_email">Email</label>
                         </div>
                       </div>
@@ -266,70 +267,70 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="rx_panoramic" id="rx_panoramic"
-                            [(ngModel)]="order.rx_panoramic">
+                            [(ngModel)]="order.rx_panoramic" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="rx_panoramic">Rx Panorámica</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="rx_arc_panoramic" id="rx_arc_panoramic"
-                            [(ngModel)]="order.rx_arc_panoramic">
+                            [(ngModel)]="order.rx_arc_panoramic" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="rx_arc_panoramic">Rx Arco Panorámico</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="rx_lateral_skull" id="rx_lateral_skull"
-                            [(ngModel)]="order.rx_lateral_skull">
+                            [(ngModel)]="order.rx_lateral_skull" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="rx_lateral_skull">Rx Lateral Cráneo</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="ap_skull" id="ap_skull"
-                            [(ngModel)]="order.ap_skull">
+                            [(ngModel)]="order.ap_skull" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="ap_skull">AP Cráneo</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="pa_skull" id="pa_skull"
-                            [(ngModel)]="order.pa_skull">
+                            [(ngModel)]="order.pa_skull" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="pa_skull">PA Cráneo</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="paranasal_sinuses"
-                            id="paranasal_sinuses" [(ngModel)]="order.paranasal_sinuses">
+                            id="paranasal_sinuses" [(ngModel)]="order.paranasal_sinuses" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="paranasal_sinuses">Senos Paranasales</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="atm_open_close" id="atm_open_close"
-                            [(ngModel)]="order.atm_open_close">
+                            [(ngModel)]="order.atm_open_close" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="atm_open_close">ATM Abre/Cierra</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="profilogram" id="profilogram"
-                            [(ngModel)]="order.profilogram">
+                            [(ngModel)]="order.profilogram" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="profilogram">Profilograma</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="watters_skull" id="watters_skull"
-                            [(ngModel)]="order.watters_skull">
+                            [(ngModel)]="order.watters_skull" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="watters_skull">Watters</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="palmar_digit" id="palmar_digit"
-                            [(ngModel)]="order.palmar_digit">
+                            [(ngModel)]="order.palmar_digit" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="palmar_digit">Dígito Palmar</label>
                         </div>
                       </div>
@@ -357,35 +358,35 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="complete_periapical"
-                            id="complete_periapical" [(ngModel)]="order.complete_periapical">
+                            id="complete_periapical" [(ngModel)]="order.complete_periapical" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="complete_periapical">Serie Periapical Completa</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="individual_periapical"
-                            id="individual_periapical" [(ngModel)]="order.individual_periapical">
+                            id="individual_periapical" [(ngModel)]="order.individual_periapical" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="individual_periapical">Periapical Individual</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="superior" id="superior"
-                            [(ngModel)]="order.superior">
+                            [(ngModel)]="order.superior" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="superior">Oclusal Superior</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="inferior" id="inferior"
-                            [(ngModel)]="order.inferior">
+                            [(ngModel)]="order.inferior" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="inferior">Oclusal Inferior</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="occlusal_xray" id="occlusal_xray"
-                            [(ngModel)]="order.occlusal_xray">
+                            [(ngModel)]="order.occlusal_xray" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="occlusal_xray">Oclusal Completa</label>
                         </div>
                       </div>
@@ -408,35 +409,35 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="rickets" id="rickets"
-                            [(ngModel)]="order.rickets">
+                            [(ngModel)]="order.rickets" (ngModelChange)="onCephChange('rickets')">
                           <label class="form-check-label" for="rickets">Rickets</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="mcnamara" id="mcnamara"
-                            [(ngModel)]="order.mcnamara">
+                            [(ngModel)]="order.mcnamara" (ngModelChange)="onCephChange('mcnamara')">
                           <label class="form-check-label" for="mcnamara">McNamara</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="downs" id="downs"
-                            [(ngModel)]="order.downs">
+                            [(ngModel)]="order.downs" (ngModelChange)="onCephChange('downs')">
                           <label class="form-check-label" for="downs">Downs</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="jaraback" id="jaraback"
-                            [(ngModel)]="order.jaraback">
+                            [(ngModel)]="order.jaraback" (ngModelChange)="onCephChange('jaraback')">
                           <label class="form-check-label" for="jaraback">Jaraback</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="steiner" id="steiner"
-                            [(ngModel)]="order.steiner">
+                            [(ngModel)]="order.steiner" (ngModelChange)="onCephChange('steiner')">
                           <label class="form-check-label" for="steiner">Steiner</label>
                         </div>
                       </div>
@@ -464,28 +465,28 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="risina" id="risina"
-                            [(ngModel)]="order.risina">
+                            [(ngModel)]="order.risina" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="risina">Resina</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="dentalprint" id="dentalprint"
-                            [(ngModel)]="order.dentalprint">
+                            [(ngModel)]="order.dentalprint" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="dentalprint">Impresión Dental</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="3d_risina" id="3d_risina"
-                            [(ngModel)]="order.risina_3d">
+                            [(ngModel)]="order.risina_3d" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="3d_risina">Resina 3D</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="surgical_guide" id="surgical_guide"
-                            [(ngModel)]="order.surgical_guide">
+                            [(ngModel)]="order.surgical_guide" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="surgical_guide">Guía Quirúrgica</label>
                         </div>
                       </div>
@@ -513,49 +514,49 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="complete_tomography"
-                            id="complete_tomography" [(ngModel)]="order.complete_tomography">
+                            id="complete_tomography" [(ngModel)]="order.complete_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="complete_tomography">Tomografía Completa</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="two_jaws_tomography"
-                            id="two_jaws_tomography" [(ngModel)]="order.two_jaws_tomography">
+                            id="two_jaws_tomography" [(ngModel)]="order.two_jaws_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="two_jaws_tomography">Tomografía Ambos Maxilares</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="maxilar_tomography"
-                            id="maxilar_tomography" [(ngModel)]="order.maxilar_tomography">
+                            id="maxilar_tomography" [(ngModel)]="order.maxilar_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="maxilar_tomography">Tomografía Maxilar</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="jaw_tomography" id="jaw_tomography"
-                            [(ngModel)]="order.jaw_tomography">
+                            [(ngModel)]="order.jaw_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="jaw_tomography">Tomografía Mandíbula</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="snp_tomography" id="snp_tomography"
-                            [(ngModel)]="order.snp_tomography">
+                            [(ngModel)]="order.snp_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="snp_tomography">Tomografía SNP</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="ear_tomography" id="ear_tomography"
-                            [(ngModel)]="order.ear_tomography">
+                            [(ngModel)]="order.ear_tomography" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="ear_tomography">Tomografía Oído</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="atm_tomography_open_close"
-                            id="atm_tomography_open_close" [(ngModel)]="order.atm_tomography_open_close">
+                            id="atm_tomography_open_close" [(ngModel)]="order.atm_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="atm_tomography_open_close">ATM Abierta/Cerrada</label>
                         </div>
                       </div>
@@ -563,7 +564,7 @@
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="lateral_left_tomography_open_close"
                             id="lateral_left_tomography_open_close"
-                            [(ngModel)]="order.lateral_left_tomography_open_close">
+                            [(ngModel)]="order.lateral_left_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="lateral_left_tomography_open_close">ATM Abierta</label>
                         </div>
                       </div>
@@ -571,21 +572,21 @@
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="lateral_right_tomography_open_close"
                             id="lateral_right_tomography_open_close"
-                            [(ngModel)]="order.lateral_right_tomography_open_close">
+                            [(ngModel)]="order.lateral_right_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="lateral_right_tomography_open_close">ATM Cerrada</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="ondemand" id="ondemand"
-                            [(ngModel)]="order.ondemand">
+                            [(ngModel)]="order.ondemand" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="ondemand">Ondemand</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="dicom" id="dicom"
-                            [(ngModel)]="order.dicom">
+                            [(ngModel)]="order.dicom" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="dicom">DICOM</label>
                         </div>
                       </div>
@@ -627,26 +628,26 @@
                     <div class="row g-1">
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="stl" id="stl" [(ngModel)]="order.stl">
+                          <input class="form-check-input" type="checkbox" name="stl" id="stl" [(ngModel)]="order.stl" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="stl">STL</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="obj" id="obj" [(ngModel)]="order.obj">
+                          <input class="form-check-input" type="checkbox" name="obj" id="obj" [(ngModel)]="order.obj" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="obj">OBJ</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="ply" id="ply" [(ngModel)]="order.ply">
+                          <input class="form-check-input" type="checkbox" name="ply" id="ply" [(ngModel)]="order.ply" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="ply">PLY</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="invisaligh" id="invisaligh"
-                            [(ngModel)]="order.invisaligh">
+                            [(ngModel)]="order.invisaligh" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="invisaligh">INVISALIGH</label>
                         </div>
                       </div>
@@ -674,21 +675,21 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="maxilar_superior" id="maxilar_superior"
-                            [(ngModel)]="order.maxilar_superior">
+                            [(ngModel)]="order.maxilar_superior" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="maxilar_superior">Maxilar Superior</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="maxilar_inferior" id="maxilar_inferior"
-                            [(ngModel)]="order.maxilar_inferior">
+                            [(ngModel)]="order.maxilar_inferior" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="maxilar_inferior">Maxilar Inferior</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="maxilar_both" id="maxilar_both"
-                            [(ngModel)]="order.maxilar_both">
+                            [(ngModel)]="order.maxilar_both" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="maxilar_both">Maxilar Ambos</label>
                         </div>
                       </div>
@@ -718,14 +719,14 @@
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input type="checkbox" name="clinical_photography" id="clinical_photography"
-                            [(ngModel)]="order.clinical_photography" class="form-check-input">
+                            [(ngModel)]="order.clinical_photography" class="form-check-input" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="clinical_photography">Fotografía Clínica</label>
                         </div>
                       </div>
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
                           <input type="checkbox" name="dental_interpretation" id="dental_interpretation"
-                            [(ngModel)]="order.dental_interpretation" class="form-check-input">
+                            [(ngModel)]="order.dental_interpretation" class="form-check-input" (ngModelChange)="onAnyOptionChange()">
                           <label class="form-check-label" for="dental_interpretation">Interpretación
                             Odontológica</label>
                         </div>
