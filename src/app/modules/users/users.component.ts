@@ -298,6 +298,19 @@ export class UsersComponent implements OnInit{
     );
   }
 
+  capitalizeFirstLetter(field: 'name' | 'lastname'): void {
+    if (this.dataInstance[field]) {
+      // Dividir el texto en palabras
+      const words = this.dataInstance[field].toLowerCase().split(' ');
+      // Capitalizar la primera letra de cada palabra
+      const capitalizedWords = words.map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      );
+      // Unir las palabras y asignar de vuelta
+      this.dataInstance[field] = capitalizedWords.join(' ');
+    }
+  }
+
   getClients(){
     this.api.getDataById('user/getmyusers', this.idUser).subscribe(
       (resp: any) =>{

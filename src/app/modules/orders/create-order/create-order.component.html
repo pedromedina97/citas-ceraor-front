@@ -97,6 +97,7 @@
                                  class="form-control form-control-sm" 
                                  [(ngModel)]="searchTerm"
                                  (input)="directCreate ? onDirectPatientChange() : filterClients()"
+                                 (blur)="directCreate ? capitalizeDirectInput() : null"
                                  [placeholder]="directCreate ? 'Escriba el nombre completo del paciente...' : 'Buscar paciente por nombre, apellido o email...'"
                                  name="patientSearch"
                                  autocomplete="off">
@@ -844,14 +845,14 @@
                 <i class="bi bi-person me-1"></i>
                 Nombre <span class="text-danger">*</span>
               </label>
-              <input type="text" class="form-control" [(ngModel)]="newPatient.name" name="newPatientName" required>
+                <input type="text" class="form-control" [(ngModel)]="newPatient.name" (blur)="capitalizeFirstLetter('name')" name="newPatientName" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-person me-1"></i>
                 Apellido <span class="text-danger">*</span>
               </label>
-              <input type="text" class="form-control" [(ngModel)]="newPatient.lastname" name="newPatientLastname" required>
+                <input type="text" class="form-control" [(ngModel)]="newPatient.lastname" (blur)="capitalizeFirstLetter('lastname')" name="newPatientLastname" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">

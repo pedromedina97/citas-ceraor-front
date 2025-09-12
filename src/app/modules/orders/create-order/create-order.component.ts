@@ -525,6 +525,34 @@ export class CreateOrderComponent {
   /**
    * Limpia la búsqueda de clientes
    */
+  capitalizeFirstLetter(field: 'name' | 'lastname'): void {
+    if (this.newPatient[field]) {
+      // Dividir el texto en palabras
+      const words = this.newPatient[field].toLowerCase().split(' ');
+      // Capitalizar la primera letra de cada palabra
+      const capitalizedWords = words.map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      );
+      // Unir las palabras y asignar de vuelta
+      this.newPatient[field] = capitalizedWords.join(' ');
+    }
+  }
+
+  capitalizeDirectInput(): void {
+    if (this.searchTerm && this.directCreate) {
+      // Dividir el texto en palabras
+      const words = this.searchTerm.toLowerCase().split(' ');
+      // Capitalizar la primera letra de cada palabra
+      const capitalizedWords = words.map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      );
+      // Unir las palabras y asignar de vuelta
+      this.searchTerm = capitalizedWords.join(' ');
+      // Actualizar también order.patient
+      this.order.patient = this.searchTerm;
+    }
+  }
+
   clearSearch() {
     this.searchTerm = '';
     this.filteredClients = [...this.clients];

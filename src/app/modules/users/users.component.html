@@ -117,12 +117,12 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
+                  [(ngModel)]="dataInstance.name" (blur)="capitalizeFirstLetter('name')" required minlength="3" #name="ngModel">
                 <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3
                   caracteres.</div>
 
                 <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
+                  [(ngModel)]="dataInstance.lastname" (blur)="capitalizeFirstLetter('lastname')" required minlength="3" #lastname="ngModel">
                 <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos
                   3 caracteres.</div>
 
@@ -184,12 +184,12 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input type="text" placeholder="Nombre" name="name" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.name" required minlength="3" #name="ngModel">
+                  [(ngModel)]="dataInstance.name" (blur)="capitalizeFirstLetter('name')" required minlength="3" #name="ngModel">
                 <div *ngIf="name.invalid && name.touched" class="text-danger">El nombre debe tener al menos 3
                   caracteres.</div>
 
                 <input type="text" placeholder="Apellidos" name="lastname" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.lastname" required minlength="3" #lastname="ngModel">
+                  [(ngModel)]="dataInstance.lastname" (blur)="capitalizeFirstLetter('lastname')" required minlength="3" #lastname="ngModel">
                 <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">Los apellidos deben tener al menos
                   3 caracteres.</div>
 
