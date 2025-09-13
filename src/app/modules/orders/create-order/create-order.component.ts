@@ -137,13 +137,13 @@ export class CreateOrderComponent {
 
   private readonly PACKET_INCLUDED = {
     1: [ // Básico
-      'rx_panoramic','rx_lateral_skull','risina','clinical_photography','dentalprint'
+      'rx_panoramic','rx_lateral_skull','risina','clinical_photography','dentalprint', 'acetate_print','paper_print','send_email'
     ],
     2: [ // Básico Digital
-      'clinical_photography','rx_panoramic','rx_lateral_skull'
+      'clinical_photography','rx_panoramic','rx_lateral_skull', 'send_email'
     ],
     3: [ // 3D (Con Tomografía)
-      'rx_arc_panoramic','rx_lateral_skull','clinical_photography','risina','complete_tomography','stl'
+      'rx_arc_panoramic','rx_lateral_skull','clinical_photography','risina','complete_tomography','stl', 'acetate_print','paper_print','send_email'
     ]
   };
 
