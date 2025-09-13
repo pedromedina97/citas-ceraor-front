@@ -16,6 +16,7 @@ import { UnauthorizedAccessComponent } from "./modules/unauthorized-access/unaut
 import { noAuthGuard } from "./guards/no-auth.guard";
 import { CreateOrderComponent } from "./modules/orders/create-order/create-order.component";
 import { CashcutsComponent } from "./modules/cashcuts/cashcuts.component";
+import { PaymentsComponent } from "./modules/payments/payments.component";
 
 export const ROUTES: Routes = [
   { 
@@ -77,6 +78,12 @@ export const ROUTES: Routes = [
     component: OrdersComponent, 
     canActivate: [authGuard], 
     data: { permissions: 'see_order', breadcrumb: 'Órdenes' } 
+  },
+  { 
+    path: 'payments', 
+    component: PaymentsComponent, 
+    canActivate: [authGuard], 
+    data: { permissions: 'see_payment', breadcrumb: 'Pagos' } 
   },
   { 
     path: 'cashcuts', 

@@ -30,6 +30,7 @@ import { BreadcrumbComponent } from './components/shared/breadcrumb/breadcrumb.c
 import { CashcutsComponent } from './modules/cashcuts/cashcuts.component';
 import { CustomPaginationComponent } from './components/custom-pagination/custom-pagination.component';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { PaymentsComponent } from './modules/payments/payments.component';
 
 
 registerLocaleData(localeEs, 'es');
@@ -56,6 +57,7 @@ registerLocaleData(localeEs, 'es');
     BreadcrumbComponent,
     CashcutsComponent,
     CustomPaginationComponent,
+    PaymentsComponent,
 
   ],
   imports: [

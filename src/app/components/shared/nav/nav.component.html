@@ -56,6 +56,10 @@
       <i class="bi bi-wallet-fill"></i>
       <p>Corte de Caja</p>
     </a>
+    <a *ngIf="canShow('see_payment')" [routerLink]="['/payments']">
+      <i class="bi bi-credit-card-fill"></i>
+      <p>Pagos</p>
+    </a>
     <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']">
       <i class="bi bi-ui-radios"></i>
       <p>Roles/Permisos</p>
