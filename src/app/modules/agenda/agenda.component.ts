@@ -93,7 +93,7 @@ export class AgendaComponent implements OnInit {
 
   loadData() {
 
-    if (this.rol == 'Owner' || this.rol == 'SuperAdmin' || this.rol === 'Admin' || this.rol === 'Recepcionista' || this.rol === 'Operativo') {
+    if (this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol === 'Admin' || this.rol === 'Recepcionista' || this.rol === 'Operativo') {
       this.getClients();
       this.getDoctors();
     }
@@ -934,9 +934,9 @@ export class AgendaComponent implements OnInit {
 
   checkAppointment(id: string) {
     Swal.fire({
-      title: "Cangear servicio",
+      title: "Cobrar servicio",
       icon: 'info',
-      html: `¿Desea cangear el servicio?`,
+      html: `¿Desea cobrar el servicio?`,
       confirmButtonColor: '#198754',
       cancelButtonColor: '#d33',
       showConfirmButton: true,
@@ -986,11 +986,11 @@ export class AgendaComponent implements OnInit {
                   text: res.msg || 'El pago fue registrado correctamente.',
                   confirmButtonColor: '#198754'
                 }).then(() => {
-                  // Solo si el pago fue exitoso, cangear el servicio
+                  // Solo si el pago fue exitoso, cobrar el servicio
                   this.api.deleteData('appointment/delete', id).subscribe(
                     (data: any) => {
                       Swal.fire({
-                        title: 'Servicio cangeado',
+                        title: 'Servicio cobrado',
                         icon: 'success',
                         text: data.msg,
                         confirmButtonColor: '#198754'
@@ -1001,9 +1001,9 @@ export class AgendaComponent implements OnInit {
                     },
                     (error) => {
                       Swal.fire({
-                        title: 'Error al cangear',
+                        title: 'Error al cobrar',
                         icon: 'error',
-                        text: error.error.msg || 'No se pudo cangear el servicio.',
+                        text: error.error.msg || 'No se pudo cobrar el servicio.',
                         confirmButtonColor: '#d33'
                       });
                     }

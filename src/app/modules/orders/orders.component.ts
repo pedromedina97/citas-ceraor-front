@@ -27,15 +27,18 @@ export class OrdersComponent implements OnInit {
   env = Environment;
   page: number = 1;
   itemsPerPage: number = 5;
+  isLoading: boolean = true;
 
   // Filtros de búsqueda
   filters = {
     folio: '',
+    folioOrder: '',
     codeTicket: '',
     patient: '',
     email: '',
     doctor: '',
     status: '',
+    packet: '',
     dateFrom: '',
     dateTo: ''
   };
@@ -112,24 +115,46 @@ export class OrdersComponent implements OnInit {
   }
 
   getData() {
+    this.isLoading = true;
     this.api.getData('order/getall').subscribe(
       (data: any) => {
+        console.log(data);
         this.orders = data.data;
         this.sortOrdersByDate(); // Ordenar por fecha antes de aplicar filtros
         this.applyFilters(); // Aplicar filtros después de cargar datos
+        this.isLoading = false;
       },
       (error) => {
         console.log(error.error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al cargar las órdenes',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        this.isLoading = false;
       }
     );
   }
 
   filter() {
     const searchText = this.filterText.toLowerCase();
-    this.filtered = this.orders.filter(order =>
-      order.patient.toLowerCase().includes(searchText) ||
-      order.appointment_code.toLowerCase().includes(searchText)
-    );
+    if (!searchText) {
+      this.filtered = [...this.orders];
+      return;
+    }
+
+    this.filtered = this.orders.filter(order => {
+      const folioMatch = order.appointment_code && order.appointment_code.toLowerCase().includes(searchText);
+      const patientMatch = order.patient && order.patient.toLowerCase().includes(searchText);
+      
+      // Si es un número de folio exacto, priorizar esa coincidencia
+      if (searchText === order.appointment_code?.toLowerCase()) {
+        return true;
+      }
+      
+      return folioMatch || patientMatch;
+    });
   }
 
   /*  getInstance(user: any, id: string) {
@@ -138,14 +163,23 @@ export class OrdersComponent implements OnInit {
    } */
 
   getOrdersByDoctor(name: String) {
+    this.isLoading = true;
     this.api.getDataById('order/getbydoctor', name).subscribe(
       (resp: any) => {
         this.orders = resp.data;
         this.sortOrdersByDate(); // Ordenar por fecha antes de aplicar filtros
         this.applyFilters(); // Aplicar filtros después de cargar datos
+        this.isLoading = false;
       },
       (error) => {
         console.log(error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al cargar las órdenes del doctor',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        this.isLoading = false;
       }
     );
   }
@@ -292,7 +326,7 @@ export class OrdersComponent implements OnInit {
         // Convertir las fechas a objetos Date para comparar
         const dateA = new Date(a.created_at);
         const dateB = new Date(b.created_at);
-        
+
         // Ordenar de más reciente a más antiguo (orden descendente)
         return dateB.getTime() - dateA.getTime();
       });
@@ -304,43 +338,52 @@ export class OrdersComponent implements OnInit {
    */
   applyFilters() {
     this.filtered = this.orders.filter(order => {
-      // Filtro por folio
-      const folioMatch = !this.filters.folio || 
+      // Filtro por folio de cita
+      const folioMatch = !this.filters.folio ||
         (order.appointment_code && order.appointment_code.toLowerCase().includes(this.filters.folio.toLowerCase())) ||
         (!order.appointment_code && 'sin folio'.includes(this.filters.folio.toLowerCase()));
 
+      // Filtro por folio de orden
+      const folioOrderMatch = !this.filters.folioOrder ||
+        (order.folio_order && order.folio_order.toLowerCase().includes(this.filters.folioOrder.toLowerCase())) ||
+        (!order.folio_order && 'sin folio'.includes(this.filters.folioOrder.toLowerCase()));
+
       // Filtro por código de entrega
-      const codeTicketMatch = !this.filters.codeTicket || 
+      const codeTicketMatch = !this.filters.codeTicket ||
         (order.code_ticket && order.code_ticket.toLowerCase().includes(this.filters.codeTicket.toLowerCase())) ||
         (!order.code_ticket && 'sin código'.includes(this.filters.codeTicket.toLowerCase()));
 
       // Filtro por paciente
-      const patientMatch = !this.filters.patient || 
+      const patientMatch = !this.filters.patient ||
         (order.patient && order.patient.toLowerCase().includes(this.filters.patient.toLowerCase()));
 
       // Filtro por email
-      const emailMatch = !this.filters.email || 
+      const emailMatch = !this.filters.email ||
         (order.email && order.email.toLowerCase().includes(this.filters.email.toLowerCase()));
 
       // Filtro por doctor
-      const doctorMatch = !this.filters.doctor || 
+      const doctorMatch = !this.filters.doctor ||
         (order.doctor && order.doctor.toLowerCase().includes(this.filters.doctor.toLowerCase()));
 
       // Filtro por status
-      const statusMatch = !this.filters.status || 
+      const statusMatch = !this.filters.status ||
         (order.status && order.status === this.filters.status);
+
+      // Filtro por tipo de estudio (packet)
+      const packetMatch = !this.filters.packet ||
+        (order.packet && order.packet === this.filters.packet);
 
       // Filtro por rango de fechas
       let dateMatch = true;
       if (this.filters.dateFrom || this.filters.dateTo) {
         const orderDate = new Date(order.created_at);
-        
+
         if (this.filters.dateFrom) {
           const fromDate = new Date(this.filters.dateFrom);
           fromDate.setHours(0, 0, 0, 0);
           if (orderDate < fromDate) dateMatch = false;
         }
-        
+
         if (this.filters.dateTo) {
           const toDate = new Date(this.filters.dateTo);
           toDate.setHours(23, 59, 59, 999);
@@ -348,7 +391,7 @@ export class OrdersComponent implements OnInit {
         }
       }
 
-      return folioMatch && codeTicketMatch && patientMatch && emailMatch && doctorMatch && statusMatch && dateMatch;
+      return folioMatch && folioOrderMatch && codeTicketMatch && patientMatch && emailMatch && doctorMatch && statusMatch && packetMatch && dateMatch;
     });
 
     // Resetear paginación cuando se filtran los datos
@@ -361,11 +404,13 @@ export class OrdersComponent implements OnInit {
   clearFilters() {
     this.filters = {
       folio: '',
+      folioOrder: '',
       codeTicket: '',
       patient: '',
       email: '',
       doctor: '',
       status: '',
+      packet: '',
       dateFrom: '',
       dateTo: ''
     };
@@ -461,20 +506,20 @@ export class OrdersComponent implements OnInit {
       (blob: Blob) => {
         // Crear URL del blob
         const url = window.URL.createObjectURL(blob);
-        
+
         // Crear enlace de descarga
         const link = document.createElement('a');
         link.href = url;
         link.download = `etiqueta_${order.id}.pdf`;
-        
+
         // Simular click para descargar
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         // Limpiar URL del blob
         window.URL.revokeObjectURL(url);
-        
+
         Swal.close();
         Swal.fire({
           title: 'Etiqueta generada',
@@ -636,10 +681,10 @@ export class OrdersComponent implements OnInit {
         if (orderIndex !== -1) {
           this.orders[orderIndex].status = statusData.status;
         }
-        
+
         // Mantener el ordenamiento después de la actualización
         this.sortOrdersByDate();
-        
+
         // Si el status es 'entregado', actualizar también el método
         if (this.statusFormData.status === 'entregado') {
           const selectedMethod = this.getSelectedMethod();
@@ -649,7 +694,7 @@ export class OrdersComponent implements OnInit {
             this.showSuccessAndClose();
           }
         } else {
-        
+
           this.clearOrderMethod();
         }
       },
@@ -680,7 +725,7 @@ export class OrdersComponent implements OnInit {
         if (orderIndex !== -1) {
           this.orders[orderIndex].method = method;
         }
-        
+
         // Mantener el ordenamiento después de la actualización
         this.sortOrdersByDate();
         this.filtered = [...this.orders]; // Actualizar lista filtrada
@@ -707,7 +752,7 @@ export class OrdersComponent implements OnInit {
     if (orderIndex !== -1) {
       this.orders[orderIndex].method = 'por_definir';
     }
-    
+
     // Mantener el ordenamiento después de la actualización
     this.sortOrdersByDate();
     this.filtered = [...this.orders]; // Actualizar lista filtrada
@@ -746,7 +791,7 @@ export class OrdersComponent implements OnInit {
 
     // Limpiar el número de teléfono (solo números)
     const cleanPhone = this.cleanPhoneNumber(order.phone);
-    
+
     if (!cleanPhone) {
       Swal.fire({
         title: 'Error',
@@ -821,7 +866,7 @@ export class OrdersComponent implements OnInit {
 
     // Generar URL del PDF
     const pdfUrl = this.getPdfUrl(order);
-    
+
     setTimeout(() => {
       Swal.close();
       const message = this.generateWhatsAppMessage(order, true, pdfUrl);
@@ -852,15 +897,43 @@ export class OrdersComponent implements OnInit {
     const metodo = this.getMethodText(order.method || 'por_definir');
     const fechaCreacion = new Date(order.created_at).toLocaleDateString('es-MX');
 
-    let message = `🦷 *CERAOR - Información de su Orden*
+    function setPackage(data: string): string {
+      if (data === "0") {
+        return `
+          Paquete: Personalizado
+        `;
+      }
+      if (data === "1") {
+        return `
+          Paquete: Básico
+        `;
+      }
+      if (data === "2") {
+        return `
+          Paquete: Básico Digital
+        `;
+      }
+      if (data === "3") {
+        return `
+          Paquete: 3D (Tomografía)
+        `;
+      }
+      // Valor por defecto si no coincide con ningún caso
+      return `
+          Paquete: No especificado
+      `;
+    }
 
-👤 *Paciente:* ${order.patient}
-📋 *Folio:* ${folio}
-🏷️ *Código de Entrega:* ${codigoEntrega}
-📊 *Estado:* ${status}
-📦 *Método de Entrega:* ${metodo}
-🩺 *Doctor:* ${order.doctor}
-📅 *Fecha de Creación:* ${fechaCreacion}`;
+    let message = `*CERAOR3D - Información de su Orden*
+
+    *Paciente:* ${order.patient}
+    *Folio:* ${folio}
+    *Código de Entrega:* ${codigoEntrega}
+    *Estado:* ${status}
+    *Método de Entrega:* ${metodo}
+    *Doctor:* ${order.doctor}
+    *Servicio | Paquete:* ${setPackage(order.packet || "0")}
+    *Fecha de Creación:* ${fechaCreacion}`;
 
     if (withFile && pdfUrl) {
       message += `
@@ -874,7 +947,7 @@ _Descargue el archivo haciendo clic en el enlace._`;
 
 ¡Gracias por confiar en nuestros servicios!
 
-_Este es un mensaje automático del sistema CERAOR._`;
+_Este es un mensaje automático del sistema CERAOR3D._`;
 
     return message;
   }
@@ -884,10 +957,10 @@ _Este es un mensaje automático del sistema CERAOR._`;
    */
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return '';
-    
+
     // Remover todos los caracteres que no sean números
     let cleanPhone = phone.replace(/\D/g, '');
-    
+
     // Si el número empieza con 52 (código de México), mantenerlo
     // Si empieza con 1, removerlo y agregar 52
     // Si no tiene código de país, agregar 52
@@ -898,7 +971,7 @@ _Este es un mensaje automático del sistema CERAOR._`;
     } else if (cleanPhone.length === 10) {
       return '52' + cleanPhone;
     }
-    
+
     return cleanPhone;
   }
 
@@ -907,6 +980,34 @@ _Este es un mensaje automático del sistema CERAOR._`;
    */
   private showWhatsAppPreview(order: any, message: string, phone: string, withFile: boolean = false, pdfUrl?: string) {
     let fileInfo = '';
+    /* console.log(order); */
+
+    function setPackage(data: string): string {
+      if (data === "0") {
+        return `
+          <p><strong>📦 Paquete:</strong> Personalizado</p>
+        `;
+      }
+      if (data === "1") {
+        return `
+          <p><strong>📦 Paquete:</strong> Básico</p>
+        `;
+      }
+      if (data === "2") {
+        return `
+          <p><strong>📦 Paquete:</strong> Básico Digital</p>
+        `;
+      }
+      if (data === "3") {
+        return `
+          <p><strong>📦 Paquete:</strong> 3D (Tomografía)</p>
+        `;
+      }
+      // Valor por defecto si no coincide con ningún caso
+      return `
+          <p><strong>📦 Paquete:</strong> No especificado</p>
+      `;
+    }
     if (withFile && pdfUrl) {
       fileInfo = `
         <div class="alert alert-info mt-2">
@@ -922,6 +1023,7 @@ _Este es un mensaje automático del sistema CERAOR._`;
         <div class="text-start">
           <p><strong>📞 Número:</strong> +${phone}</p>
           <p><strong>👤 Paciente:</strong> ${order.patient}</p>
+          ${setPackage(order.packet || "0")}
           ${fileInfo}
           <hr>
           <p><strong>📝 Mensaje a enviar:</strong></p>
@@ -950,13 +1052,13 @@ ${message}
   private openWhatsApp(phone: string, message: string) {
     // Codificar el mensaje para URL
     const encodedMessage = encodeURIComponent(message);
-    
+
     // Crear URL de WhatsApp
     const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-    
+
     // Abrir WhatsApp en una nueva ventana/pestaña
     window.open(whatsappUrl, '_blank');
-    
+
     // Mostrar confirmación
     Swal.fire({
       title: '✅ WhatsApp Abierto',

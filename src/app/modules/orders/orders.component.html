@@ -15,14 +15,28 @@
             <div class="col-md-3">
               <label for="filterFolio" class="form-label">
                 <i class="bi bi-file-earmark-text me-1"></i>
-                Folio
+                Folio Cita
               </label>
               <input 
                 type="text" 
                 id="filterFolio"
                 class="form-control" 
-                placeholder="Buscar por folio..."
+                placeholder="Buscar por folio de cita..."
                 [(ngModel)]="filters.folio"
+                (input)="applyFilters()">
+            </div>
+
+            <div class="col-md-3">
+              <label for="filterFolioOrder" class="form-label">
+                <i class="bi bi-file-text me-1"></i>
+                Folio Orden
+              </label>
+              <input 
+                type="text" 
+                id="filterFolioOrder"
+                class="form-control" 
+                placeholder="Buscar por folio de orden..."
+                [(ngModel)]="filters.folioOrder"
                 (input)="applyFilters()">
             </div>
             
@@ -99,6 +113,25 @@
                 <option value="entregado">Entregado</option>
               </select>
             </div>
+
+            <!-- Filtro de Tipo Estudio -->
+            <div class="col-md-3">
+              <label for="filterPacket" class="form-label">
+                <i class="bi bi-collection me-1"></i>
+                Tipo Estudio
+              </label>
+              <select 
+                id="filterPacket"
+                class="form-select"
+                [(ngModel)]="filters.packet"
+                (change)="applyFilters()">
+                <option value="">Todos los tipos</option>
+                <option value="0">Personalizado</option>
+                <option value="1">Básico</option>
+                <option value="2">Básico Digital</option>
+                <option value="3">3D (Tomografía)</option>
+              </select>
+            </div>
             
             <!-- Filtros de fecha -->
             <div class="col-md-3">
@@ -163,31 +196,62 @@
       </div>
     </div>
 
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center mt-5">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-primary">Cargando órdenes...</p>
+    </div>
+
     <!-- 🖥️ Tabla para escritorio -->
-    <div class="table-desktop mt-4">
+    <div *ngIf="!isLoading" class="table-desktop mt-4">
       <h3 class="table-title">Órdenes</h3>
-      <div class="dashboard-table-wrapper">
+
+      <!-- Mensaje de no datos -->
+      <div *ngIf="orders.length === 0" class="alert alert-info text-center mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No se encontraron órdenes registradas.
+      </div>
+
+      <!-- Mensaje de no resultados en filtros -->
+      <div *ngIf="orders.length > 0 && filtered.length === 0" class="alert alert-warning text-center mt-4">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        No se encontraron coincidencias con los filtros aplicados.
+      </div>
+
+      <!-- Tabla de datos -->
+      <div *ngIf="filtered.length > 0" class="dashboard-table-wrapper">
         <table class="dashboard-table table table-hover">
           <thead class="table-light">
             <tr>
-                          <th>Folio</th>
-            <th>Código Entrega</th>
-            <th>Paciente</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Doctor</th>
-            <th>Status</th>
-            <th>Método</th>
-            <th>Creación</th>
-            <th>Opciones</th>
+              <th>Folio Cita</th>
+              <th>Folio Orden</th>
+              <th>Código Entrega</th>
+              <th>Paquete Estudio</th>
+              <th>Paciente</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Doctor</th>
+              <th>Status</th>
+              <th>Método</th>
+              <th>Creación</th>
+              <th>Opciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let order of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
               <td>{{ order.appointment_code || 'Sin Folio' }}</td>
+              <td>{{ order.folio_order || 'Sin Folio' }}</td>
               <td>
                 <span *ngIf="order.code_ticket" class="badge bg-info text-white">{{ order.code_ticket }}</span>
                 <span *ngIf="!order.code_ticket" class="text-muted">Sin código</span>
+              </td>
+              <td>
+                <span *ngIf="order.packet === '0'" class="badge bg-warning  text-white">Personalizado</span>
+                <span *ngIf="order.packet === '1'" class="badge bg-success  text-white">Básico</span>
+                <span *ngIf="order.packet === '2'" class="badge bg-primary  text-white">Básico Digital</span>
+                <span *ngIf="order.packet === '3'" class="badge bg-secondary  text-white">3D (Tomografía)</span>
               </td>
               <td>{{ order.patient }}</td>
               <td>{{ order.email }}</td>
@@ -262,81 +326,97 @@
     </div>
 
     <!-- 📱 Cards para móviles -->
-    <div class="cards-mobile">
+    <div *ngIf="!isLoading" class="cards-mobile">
       <h3 class="table-title">Órdenes</h3>
-      <div class="card mb-3 shadow-sm p-3 fade-in" *ngFor="let order of filtered">
-        <p><strong>Folio:</strong> {{ order.appointment_code || 'Sin Folio' }}</p>
-        <p>
-          <strong>Código Entrega:</strong> 
-          <span *ngIf="order.code_ticket" class="badge bg-info text-white ms-1">{{ order.code_ticket }}</span>
-          <span *ngIf="!order.code_ticket" class="text-muted ms-1">Sin código</span>
-        </p>
-        <p><strong>Paciente:</strong> {{ order.patient }}</p>
-        <p><strong>Email:</strong> {{ order.email }}</p>
-        <p><strong>Teléfono:</strong> {{ order.phone }}</p>
-        <p><strong>Doctor:</strong> {{ order.doctor }}</p>
-        <p>
-          <strong>Status:</strong> 
-          <span class="badge status-badge ms-1" [ngClass]="getStatusClass(order.status)">
-            {{ getStatusText(order.status) }}
-          </span>
-        </p>
-        <p>
-          <strong>Método:</strong> 
-          <span class="badge method-badge ms-1" [ngClass]="getMethodClass(order.method || 'por_definir')">
-            {{ getMethodText(order.method || 'por_definir') }}
-          </span>
-        </p>
-        <p><strong>Creación:</strong> {{ order.created_at | date:'dd/MM/yyyy' }}</p>
-        <div class="d-flex justify-content-start gap-2 mt-2">
-          <!-- Botón para ver detalle -->
-          <button (click)="openDetailModal(order)"
-                  class="btn btn-outline-info btn-sm btn-ios"
-                  title="Ver Detalle">
-            <i class="bi bi-eye"></i>
-            <span class="d-none d-sm-inline ms-1">Detalle</span>
-          </button>
-          
-          <!-- Botón para generar etiqueta (solo cuando status = entregado) -->
-          <button *ngIf="order.status === 'entregado'" 
-                  (click)="generateTicket(order)"
-                  class="btn btn-outline-warning btn-sm btn-ios"
-                  title="Generar Etiqueta">
-            <i class="bi bi-printer"></i>
-            <span class="d-none d-sm-inline ms-1">Etiqueta</span>
-          </button>
-          
-          <!-- Botón para cambiar status (solo para Operativo) -->
-          <button *ngIf="rol === 'Operativo'" 
-                  (click)="openStatusModal(order)"
-                  class="btn btn-outline-success btn-sm btn-ios"
-                  title="Cambiar Status">
-            <i class="bi bi-gear"></i>
-            <span class="d-none d-sm-inline ms-1">Status</span>
-          </button>
-          
-          <!-- Botón para enviar por WhatsApp -->
-          <button *ngIf="order.phone" 
-                  (click)="sendWhatsApp(order)"
-                  class="btn btn-success btn-sm btn-ios"
-                  title="Enviar por WhatsApp">
-            <i class="bi bi-whatsapp"></i>
-            <span class="d-none d-sm-inline ms-1">WhatsApp</span>
-          </button>
-          
-          <!-- Botones de descarga PDF -->
-          <button *ngIf="order.appointment_code !== null"
-            (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
-            class="btn btn-outline-danger btn-sm btn-ios"
-            title="Descargar PDF">
-            <i class="bi bi-file-earmark-pdf-fill"></i>
-          </button>
-          <button *ngIf="order.appointment_code == null"
-            (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
-            class="btn btn-outline-primary btn-sm btn-ios"
-            title="Descargar PDF">
-            <i class="bi bi-file-earmark-pdf-fill"></i>
-          </button>
+
+      <!-- Mensaje de no datos -->
+      <div *ngIf="orders.length === 0" class="alert alert-info text-center mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No se encontraron órdenes registradas.
+      </div>
+
+      <!-- Mensaje de no resultados en filtros -->
+      <div *ngIf="orders.length > 0 && filtered.length === 0" class="alert alert-warning text-center mt-4">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        No se encontraron coincidencias con los filtros aplicados.
+      </div>
+
+      <!-- Cards de datos -->
+      <div *ngIf="filtered.length > 0">
+        <div class="card mb-3 shadow-sm p-3 fade-in" *ngFor="let order of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+          <p><strong>Folio:</strong> {{ order.appointment_code || 'Sin Folio' }}</p>
+          <p>
+            <strong>Código Entrega:</strong> 
+            <span *ngIf="order.code_ticket" class="badge bg-info text-white ms-1">{{ order.code_ticket }}</span>
+            <span *ngIf="!order.code_ticket" class="text-muted ms-1">Sin código</span>
+          </p>
+          <p><strong>Paciente:</strong> {{ order.patient }}</p>
+          <p><strong>Email:</strong> {{ order.email }}</p>
+          <p><strong>Teléfono:</strong> {{ order.phone }}</p>
+          <p><strong>Doctor:</strong> {{ order.doctor }}</p>
+          <p>
+            <strong>Status:</strong> 
+            <span class="badge status-badge ms-1" [ngClass]="getStatusClass(order.status)">
+              {{ getStatusText(order.status) }}
+            </span>
+          </p>
+          <p>
+            <strong>Método:</strong> 
+            <span class="badge method-badge ms-1" [ngClass]="getMethodClass(order.method || 'por_definir')">
+              {{ getMethodText(order.method || 'por_definir') }}
+            </span>
+          </p>
+          <p><strong>Creación:</strong> {{ order.created_at | date:'dd/MM/yyyy' }}</p>
+          <div class="d-flex justify-content-start gap-2 mt-2">
+            <!-- Botón para ver detalle -->
+            <button (click)="openDetailModal(order)"
+                    class="btn btn-outline-info btn-sm btn-ios"
+                    title="Ver Detalle">
+              <i class="bi bi-eye"></i>
+              <span class="d-none d-sm-inline ms-1">Detalle</span>
+            </button>
+            
+            <!-- Botón para generar etiqueta (solo cuando status = entregado) -->
+            <button *ngIf="order.status === 'entregado'" 
+                    (click)="generateTicket(order)"
+                    class="btn btn-outline-warning btn-sm btn-ios"
+                    title="Generar Etiqueta">
+              <i class="bi bi-printer"></i>
+              <span class="d-none d-sm-inline ms-1">Etiqueta</span>
+            </button>
+            
+            <!-- Botón para cambiar status (solo para Operativo) -->
+            <button *ngIf="rol === 'Operativo'" 
+                    (click)="openStatusModal(order)"
+                    class="btn btn-outline-success btn-sm btn-ios"
+                    title="Cambiar Status">
+              <i class="bi bi-gear"></i>
+              <span class="d-none d-sm-inline ms-1">Status</span>
+            </button>
+            
+            <!-- Botón para enviar por WhatsApp -->
+            <button *ngIf="order.phone" 
+                    (click)="sendWhatsApp(order)"
+                    class="btn btn-success btn-sm btn-ios"
+                    title="Enviar por WhatsApp">
+              <i class="bi bi-whatsapp"></i>
+              <span class="d-none d-sm-inline ms-1">WhatsApp</span>
+            </button>
+            
+            <!-- Botones de descarga PDF -->
+            <button *ngIf="order.appointment_code !== null"
+              (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
+              class="btn btn-outline-danger btn-sm btn-ios"
+              title="Descargar PDF">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </button>
+            <button *ngIf="order.appointment_code == null"
+              (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
+              class="btn btn-outline-primary btn-sm btn-ios"
+              title="Descargar PDF">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>

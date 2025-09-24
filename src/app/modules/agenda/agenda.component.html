@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div class="container" *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista'">
+  <div class="container" *ngIf="rol === 'Owner' || rol === 'Superadmin' || rol === 'Admin' || rol === 'Recepcionista'">
     <div class="row justify-content-center">
       <div class="col-2">
         <button class="btn btn-dark" (click)="open(content)"><i class="bi bi-upc-scan"></i> Escanear Cita</button>
@@ -207,7 +207,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary"
-      (click)="checkAppointment(selectedEvent.id)">Canjear</button>
+      (click)="checkAppointment(selectedEvent.id)">Cobrar</button>
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
       </div>
     </div>
@@ -252,7 +252,7 @@
 
 
   <ng-template #eventModal let-modal
-    *ngIf="rol === 'Owner' || rol === 'SuperAdmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
+    *ngIf="rol === 'Owner' || rol === 'Superadmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Agregar Cita</h5>
@@ -374,6 +374,6 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary"
-      (click)="checkAppointment(appointment.appointment_id)">Cangear</button>
+      (click)="checkAppointment(appointment.appointment_id)">Cobrar</button>
   </div>
 </ng-template>

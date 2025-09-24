@@ -245,7 +245,7 @@
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="paper_print" id="paper_print"
                             [(ngModel)]="order.paper_print" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="paper_print">Papel</label>
+                          <label class="form-check-label" for="paper_print">Papel Backlight Blanco</label>
                         </div>
                       </div>
                       <div class="col-12">
@@ -355,6 +355,15 @@
                     </h6>
                   </div>
                   <div class="card-body">
+                    <!-- Alerta para Intraorales -->
+                    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert" *ngIf="hasIntraoralSelection()">
+                      <small>
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Recuerde agendar para este servicio
+                      </small>
+                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <div class="row g-1">
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
@@ -462,6 +471,15 @@
                     </h6>
                   </div>
                   <div class="card-body">
+                    <!-- Alerta para Modelos de Estudio -->
+                    <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert" *ngIf="hasModelSelection()">
+                      <small>
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Recuerde agendar para este servicio
+                      </small>
+                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <div class="row g-1">
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
@@ -626,6 +644,15 @@
                     </h6>
                   </div>
                   <div class="card-body">
+                    <!-- Alerta para Escaneo Intraoral -->
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" *ngIf="hasScannerSelection()">
+                      <small>
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Recuerde agendar para este servicio
+                      </small>
+                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <div class="row g-1">
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
@@ -649,7 +676,7 @@
                         <div class="form-check form-check-custom-sm">
                           <input class="form-check-input" type="checkbox" name="invisaligh" id="invisaligh"
                             [(ngModel)]="order.invisaligh" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="invisaligh">INVISALIGH</label>
+                          <label class="form-check-label" for="invisaligh">Invisalign</label>
                         </div>
                       </div>
                       <div class="col-12 mt-2">
@@ -716,6 +743,15 @@
                     </h6>
                   </div>
                   <div class="card-body">
+                    <!-- Alerta para Fotografía Clínica -->
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert" *ngIf="hasPhotographySelection()">
+                      <small>
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Recuerde agendar para este servicio
+                      </small>
+                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <div class="row g-1">
                       <div class="col-12">
                         <div class="form-check form-check-custom-sm">
@@ -747,10 +783,16 @@
                 <div class="col-12">
                   <div class="card shadow-sm">
                     <div class="card-body text-center">
-                      <button type="submit" class="btn btn-primary btn-lg px-5" [disabled]="!order.patient">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Crear Orden de Estudios
-                      </button>
+                      <div class="d-flex justify-content-center gap-3">
+                        <button type="button" class="btn btn-outline-secondary btn-lg px-5" (click)="resetForm()">
+                          <i class="bi bi-arrow-counterclockwise me-2"></i>
+                          Restablecer Formulario
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg px-5" [disabled]="!order.patient">
+                          <i class="bi bi-check-circle me-2"></i>
+                          Crear Orden de Estudios
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
