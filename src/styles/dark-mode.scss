@@ -1,5 +1,25 @@
+// Transiciones para el cambio de modo
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  * {
+    transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                color 0.3s ease,
+                box-shadow 0.3s ease;
+  }
+}
+
 // Dark mode styles
 body.dark-mode {
+  // Override de estilos de tabla Bootstrap
+  .table-light {
+    --bs-table-bg: var(--bg-secondary);
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
   // Base colors
   --bg-primary: #1a1a1a;
   --bg-secondary: #2d2d2d;
@@ -37,35 +57,154 @@ body.dark-mode {
     background-color: var(--bg-secondary);
     border-color: var(--border-color);
     
+    &.bg-body-tertiary {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    &.permission-card {
+      .card-header {
+        .text-dark {
+          color: var(--text-primary) !important;
+        }
+      }
+
+      .card-body {
+        .permission-item {
+          border-color: var(--border-color);
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+          }
+
+          .permission-name {
+            color: var(--text-primary) !important;
+          }
+
+          .permission-description {
+            color: var(--text-secondary) !important;
+          }
+
+          .form-switch {
+            .form-check-input {
+              background-color: rgba(255, 255, 255, 0.1);
+              border-color: rgba(255, 255, 255, 0.2);
+              position: relative;
+
+              &:not(:checked) {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255, 255, 255, 0.8)'/%3e%3c/svg%3e");
+              }
+
+              &:checked {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+              }
+
+              &:focus {
+                border-color: rgba(255, 255, 255, 0.5);
+                box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+              }
+
+              &:hover:not(:disabled):not(:checked) {
+                background-color: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+              }
+            }
+          }
+        }
+      }
+
+      .card-footer {
+        &.bg-light {
+          background-color: var(--bg-secondary) !important;
+          border-top: 1px solid var(--border-color) !important;
+
+          .text-muted {
+            color: var(--text-secondary) !important;
+          }
+        }
+      }
+    }
+    
     .card-header {
       background-color: rgba(0, 0, 0, 0.2);
       border-bottom: 1px solid var(--border-color);
     }
+
+    .card-body {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+
+      .form-control {
+        background-color: var(--bg-primary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+
+        &:focus {
+          background-color: var(--bg-primary);
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+          color: var(--text-primary);
+        }
+
+        &::placeholder {
+          color: var(--text-secondary);
+        }
+      }
+
+      .input-group {
+        .input-group-text {
+          background-color: var(--bg-primary);
+          border-color: var(--border-color);
+          color: var(--text-primary);
+        }
+      }
+
+      .form-check {
+        .form-check-input {
+          background-color: var(--bg-primary);
+          border-color: var(--border-color);
+
+          &:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+          }
+        }
+
+        .form-check-label {
+          color: var(--text-primary);
+        }
+      }
+    }
   }
 
   // Tables
-  .table, .dashboard-table {
+  .table, .dashboard-table, .table-striped {
     color: var(--text-primary);
     background-color: var(--bg-secondary);
     
     thead th {
-      background-color: var(--bg-secondary);
-      color: var(--text-primary);
+      background-color: rgba(0, 0, 0, 0.2);
+      color: #ffffff;
       border-color: var(--border-color);
+      font-weight: 500;
     }
     
     td {
       border-color: var(--border-color);
       color: var(--text-primary);
-    }
-
-    // Sobrescribir el efecto zebra
-    tbody tr:nth-child(even) {
       background-color: var(--bg-secondary);
     }
 
     tbody {
       tr {
+        background-color: var(--bg-secondary);
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+
         td {
           color: var(--text-primary);
         }
@@ -115,6 +254,313 @@ body.dark-mode {
     padding: 1rem;
   }
 
+  // Cards
+  .card {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+
+    .card-body {
+      background-color: var(--bg-secondary);
+
+      .text-muted {
+        color: var(--text-secondary) !important;
+      }
+
+      label {
+        color: var(--text-primary);
+      }
+
+      .form-check-label {
+        color: var(--text-primary);
+      }
+
+      .dropdown-menu {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-color);
+
+        .dropdown-item {
+          color: var(--text-primary);
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+          }
+        }
+      }
+
+      .list-unstyled {
+        color: var(--text-primary);
+      }
+    }
+
+    .card-header {
+      &.bg-primary, &.bg-success, &.bg-info, &.bg-secondary, &.bg-warning, &.bg-danger, &.bg-dark {
+        color: #fff !important;
+
+        &.bg-warning {
+          color: #000 !important;
+        }
+      }
+    }
+  }
+
+  // Calendario
+  .calendar-container {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+
+    label {
+      color: var(--text-primary);
+    }
+
+    .calendar-header {
+      h4 {
+        color: var(--text-primary);
+        margin: 0 20px;
+      }
+    }
+
+    .day-header {
+      color: var(--text-primary);
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+
+    .day-cell {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+
+      &.current-day {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .day-number {
+        color: var(--text-primary);
+      }
+
+      .events-container {
+        .event {
+          border: 1px solid var(--border-color);
+
+          span {
+            color: #000;
+          }
+
+          small {
+            color: rgba(0, 0, 0, 0.7);
+          }
+
+          .btn-delete {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+
+            &:hover {
+              background: rgba(220, 53, 69, 0.2);
+            }
+          }
+        }
+      }
+    }
+
+    .week-view, .day-view {
+      .week-day {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+
+        &.current-day {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
+    // Modales del calendario
+    .modal-content {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+
+      label {
+        color: var(--text-primary);
+      }
+
+      .form-check-label {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  // Botones
+  .btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+    &:hover {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+  }
+
+  .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+    &:hover {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+  }
+
+  .btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+    &:hover {
+      background-color: rgba(13, 202, 240, 0.1);
+      color: #0dcaf0;
+    }
+  }
+
+  .btn-outline-secondary {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+  }
+
+  // Contenedor de permisos
+  .permissions-container {
+    background-color: var(--bg-primary);
+    min-height: 100vh;
+    
+    .container-lg {
+      background-color: var(--bg-primary);
+    }
+
+    // Ajuste para mostrar una card por fila en móviles
+    .row.g-4.justify-content-center {
+      [class*="col-"] {
+        @media (max-width: 767px) {
+          width: 100%;
+          flex: 0 0 100%;
+          max-width: 100%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .permission-card {
+        .card-header {
+          .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+
+            .d-flex:first-child {
+              width: 100%;
+            }
+
+            .d-flex.gap-2 {
+              width: 100%;
+              justify-content: space-between !important;
+
+              .toggle-all-btn {
+                flex: 1;
+                margin-right: 0.5rem;
+              }
+
+              .dropdown {
+                button {
+                  width: 100%;
+                }
+              }
+            }
+          }
+        }
+
+        .permission-item {
+          .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+
+            .permission-info {
+              width: 100%;
+            }
+
+            .form-switch {
+              align-self: flex-start;
+              margin-left: 0 !important;
+            }
+          }
+        }
+
+        .card-footer {
+          .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+
+            small {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 576px) {
+      .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+
+        h3 {
+          margin-bottom: 0;
+        }
+
+        .btn-success {
+          width: 100%;
+        }
+      }
+    }
+    h3.text-dark {
+      color: var(--text-primary) !important;
+    }
+
+    .empty-state {
+      .text-muted {
+        color: var(--text-secondary) !important;
+      }
+    }
+
+    .dropdown-menu {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+
+      .dropdown-item {
+        color: var(--text-primary);
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        i {
+          &.text-success {
+            color: #66BB6A !important;
+          }
+          &.text-danger {
+            color: #f44336 !important;
+          }
+          &.text-primary {
+            color: #29b6f6 !important;
+          }
+        }
+      }
+
+      .dropdown-divider {
+        border-color: var(--border-color);
+      }
+    }
+  }
+
   // Título de la tabla
   .table-title {
     color: var(--text-primary);
@@ -135,18 +581,62 @@ body.dark-mode {
     color: var(--text-primary);
   }
 
-  // Vista móvil de usuarios
+  // Vista móvil
   .mobile-card {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
 
     strong {
-      color: var(--text-primary);
+      color: var(--text-secondary);
+      font-weight: 500;
     }
 
-    span {
-      color: var(--text-primary);
+    // Estilos específicos para cortes de caja
+    p {
+      &:nth-child(1) { // ID Corte
+        font-family: monospace;
+      }
+
+      &:nth-child(3), // Fecha Inicio
+      &:nth-child(4) { // Fecha Corte
+        font-family: monospace;
+      }
+
+      &:nth-child(6) { // Total
+        color: #66BB6A;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Botones específicos de cortes de caja
+  .btn-outline-success {
+    color: #198754;
+    border-color: #198754;
+    
+    &:hover {
+      background-color: rgba(25, 135, 84, 0.1);
+      color: #198754;
+    }
+
+    .bi-file-earmark-excel-fill,
+    .bi-file-earmark-spreadsheet {
+      color: inherit;
+    }
+  }
+
+  .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+    
+    &:hover {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    .bi-file-earmark-pdf-fill {
+      color: inherit;
     }
   }
 
@@ -158,6 +648,7 @@ body.dark-mode {
 
     .modal-header {
       border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
       
       .btn-close {
         filter: invert(1) grayscale(100%) brightness(200%);
@@ -166,6 +657,40 @@ body.dark-mode {
       .modal-title {
         color: var(--text-primary);
       }
+
+      &.bg-info, &.bg-primary, &.bg-success {
+        .btn-close {
+          filter: invert(0) grayscale(100%) brightness(200%);
+        }
+      }
+    }
+
+    .modal-body {
+      background-color: var(--bg-secondary);
+
+      .form-group {
+        .form-control {
+          background-color: var(--bg-primary);
+          border-color: var(--border-color);
+          color: var(--text-primary);
+
+          &:focus {
+            background-color: var(--bg-primary);
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            color: var(--text-primary);
+          }
+
+          &::placeholder {
+            color: var(--text-secondary);
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
     }
 
     .modal-body {
@@ -176,6 +701,141 @@ body.dark-mode {
       label {
         color: var(--text-primary);
       }
+
+      // Detalles de la orden
+      .card {
+        border-color: var(--border-color);
+
+        .card-header {
+          &.bg-primary, &.bg-success, &.bg-info, &.bg-secondary {
+            text-white {
+              color: #fff !important;
+            }
+          }
+        }
+
+        .card-body {
+          background-color: var(--bg-secondary);
+
+          strong, .fw-bold {
+            color: var(--text-primary);
+          }
+
+          p, span, div {
+            color: var(--text-primary);
+          }
+
+          .text-muted {
+            color: #a0a0a0 !important;
+          }
+
+          .list-unstyled {
+            color: var(--text-primary);
+
+            li {
+              color: var(--text-primary);
+              
+              strong {
+                color: var(--text-primary);
+              }
+            }
+
+            .text-success {
+              color: #66BB6A !important;
+            }
+
+            .text-danger {
+              color: #f44336 !important;
+            }
+
+            .text-warning {
+              color: #ffa726 !important;
+            }
+
+            .text-info {
+              color: #29b6f6 !important;
+            }
+          }
+
+          // Detalles específicos de la orden
+          .order-details {
+            color: var(--text-primary);
+
+            .detail-label {
+              color: var(--text-primary);
+              font-weight: 500;
+            }
+
+            .detail-value {
+              color: var(--text-primary);
+            }
+          }
+
+          // Estado de la orden
+          .order-status {
+            &.text-success, &.text-danger, &.text-warning, &.text-info {
+              font-weight: 500;
+            }
+          }
+
+          // Información del paciente
+          .patient-info {
+            color: var(--text-primary);
+
+            .info-label {
+              color: #a0a0a0;
+              font-weight: 500;
+            }
+
+            .info-value {
+              color: var(--text-primary);
+            }
+          }
+        }
+      }
+
+      // Tabs de detalles
+      .nav-tabs {
+        border-color: var(--border-color);
+
+        .nav-link {
+          color: #e0e0e0;
+          border-color: transparent;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          opacity: 0.85;
+
+          &:hover {
+            color: #ffffff;
+            border-color: var(--border-color);
+            background-color: rgba(255, 255, 255, 0.1);
+            opacity: 1;
+          }
+
+          &.active {
+            color: #ffffff;
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            border-bottom-color: var(--bg-secondary);
+            font-weight: 600;
+            opacity: 1;
+          }
+
+          // Iconos en los tabs si los hay
+          i, .bi {
+            color: inherit;
+            margin-right: 5px;
+          }
+        }
+      }
+
+      .tab-content {
+        .tab-pane {
+          .card {
+            background-color: var(--bg-secondary);
+          }
+        }
+      }
     }
 
     .modal-footer {
@@ -184,12 +844,72 @@ body.dark-mode {
   }
 
   // Forms
-  .form-control {
+  .form-control, .form-select, .input-ios {
     background-color: var(--bg-primary);
     border-color: var(--border-color);
     color: var(--text-primary);
 
     &:focus {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    &::placeholder {
+      color: var(--text-secondary);
+    }
+
+    &:disabled {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+    }
+  }
+
+  // Form checks
+  .form-check-input {
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+
+    &:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+  }
+
+  // Checkboxes en cards de crear orden
+  .form-check-custom, .form-check-custom-sm {
+    padding: 4px 8px;
+    margin: 2px 0;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      .form-check-label {
+        color: #e0e0e0;
+      }
+    }
+  }
+
+  // Alerts
+  .alert {
+    &.alert-info, &.alert-warning, &.alert-success, &.alert-danger {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+  }
+
+  // Form labels
+  label {
+    color: var(--text-primary);
+  }
+
+  // Select dropdown
+  .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+
+    option {
       background-color: var(--bg-primary);
       color: var(--text-primary);
     }

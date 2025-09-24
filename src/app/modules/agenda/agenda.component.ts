@@ -60,6 +60,9 @@ export class AgendaComponent implements OnInit {
     id_subsidiary: '',
     service: ''
   };
+
+  searchDoctorText: string = '';
+  filteredDoctors: any[] = [];
   weekDays: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   services: any;
   editing: boolean = false;
@@ -78,6 +81,8 @@ export class AgendaComponent implements OnInit {
   doctor: any;
   selectedSubsidiary: string = '';
   isManualClient: boolean = false;
+  searchClientText: string = '';
+  filteredClients: any[] = [];
   idCashcut: String;
   isSaving: boolean = false;
 
@@ -621,11 +626,33 @@ export class AgendaComponent implements OnInit {
     this.api.getData('catalog/getdoctors').subscribe(
       (resp: any) => {
         this.doctors = resp.data;
+        this.filteredDoctors = [];
       },
       (error) => {
         console.log(error);
       }
     );
+  }
+
+  // Método para filtrar doctores
+  filterDoctors() {
+    if (!this.searchDoctorText) {
+      this.filteredDoctors = [];
+      return;
+    }
+
+    const searchText = this.searchDoctorText.toLowerCase();
+    this.filteredDoctors = this.doctors.filter(doctor => 
+      (doctor.name + ' ' + doctor.lastname).toLowerCase().includes(searchText)
+    );
+  }
+
+  // Método para seleccionar un doctor
+  selectDoctor(doctor: any) {
+    this.eventForm.personal = doctor.name + ' ' + doctor.lastname;
+    this.searchDoctorText = doctor.name + ' ' + doctor.lastname;
+    this.filteredDoctors = [];
+    this.getOrders(doctor.name, doctor.lastname);
   }
 
   getMyClients() {
@@ -643,11 +670,45 @@ export class AgendaComponent implements OnInit {
     this.api.getData('catalog/getclients').subscribe(
       (resp: any) => {
         this.clients = resp.data;
+        this.filteredClients = [];
       },
       (error) => {
         console.log(error);
       }
     );
+  }
+
+  // Método para filtrar clientes
+  filterClients() {
+    if (!this.searchClientText) {
+      this.filteredClients = [];
+      return;
+    }
+
+    const searchText = this.searchClientText.toLowerCase();
+    this.filteredClients = this.clients.filter(client => 
+      (client.name + ' ' + client.lastname).toLowerCase().includes(searchText) ||
+      client.email?.toLowerCase().includes(searchText)
+    );
+  }
+
+  // Método para seleccionar un cliente
+  selectClient(client: any) {
+    this.eventForm.title = client.name + ' ' + client.lastname;
+    this.searchClientText = client.name + ' ' + client.lastname;
+    this.filteredClients = [];
+  }
+
+  // Método para formatear el nombre del cliente
+  formatClientName() {
+    if (this.eventForm.title) {
+      this.eventForm.title = this.eventForm.title
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+        .trim();
+    }
   }
 
   deleteEvent(id: string, event: MouseEvent) {

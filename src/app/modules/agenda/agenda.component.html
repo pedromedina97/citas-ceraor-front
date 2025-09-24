@@ -265,17 +265,39 @@
         </div>
 
         <label>Cliente</label>
+        <div class="position-relative">
+          <!-- Input de búsqueda -->
+          <input type="text" 
+                 class="form-control mb-2" 
+                 [placeholder]="isManualClient ? 'Nombre completo del cliente' : 'Buscar cliente...'"
+                 [(ngModel)]="searchClientText"
+                 (input)="filterClients()"
+                 [ngModelOptions]="{standalone: true}"
+                 [class.is-invalid]="!isManualClient && searchClientText && filteredClients.length === 0"
+                 [disabled]="isManualClient">
 
-        <!-- Select de clientes -->
-        <select name="title" class="form-control mb-2" [(ngModel)]="eventForm.title" [disabled]="isManualClient">
-          <option *ngFor="let client of clients" [value]="client.name + ' ' + client.lastname">
-            {{ client.name }} {{ client.lastname }}
-          </option>
-        </select>
+          <!-- Lista de resultados -->
+          <div class="dropdown-menu w-100" 
+               [class.show]="!isManualClient && searchClientText && filteredClients.length > 0" 
+               style="max-height: 200px; overflow-y: auto;">
+            <button type="button" 
+                    class="dropdown-item" 
+                    *ngFor="let client of filteredClients"
+                    (click)="selectClient(client)">
+              {{ client.name }} {{ client.lastname }}
+            </button>
+          </div>
+        </div>
 
         <!-- Input manual -->
-        <input *ngIf="isManualClient" type="text" class="form-control mb-2" placeholder="Nombre completo del cliente"
-          name="manualClient" [(ngModel)]="eventForm.title" [required]="isManualClient" />
+        <input *ngIf="isManualClient" 
+               type="text" 
+               class="form-control mb-2" 
+               placeholder="Nombre completo del cliente"
+               name="manualClient" 
+               [(ngModel)]="eventForm.title" 
+               (blur)="formatClientName()"
+               [required]="isManualClient" />
 
 
 
@@ -291,11 +313,28 @@
 
 
         <label>Doctor Afiliado</label>
-        <select name="personal" id="" class="form-control mb-2" (change)="onDoctorChange($event)">
-          <option value="" selected>Seleccione un doctor</option>
-          <option *ngFor="let doctor of doctors" value="{{doctor | json}}">{{doctor.name}}
-            {{doctor.lastname}}</option>
-        </select>
+        <div class="position-relative">
+          <!-- Input de búsqueda -->
+          <input type="text" 
+                 class="form-control mb-2" 
+                 placeholder="Buscar doctor..."
+                 [(ngModel)]="searchDoctorText"
+                 (input)="filterDoctors()"
+                 [ngModelOptions]="{standalone: true}"
+                 [class.is-invalid]="searchDoctorText && filteredDoctors.length === 0">
+
+          <!-- Lista de resultados -->
+          <div class="dropdown-menu w-100" 
+               [class.show]="searchDoctorText && filteredDoctors.length > 0" 
+               style="max-height: 200px; overflow-y: auto;">
+            <button type="button" 
+                    class="dropdown-item" 
+                    *ngFor="let doctor of filteredDoctors"
+                    (click)="selectDoctor(doctor)">
+              {{ doctor.name }} {{ doctor.lastname }}
+            </button>
+          </div>
+        </div>
 
         <label>Orden ligada</label>
         <select name="id_order" id="" class="form-control mb-2" [(ngModel)]="eventForm.id_order">

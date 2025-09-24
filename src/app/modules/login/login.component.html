@@ -1,4 +1,16 @@
 <div class="content">
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" 
+             [checked]="isDarkMode$ | async" (change)="toggleDarkMode()"
+             style="cursor: pointer;">
+      <label class="form-check-label" for="darkModeSwitch">
+        <i class="bi" [class.bi-moon-fill]="isDarkMode$ | async" [class.bi-sun-fill]="!(isDarkMode$ | async)"></i>
+      </label>
+    </div>
+  </div>
+
   <img src="assets/logo_ceraor.svg" alt="Logo" class="img-logo animate__animated animate__fadeIn" />
 
   <div class="grid-card animate__animated animate__fadeInUp">
@@ -9,7 +21,20 @@
       <input type="email" autocomplete="false" name="email" [(ngModel)]="credentials.email" placeholder="name@example.com" class="input-field" required />
 
       <label class="label-form mt-3">Contraseña</label>
-      <input type="password" autocomplete="false" name="password" [(ngModel)]="credentials.password" placeholder="********" class="input-field"required />
+      <div class="input-group">
+        <input [type]="showPassword ? 'text' : 'password'" 
+               autocomplete="false" 
+               name="password" 
+               [(ngModel)]="credentials.password" 
+               placeholder="********" 
+               class="input-field"
+               required />
+        <button class="btn btn-outline-secondary" 
+                type="button"
+                (click)="showPassword = !showPassword">
+          <i class="bi" [class.bi-eye-fill]="!showPassword" [class.bi-eye-slash-fill]="showPassword"></i>
+        </button>
+      </div>
 
       <!-- <a href="#modal1" class="forgot-link">Olvidé mi contraseña</a>
 
@@ -20,7 +45,7 @@
 
       <button type="submit" class="btn btn-primary w-100 mt-5">Iniciar Sesión</button>
       <div class="text-center">
-        <span style="font-size: 12px;">Ver. 1.5</span>
+        <span style="font-size: 12px;">Ver. 1.5.6</span>
       </div>
     </form>
   </div>

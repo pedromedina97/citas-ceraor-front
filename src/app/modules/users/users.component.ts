@@ -16,7 +16,11 @@ export class UsersComponent implements OnInit{
   permissions: any;
   users: any[] = [];
   filtered: any[] = [];
-  filterText: string = '';
+  nameFilter: string = '';
+  emailFilter: string = '';
+  rolFilter: string = '';
+  dateFromFilter: string = '';
+  dateToFilter: string = '';
   isLoading: boolean = true;
   dataInstance = {
     parentId: '',
@@ -92,6 +96,7 @@ export class UsersComponent implements OnInit{
     this.isLoading = true;
     this.api.getData('user/getall').subscribe(
       (data: any) => {
+        console.log(data);
         this.users = data.data;
         this.filtered = [...this.users]; // Inicializa con todos los usuarios
         this.isLoading = false;
@@ -109,19 +114,53 @@ export class UsersComponent implements OnInit{
     );
   }
 
-  clearFilter(): void {
-    this.filterText = '';
-    this.filter(); // Opcional: vuelve a mostrar todo
-  }
-  
 
   filter() {
-    const searchText = this.filterText.toLowerCase();
-    this.filtered = this.users.filter(user =>
-      user.email.toLowerCase().includes(searchText) ||
-      user.name.toLowerCase().includes(searchText) ||
-      user.lastname.toLowerCase().includes(searchText)
-    );
+    this.filtered = this.users.filter(user => {
+      // Filtro por nombre
+      const nameMatch = !this.nameFilter || 
+        (user.name + ' ' + user.lastname).toLowerCase().includes(this.nameFilter.toLowerCase());
+
+      // Filtro por email
+      const emailMatch = !this.emailFilter || 
+        user.email.toLowerCase().includes(this.emailFilter.toLowerCase());
+
+      // Filtro por rol
+      const rolMatch = !this.rolFilter || 
+        user.id_rol === this.rolFilter;
+
+      // Filtro por fecha
+      let dateMatch = true;
+      if (this.dateFromFilter || this.dateToFilter) {
+        const userDate = new Date(user.created_at);
+        
+        if (this.dateFromFilter) {
+          const fromDate = new Date(this.dateFromFilter);
+          dateMatch = dateMatch && userDate >= fromDate;
+        }
+        
+        if (this.dateToFilter) {
+          const toDate = new Date(this.dateToFilter);
+          toDate.setHours(23, 59, 59); // Incluir todo el día final
+          dateMatch = dateMatch && userDate <= toDate;
+        }
+      }
+
+      return nameMatch && emailMatch && rolMatch && dateMatch;
+    });
+  }
+
+  hasAnyFilter(): boolean {
+    return !!(this.nameFilter || this.emailFilter || this.rolFilter || this.dateFromFilter || this.dateToFilter);
+  }
+
+  clearFilters(): void {
+    this.nameFilter = '';
+    this.emailFilter = '';
+    this.rolFilter = '';
+    this.dateFromFilter = '';
+    this.dateToFilter = '';
+    this.filter();
   }
 
   getInstance(user: any, id: string) {

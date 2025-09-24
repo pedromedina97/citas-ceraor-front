@@ -1,30 +1,81 @@
 <div class="container mt-5" style="max-width: 90% !important;">
   <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8 col-sm-12 mt-4">
+    <div class="col-12 mt-4">
       <div class="card shadow-lg p-4 rounded-lg fade-in">
         <div class="card-body">
           <form (submit)="filter()" role="search" aria-label="Buscar usuario">
-            <div class="row g-2">
-              <!-- Input de búsqueda -->
-              <div class="col-12">
-                <input type="search" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
-                  autocomplete="off" [(ngModel)]="filterText" (input)="filter()"
-                  placeholder="Buscar usuario por nombre, email o teléfono..." />
+            <div class="row g-3">
+              <!-- Filtro por nombre -->
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="form-label">Nombre</label>
+                  <input type="text" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                    autocomplete="off" [(ngModel)]="nameFilter" (input)="filter()"
+                    placeholder="Filtrar por nombre..." />
+                </div>
               </div>
 
-              <!-- Botones en columna para móviles, en fila para escritorio -->
-              <div class="col-12 d-flex flex-column flex-md-row justify-content-between gap-2">
-                <!-- Botón limpiar -->
-                <button *ngIf="filterText" type="button" class="btn btn-outline-secondary w-100 w-md-auto"
-                  (click)="clearFilter()" aria-label="Limpiar búsqueda">
-                  <i class="bi bi-x-circle"></i> Limpiar
-                </button>
+              <!-- Filtro por email -->
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="text" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                    autocomplete="off" [(ngModel)]="emailFilter" (input)="filter()"
+                    placeholder="Filtrar por email..." />
+                </div>
+              </div>
 
-                <!-- Botón crear -->
-                <button *ngIf="canShow('create_user')" class="btn btn-primary w-100 w-md-auto" type="button"
-                  data-bs-toggle="modal" data-bs-target="#createModal" (click)="resetForm()">
-                  <i class="bi bi-plus-circle me-1"></i> Crear
-                </button>
+              <!-- Filtro por rol -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="form-label">Rol</label>
+                  <select class="form-select input-ios" [ngModelOptions]="{ standalone: true }"
+                    [(ngModel)]="rolFilter" (change)="filter()">
+                    <option value="">Todos los roles</option>
+                    <option *ngFor="let rol of rols" [value]="rol.id">{{ rol.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Filtro por fecha desde -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="form-label">Fecha desde</label>
+                  <input type="date" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                    [(ngModel)]="dateFromFilter" (change)="filter()" />
+                </div>
+              </div>
+
+              <!-- Filtro por fecha hasta -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="form-label">Fecha hasta</label>
+                  <input type="date" class="form-control input-ios" [ngModelOptions]="{ standalone: true }"
+                    [(ngModel)]="dateToFilter" (change)="filter()" />
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="col-12">
+                <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-stretch gap-2">
+                  <!-- Botón limpiar -->
+                  <button *ngIf="hasAnyFilter()" type="button" 
+                    class="btn btn-outline-secondary flex-fill flex-md-grow-0"
+                    (click)="clearFilters()" 
+                    aria-label="Limpiar filtros">
+                    <i class="bi bi-x-circle me-1"></i> Limpiar Filtros
+                  </button>
+
+                  <!-- Botón crear -->
+                  <button *ngIf="canShow('create_user')" 
+                    class="btn btn-primary flex-fill flex-md-grow-0" 
+                    type="button"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#createModal" 
+                    (click)="resetForm()">
+                    <i class="bi bi-plus-circle me-1"></i> Crear Usuario
+                  </button>
+                </div>
               </div>
             </div>
           </form>
@@ -63,6 +114,7 @@
             <tr>
               <th>Email</th>
               <th>Nombre</th>
+              <th>Rol</th>
               <th>Teléfono</th>
               <th>Usuario Relacionado</th>
               <th>Dirección</th>
@@ -74,18 +126,25 @@
             <tr *ngFor="let user of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
               <td>{{ user.email }}</td>
               <td>{{ user.name }} {{ user.lastname }}</td>
+              <td *ngIf="user.id_rol ==='1'">Owner</td>
+              <td *ngIf="user.id_rol ==='2'">Superadmin</td>
+              <td *ngIf="user.id_rol ==='3'">Admin</td>
+              <td *ngIf="user.id_rol ==='4'">Recepcionista</td>
+              <td *ngIf="user.id_rol ==='5'">Doctor</td>
+              <td *ngIf="user.id_rol ==='6'">Paciente</td>
+              <td *ngIf="user.id_rol ==='7'">Operativo</td>
               <td>{{ user.phone }}</td>
               <td>{{ user.related }}</td>
               <td>{{ user.address }}</td>
               <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
               <td>
                 <button *ngIf="canShow('update_user')" class="btn btn-outline-warning btn-sm me-2"
-                  data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)">
+                  data-bs-toggle="modal" data-bs-target="#editModal" (click)="getInstance(user, user.id)" title="Editar usuario">
                   <i class="bi bi-pencil-square"></i>
                 </button>
                 <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm me-2"
-                  (click)="delete(user.id, user.name)">
-                  <i class="bi bi-trash"></i>
+                  (click)="delete(user.id, user.name)" title="Desactivar usuario">
+                  <i class="bi bi-x-circle"></i>
                 </button>
                 <!-- Botón Restablecer Contraseña (solo para Owner y Superadmin) -->
                 <button *ngIf="rol === 'Owner' || rol === 'Superadmin'" 
@@ -127,6 +186,7 @@
         <div class="mobile-card" *ngFor="let user of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
           <p><strong>Email:</strong> {{ user.email }}</p>
           <p><strong>Nombre:</strong> {{ user.name }} {{ user.lastname }}</p>
+          <p><strong>Rol:</strong> {{ user.id_rol ==='1' ? 'Owner' : user.id_rol ==='2' ? 'Superadmin' : user.id_rol ==='3' ? 'Admin' : user.id_rol ==='4' ? 'Recepcionista' : user.id_rol ==='5' ? 'Doctor' : user.id_rol ==='6' ? 'Paciente' : user.id_rol ==='7' ? 'Operativo' : 'Sin rol' }}</p>
           <p><strong>Teléfono:</strong> {{ user.phone }}</p>
           <p><strong>Relacionado:</strong> {{ user.related }}</p>
           <p><strong>Dirección:</strong> {{ user.address }}</p>
@@ -138,7 +198,7 @@
             </button>
             <button *ngIf="canShow('delete_user')" class="btn btn-outline-danger btn-sm me-2"
               (click)="delete(user.id, user.name)">
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-x-circle"></i>
             </button>
             <!-- Botón Restablecer Contraseña (solo para Owner y Superadmin) -->
             <button *ngIf="rol === 'Owner' || rol === 'Superadmin'" 
