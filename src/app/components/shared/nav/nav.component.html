@@ -8,6 +8,18 @@
  -->
     <div class="spacer flex-grow-1"></div>
 
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle me-3">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" 
+               [checked]="isDarkMode$ | async" (change)="toggleDarkMode()"
+               style="cursor: pointer;">
+        <label class="form-check-label" for="darkModeSwitch">
+          <i class="bi" [class.bi-moon-fill]="isDarkMode$ | async" [class.bi-sun-fill]="!(isDarkMode$ | async)"></i>
+        </label>
+      </div>
+    </div>
+
     <!-- Menú de usuario -->
     <div class="user-menu">
       <div class="user-name d-flex align-items-center gap-2" (click)="toggleDropdown()" style="cursor: pointer;">

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CeraorService } from '../../../services/ceraor.service';
 import { PermissionsService } from '../../../services/permissions.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-nav',
@@ -11,7 +12,7 @@ import { PermissionsService } from '../../../services/permissions.service';
   styleUrl: './nav.component.scss'
 })
 export class NavComponent implements OnInit {
-
+  isDarkMode$: any;
   permissions: any;
   user: string;
   dropdownVisible: boolean = false;
@@ -97,7 +98,14 @@ export class NavComponent implements OnInit {
 
 
 
-  constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) {
+  constructor(
+    private api: CeraorService,
+    private permissionsService: PermissionsService,
+    private cd: ChangeDetectorRef,
+    private router: Router,
+    private zone: NgZone,
+    private themeService: ThemeService
+  ) {
     this.getInfo();
   }
 
@@ -122,6 +130,7 @@ export class NavComponent implements OnInit {
     this.loadPermissions();
     this.user = localStorage.getItem('userName') || ''; // Asigna el valor en ngOnInit
     this.getUser();
+    this.isDarkMode$ = this.themeService.darkMode$;
   }
 
   toggleSidebar() {
@@ -130,6 +139,10 @@ export class NavComponent implements OnInit {
 
   toggleDropdown(): void {
     this.dropdownVisible = !this.dropdownVisible;
+  }
+
+  toggleDarkMode(): void {
+    this.themeService.toggleDarkMode();
   }
 
   @HostListener('document:click', ['$event'])
