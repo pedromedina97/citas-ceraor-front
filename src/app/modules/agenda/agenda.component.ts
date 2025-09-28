@@ -48,6 +48,15 @@ export class AgendaComponent implements OnInit {
   subsidiaries: any;
   doctors: any;
   clients: any;
+  private eventsForSlots: Event[] = [];
+
+  timeSlots: Array<{
+    slot_start: string;
+    slot_end: string;
+    status: 'available' | 'occupied';
+  }> = [];
+  canSelectDateTime: boolean = false;
+
   eventForm: EventForm = {
     id: '',
     id_order: '',
@@ -63,6 +72,8 @@ export class AgendaComponent implements OnInit {
 
   searchDoctorText: string = '';
   filteredDoctors: any[] = [];
+  searchOrderText: string = '';
+  filteredOrders: any[] = [];
   weekDays: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   services: any;
   editing: boolean = false;
@@ -424,33 +435,47 @@ export class AgendaComponent implements OnInit {
   updateEndTime() {
     if (!this.eventForm.startTime) return;
 
-    let startHour = parseInt(this.eventForm.startTime.split(':')[0], 10);
-    let startMinutes = parseInt(this.eventForm.startTime.split(':')[1], 10);
+    // Encontrar el slot seleccionado
+    const selectedSlot = this.timeSlots.find(slot => {
+      const slotTime = new Date(slot.slot_start).toTimeString().substring(0, 5);
+      return slotTime === this.eventForm.startTime;
+    });
 
-    // 📌 Aseguramos que la hora final sea 30 minutos después de la hora de inicio
-    let endMinutes = startMinutes + 30;
-    let endHour = startHour;
-
-    if (endMinutes >= 60) {
-      endMinutes -= 60;
-      endHour += 1;
+    if (selectedSlot) {
+      this.eventForm.endTime = new Date(selectedSlot.slot_end).toTimeString().substring(0, 5);
     }
-
-    // 📌 Formateamos en HH:mm
-    this.eventForm.endTime = `${endHour.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
   }
 
-  // 🟢 Método para validar si todos los campos del formulario están llenos
+  // 🟢 Método para validar si todos los campos requeridos del formulario están llenos
   isFormValid(): boolean {
-    return (
-      this.eventForm.title.trim() !== '' &&
-      this.eventForm.start.trim() !== '' &&
-      this.eventForm.startTime.trim() !== '' &&
-      this.eventForm.endTime.trim() !== '' &&
-      this.eventForm.personal.trim() !== '' &&
-      this.eventForm.id_subsidiary.trim() !== '' &&
-      this.eventForm.service.trim() !== ''
+    const requiredFields = {
+      'Cliente': this.eventForm.title?.trim() !== '',
+      'Fecha': this.eventForm.start?.trim() !== '',
+      'Horario': this.eventForm.startTime?.trim() !== '',
+      'Sucursal': this.eventForm.id_subsidiary?.trim() !== '',
+      'Servicio': this.eventForm.service?.trim() !== ''
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, isValid]) => !isValid)
+      .map(([fieldName]) => fieldName);
+
+    if (missingFields.length > 0) {
+      console.log('Campos faltantes:', missingFields.join(', '));
+      return false;
+    }
+
+    // Verificar que el horario seleccionado siga disponible
+    const selectedSlot = this.timeSlots.find(slot => 
+      new Date(slot.slot_start).toTimeString().substring(0, 5) === this.eventForm.startTime
     );
+
+    if (!selectedSlot || selectedSlot.status !== 'available') {
+      console.log('El horario seleccionado no está disponible');
+      return false;
+    }
+
+    return true;
   }
   getDayEvents(): Event[] {
     return this.events
@@ -501,21 +526,29 @@ export class AgendaComponent implements OnInit {
 
     const isoDate = day.toISOString().slice(0, 10); // Formato YYYY-MM-DD
 
-    this.eventForm = {
-      id: '',
-      id_order: '',
-      title: '',
-      start: isoDate,
-      startTime: '12:00',
-      endTime: '',
-      color: this.generateRandomColor(), // 🟢 Color aleatorio siempre
-      personal: '',
-      id_subsidiary: '',
-      service: ''
-    };
+    // Limpiar el formulario y estados
+    this.resetEventForm();
+    this.eventsForSlots = [];
+    
+    // Establecer la fecha seleccionada
+    this.eventForm.start = isoDate;
+
+    // Si es doctor, establecemos el texto de búsqueda y filtramos las órdenes
+    if (this.rol === 'Doctor') {
+      this.searchDoctorText = `${this.name} ${this.lastname}`;
+      this.getOrders(this.name, this.lastname);
+    }
+    // Si es recepcionista, cargamos todas las órdenes
+    else if (this.rol === 'Recepcionista') {
+      this.getAllOrders();
+    }
     this.updateEndTime(); // ✅ Cálculo automático al abrir modal
     this.editing = false;
-    this.modalService.open(this.eventModal); // 🟢 Ahora se abre sin importar si ya hay eventos en el día
+    this.modalService.open(this.eventModal, { 
+      size: 'xl',
+      backdrop: 'static',
+      keyboard: false
+    }); // Modal más grande y previene cierre accidental
   }
 
   saveEvent() {
@@ -548,17 +581,44 @@ export class AgendaComponent implements OnInit {
 
     // Si no hay conflicto, procedemos a guardar
     this.eventForm.color = this.generateRandomColor();
+    
+    // Encontrar el slot seleccionado para usar sus tiempos exactos
+    const selectedSlot = this.timeSlots.find(slot => 
+      new Date(slot.slot_start).toTimeString().substring(0, 5) === this.eventForm.startTime
+    );
+
+    if (!selectedSlot) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El horario seleccionado ya no está disponible.'
+      });
+      return;
+    }
+
+    // Validar que el cliente no sea null o vacío
+    if (!this.eventForm.title || this.eventForm.title.trim() === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El nombre del cliente es obligatorio'
+      });
+      return;
+    }
+
     const eventData = {
-      id_order: this.eventForm.id_order,
-      client: this.eventForm.title,
-      personal: this.eventForm.personal,
+      id_order: this.eventForm.id_order || '',
+      client: this.eventForm.title.trim(),
+      personal: this.eventForm.personal || '',
       id_subsidiary: this.eventForm.id_subsidiary,
       service: this.eventForm.service,
-      appointment: `${this.eventForm.start} ${this.eventForm.startTime}:00`,
-      end_appointment: `${this.eventForm.start} ${this.eventForm.endTime}:00`,
+      appointment: selectedSlot.slot_start,
+      end_appointment: selectedSlot.slot_end,
       color: this.eventForm.color
     };
 
+    console.log('Datos a enviar:', eventData);
+    
     this.api.createData('appointment/setappointment', eventData).subscribe(
       (resp: any) => {
         Swal.fire({
@@ -576,6 +636,7 @@ export class AgendaComponent implements OnInit {
           }
         }, 300);
         
+        this.resetEventForm();
         this.modalService.dismissAll();
       },
       (error) => {
@@ -611,7 +672,59 @@ export class AgendaComponent implements OnInit {
       }
     );
   }
+  getAllOrders() {
+    this.api.getData('order/getall').subscribe(
+      (resp: any) => {
+        this.catalogOrders = resp.data;
+        this.filteredOrders = resp.data;
+      },
+      (error) => {
+        console.log(error.error);
+      }
+    );
+  }
+
+  // Método para filtrar órdenes
+  filterOrders() {
+    if (!this.searchOrderText) {
+      this.filteredOrders = this.catalogOrders;
+      return;
+    }
+
+    const searchText = this.searchOrderText.toLowerCase();
+    this.filteredOrders = this.catalogOrders.filter((order: any) => {
+      return (
+        order.patient?.toLowerCase().includes(searchText) ||
+        order.doctor?.toLowerCase().includes(searchText) ||
+        order.created_at?.toLowerCase().includes(searchText) ||
+        order.service_name?.toLowerCase().includes(searchText)
+      );
+    });
+  }
+
+  // Método para seleccionar una orden
+  selectOrder(order: any) {
+    this.eventForm.id_order = order.id;
+    this.searchOrderText = `${order.patient} - ${order.created_at}`;
+    
+    // Si la orden tiene una sucursal asignada, la seleccionamos y cargamos sus servicios
+    if (order.id_subsidiary) {
+      this.eventForm.id_subsidiary = order.id_subsidiary;
+      this.getServices(order.id_subsidiary);
+    }
+
+    // Limpiar la lista de órdenes filtradas para ocultar el dropdown
+    this.filteredOrders = [];
+  }
+
   getOrders(name: String, lastname: String) {
+    // Si es recepcionista, obtener todas las órdenes
+    if (this.rol === 'Recepcionista') {
+      this.getAllOrders();
+      return;
+    }
+    
+    // Si no es recepcionista, obtener solo las órdenes del doctor
     this.api.getDataById('order/getbydoctor', name + ' ' + lastname).subscribe(
       (resp: any) => {
         this.catalogOrders = resp.data;
@@ -652,7 +765,10 @@ export class AgendaComponent implements OnInit {
     this.eventForm.personal = doctor.name + ' ' + doctor.lastname;
     this.searchDoctorText = doctor.name + ' ' + doctor.lastname;
     this.filteredDoctors = [];
-    this.getOrders(doctor.name, doctor.lastname);
+    // Solo filtramos las órdenes por doctor si no es recepcionista
+    if (this.rol !== 'Recepcionista') {
+      this.getOrders(doctor.name, doctor.lastname);
+    }
   }
 
   getMyClients() {
@@ -766,16 +882,111 @@ export class AgendaComponent implements OnInit {
     );
   }
 
-  getServices(id: string) {
+  /* getServices(id: string) {
     this.services = []; // Limpiar servicios anteriores
     this.api.getDataById('service/getbysubsidiary', id).subscribe(
       (resp: any) => {
         this.services = resp.data;
+        this.canSelectDateTime = true;
+        this.calculateAvailableTimeSlots();
       },
       (error) => {
         console.error('Error al cargar servicios:', error);
       }
     );
+  } */
+  getServices(id: string) {
+    this.services = []; // Limpiar servicios anteriores
+    
+    // Si no hay fecha seleccionada en el formulario, usar la fecha actual
+    if (!this.eventForm.start) {
+      this.eventForm.start = new Date().toISOString().slice(0, 10);
+    }
+  
+    // 1) Cargar servicios de la sucursal
+    this.api.getDataById('service/getbysubsidiary', id).subscribe(
+      (resp: any) => {
+        this.services = resp.data;
+        
+        // 2) Cargar horarios disponibles
+        this.getAvailableTimeSlots();
+        this.canSelectDateTime = true;
+      },
+      (error) => {
+        console.error('Error al cargar servicios:', error);
+      }
+    );
+  }
+    
+
+    private async fetchDayEventsForSubsidiary(dateISO: string, subsidiaryId: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        this.api.getDataById('appointment/getbysubsidiary', subsidiaryId).subscribe(
+          (resp: any) => {
+            const all = (resp?.data || []) as any[];
+    
+            // Mapea al tipo Event y filtra por el día exacto
+            const mapped: Event[] = all.map(ev => ({
+              id: ev.id,
+              id_order: ev.id_order || '',
+              title: ev.client,
+              start: ev.appointment,
+              end: ev.end_appointment,
+              personal: ev.personal,
+              id_subsidiary: ev.id_subsidiary,
+              service: ev.service,
+              service_name: ev.service_name,
+              subsidiary_name: ev.subsidiary_name,
+              color: ev.color || this.generateRandomColor()
+            }));
+    
+            const selectedDate = new Date(dateISO);
+            this.eventsForSlots = mapped.filter(e => {
+              const d = new Date(e.start);
+              return d.getFullYear() === selectedDate.getFullYear()
+                  && d.getMonth() === selectedDate.getMonth()
+                  && d.getDate() === selectedDate.getDate();
+            });
+    
+            resolve();
+          },
+          (error) => {
+            console.error('Error al cargar citas del día por sucursal:', error);
+            this.eventsForSlots = [];
+            resolve(); // resolvemos vacío para no romper el flujo
+          }
+        );
+      });
+    }
+    
+    
+
+  onServiceSelected() {
+    if (this.eventForm.id_subsidiary && this.eventForm.service) {
+      this.canSelectDateTime = true;
+      if (this.eventForm.start) {
+        this.calculateAvailableTimeSlots();
+      }
+    }
+    console.log('Can select date time:', this.canSelectDateTime);
+  }
+
+  calculateAvailableTimeSlots() {
+    if (this.eventForm.id_subsidiary && this.eventForm.start) {
+      this.getAvailableTimeSlots();
+    }
+  }
+
+  getAvailableTimeSlots() {
+   this.api.getData(`appointment/getavaliables/${this.eventForm.id_subsidiary}/${this.eventForm.start}`).subscribe(
+    (resp: any) => {
+      this.timeSlots = resp.data;
+      console.log('Horarios disponibles:', this.timeSlots);
+    },
+    (error) => {
+      console.error('Error al cargar horarios disponibles:', error);
+    }
+   );
   }
 
   loadPermissions() {
@@ -1097,6 +1308,39 @@ export class AgendaComponent implements OnInit {
     } else {
       this.events = []; // Limpiar eventos si se deselecciona
     }
+  }
+
+  resetEventForm() {
+    // Limpiar el formulario principal
+    this.eventForm = {
+      id: '',
+      id_order: '',
+      title: '',
+      start: new Date().toISOString().slice(0, 10), // Mantener la fecha actual
+      startTime: '',
+      endTime: '',
+      color: this.generateRandomColor(),
+      personal: this.rol === 'Doctor' ? `${this.name} ${this.lastname}` : '', // Mantener si es doctor
+      id_subsidiary: '',
+      service: ''
+    };
+
+    // Limpiar campos de búsqueda
+    this.searchClientText = '';
+    this.searchDoctorText = '';
+    this.searchOrderText = '';
+
+    // Limpiar resultados de búsqueda
+    this.filteredClients = [];
+    this.filteredDoctors = [];
+    this.filteredOrders = [];
+
+    // Limpiar horarios
+    this.timeSlots = [];
+    this.canSelectDateTime = false;
+
+    // Resetear modo de entrada de cliente
+    this.isManualClient = false;
   }
 
   getAppointmentsBySubsidiary(id: string) {

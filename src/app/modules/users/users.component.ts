@@ -199,11 +199,9 @@ export class UsersComponent implements OnInit{
     }
 
     // Formatear la fecha en ddmmaa
-    const birthDate = new Date(this.dataInstance.birthday);
-    const day = birthDate.getDate().toString().padStart(2, '0');
-    const month = (birthDate.getMonth() + 1).toString().padStart(2, '0');
-    const year = birthDate.getFullYear().toString().slice(-2);
-    const datePassword = `${day}${month}${year}`;
+    // Usar split para obtener los componentes de la fecha directamente del string YYYY-MM-DD
+    const [year, month, day] = this.dataInstance.birthday.split('-');
+    const datePassword = `${day}${month}${year.slice(-2)}`;
 
     // Usar solo la fecha como contraseña
     console.log('Contraseña generada de fecha:', datePassword);
@@ -252,6 +250,7 @@ export class UsersComponent implements OnInit{
   
     this.api.createData('user/register', this.dataInstance).subscribe(
       (data: any) => {
+        console.log(data);
         Swal.fire({
           title: 'Usuario Creado',
           icon: 'success',
@@ -270,6 +269,7 @@ export class UsersComponent implements OnInit{
         this.setPermissions();
       },
       (error) => {
+        console.log(error);
         Swal.fire({
           title: 'Error',
           icon: 'error',
@@ -321,6 +321,7 @@ export class UsersComponent implements OnInit{
       this.setPetitions();
       },
       (error) => {
+        console.log(error);
         Swal.fire({
           title: 'Error',
           icon: 'error',

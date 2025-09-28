@@ -262,7 +262,7 @@
                 <div class="input-group mb-2">
                   <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" name="password" 
                     class="form-control input-ios" [(ngModel)]="dataInstance.password" required minlength="4" 
-                    #password="ngModel" readonly>
+                    #password="ngModel" >
                   <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
                     <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                   </button>
@@ -357,7 +357,7 @@
                 <div class="input-group mb-2">
                   <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" name="password" 
                     class="form-control input-ios" [(ngModel)]="dataInstance.password" required minlength="8" 
-                    #password="ngModel" readonly>
+                    #password="ngModel">
                   <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
                     <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                   </button>

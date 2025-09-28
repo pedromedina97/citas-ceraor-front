@@ -12,7 +12,7 @@
           <h3>Citas del mes</h3>
           <p><span class="counter">{{data?.total_citas_mes}}</span></p>
         </div>
-        <div class="dashboard-card">
+        <div class="dashboard-card" *ngIf="isAdminRole()">
           <h3>Ingresos del mes</h3>
           <p><span class="counter">{{ data?.ganancia_mes | currency: 'MXN':'symbol' }}</span></p>
         </div>

@@ -50,14 +50,6 @@
               (click)="deleteEvent(event.id, $event)">×</button>
           </div>
         </div>
-
-        <!-- <div class="events-container" *ngIf="day">
-          <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color"
-            (click)="openEventDetails(event, eventDetailsModal); $event.stopPropagation()">
-            <span>{{ event.title }}</span>
-            <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
-          </div>
-        </div> -->
       </div>
     </div>
   </div>
@@ -76,10 +68,10 @@
           </div>
           <p class="mt-2 text-muted">Cargando información completa del evento...</p>
         </div>
-        
+
         <!-- Contenido del evento -->
         <div [style.opacity]="loadingEventDetails ? '0.5' : '1'" [style.transition]="'opacity 0.3s ease'">
-          
+
           <!-- Información del Paciente -->
           <div class="card mb-3">
             <div class="card-header bg-primary text-white">
@@ -91,14 +83,15 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6">
-                  <p><strong>Paciente:</strong> 
+                  <p><strong>Paciente:</strong>
                     <span *ngIf="selectedEvent.patient_name">{{ selectedEvent.patient_name }}</span>
                     <span *ngIf="!selectedEvent.patient_name && selectedEvent.title">{{ selectedEvent.title }}</span>
-                    <span *ngIf="!selectedEvent.patient_name && !selectedEvent.title" class="text-muted"><em>No disponible</em></span>
+                    <span *ngIf="!selectedEvent.patient_name && !selectedEvent.title" class="text-muted"><em>No
+                        disponible</em></span>
                   </p>
                 </div>
                 <div class="col-md-6">
-                  <p><strong>ID Cita:</strong> 
+                  <p><strong>ID Cita:</strong>
                     <span class="badge bg-info text-white">{{ selectedEvent.appointment_id || selectedEvent.id }}</span>
                   </p>
                 </div>
@@ -117,7 +110,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6">
-                  <p><strong>Fecha y Hora:</strong> 
+                  <p><strong>Fecha y Hora:</strong>
                     <span *ngIf="selectedEvent.appointment_datetime">
                       {{ selectedEvent.appointment_datetime | date:'dd/MM/yyyy HH:mm' }}
                     </span>
@@ -125,18 +118,21 @@
                       {{ selectedEvent.start | date:'dd/MM/yyyy HH:mm' }}
                     </span>
                   </p>
-                  <p><strong>Personal:</strong> 
+                  <p><strong>Personal:</strong>
                     <span *ngIf="selectedEvent.staff_name">{{ selectedEvent.staff_name }}</span>
-                    <span *ngIf="!selectedEvent.staff_name && selectedEvent.personal">{{ selectedEvent.personal }}</span>
-                    <span *ngIf="!selectedEvent.staff_name && !selectedEvent.personal" class="text-muted"><em>No disponible</em></span>
+                    <span *ngIf="!selectedEvent.staff_name && selectedEvent.personal">{{ selectedEvent.personal
+                      }}</span>
+                    <span *ngIf="!selectedEvent.staff_name && !selectedEvent.personal" class="text-muted"><em>No
+                        disponible</em></span>
                   </p>
                 </div>
                 <div class="col-md-6">
-                  <p><strong>Sucursal:</strong> 
-                    <span *ngIf="selectedEvent.subsidiary_name" class="badge bg-secondary">{{ selectedEvent.subsidiary_name }}</span>
+                  <p><strong>Sucursal:</strong>
+                    <span *ngIf="selectedEvent.subsidiary_name" class="badge bg-secondary">{{
+                      selectedEvent.subsidiary_name }}</span>
                     <span *ngIf="!selectedEvent.subsidiary_name" class="text-muted"><em>No disponible</em></span>
                   </p>
-                  <p><strong>Estado:</strong> 
+                  <p><strong>Estado:</strong>
                     <span class="badge bg-warning text-dark">Agendada</span>
                   </p>
                 </div>
@@ -155,14 +151,15 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-8">
-                  <p><strong>Servicio:</strong> 
+                  <p><strong>Servicio:</strong>
                     <span *ngIf="selectedEvent.service_name" class="fw-bold">{{ selectedEvent.service_name }}</span>
                     <span *ngIf="!selectedEvent.service_name" class="text-muted"><em>No disponible</em></span>
                   </p>
                 </div>
                 <div class="col-md-4">
-                  <p><strong>Precio:</strong> 
-                    <span *ngIf="selectedEvent.service_price" class="text-success fw-bold">${{ selectedEvent.service_price }}</span>
+                  <p><strong>Precio:</strong>
+                    <span *ngIf="selectedEvent.service_price" class="text-success fw-bold">${{
+                      selectedEvent.service_price }}</span>
                     <span *ngIf="!selectedEvent.service_price" class="text-muted"><em>No disponible</em></span>
                   </p>
                 </div>
@@ -179,35 +176,19 @@
               </h6>
             </div>
             <div class="card-body">
-              <p><strong>Color del Evento:</strong> 
-                <span [style.backgroundColor]="selectedEvent.color" 
-                      class="color-box d-inline-block rounded" 
-                      style="width: 30px; height: 20px; border: 1px solid #ccc;">
+              <p><strong>Color del Evento:</strong>
+                <span [style.backgroundColor]="selectedEvent.color" class="color-box d-inline-block rounded"
+                  style="width: 30px; height: 20px; border: 1px solid #ccc;">
                 </span>
                 <span class="ms-2 small text-muted">{{ selectedEvent.color }}</span>
               </p>
             </div>
           </div>
-          
-          <!-- Debug info (temporal) -->
-          <!-- <details class="mt-3">
-            <summary class="text-muted small">
-              <i class="bi bi-bug me-1"></i>
-              Debug Info (temporal)
-            </summary>
-            <div class="small text-muted mt-2">
-              <p><strong>Endpoint usado:</strong> appointment/getdetailbyid/{{ selectedEvent.appointment_id || selectedEvent.id }}</p>
-              <p><strong>Estado de carga:</strong> {{ loadingEventDetails ? 'Cargando...' : 'Completo' }}</p>
-              <div class="bg-light p-2 rounded">
-                <pre class="mb-0">{{ selectedEvent | json }}</pre>
-              </div>
-            </div>
-          </details> -->
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary"
-      (click)="checkAppointment(selectedEvent.id)">Cobrar</button>
+          (click)="checkAppointment(selectedEvent.id)">Cobrar</button>
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cerrar</button>
       </div>
     </div>
@@ -226,13 +207,6 @@
           <span>{{ event.title }}</span>
           <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
         </div>
-
-
-        <!-- <div *ngFor="let event of getEventsForDay(day)" class="event" [style.backgroundColor]="event.color">
-          <span>{{ event.title }}</span>
-          <button class="btn-delete" (click)="deleteEvent(event.id, $event)">×</button>
-        </div> -->
-
       </div>
     </div>
   </div>
@@ -249,170 +223,253 @@
     </div>
   </div>
 
-
-
   <ng-template #eventModal let-modal
     *ngIf="rol === 'Owner' || rol === 'Superadmin' || rol === 'Admin' || rol === 'Recepcionista' || rol === 'Doctor'">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Agregar Cita</h5>
-        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-calendar-plus"></i> Agregar Cita
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
       </div>
       <div class="modal-body">
-        <div class="form-check form-switch mb-2">
-          <input class="form-check-input" type="checkbox" id="manualClientSwitch" [(ngModel)]="isManualClient">
-          <label class="form-check-label" for="manualClientSwitch">Escribir cliente manualmente</label>
-        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <!-- Columna izquierda -->
+            <div class="col-md-6">
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Información del Cliente</h6>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="manualClientSwitch"
+                        [(ngModel)]="isManualClient">
+                      <label class="form-check-label small" for="manualClientSwitch">Entrada manual</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="position-relative">
+                    <!-- Input de búsqueda -->
+                    <input type="text" class="form-control"
+                      [placeholder]="isManualClient ? 'Nombre completo del cliente' : 'Buscar cliente...'"
+                      [(ngModel)]="searchClientText" (input)="filterClients()" [ngModelOptions]="{standalone: true}"
+                      [class.is-invalid]="!isManualClient && searchClientText && filteredClients.length === 0 && !eventForm.title"
+                      [disabled]="isManualClient">
 
-        <label>Cliente</label>
-        <div class="position-relative">
-          <!-- Input de búsqueda -->
-          <input type="text" 
-                 class="form-control mb-2" 
-                 [placeholder]="isManualClient ? 'Nombre completo del cliente' : 'Buscar cliente...'"
-                 [(ngModel)]="searchClientText"
-                 (input)="filterClients()"
-                 [ngModelOptions]="{standalone: true}"
-                 [class.is-invalid]="!isManualClient && searchClientText && filteredClients.length === 0"
-                 [disabled]="isManualClient">
+                    <!-- Lista de resultados -->
+                    <div class="dropdown-menu w-100"
+                      [class.show]="!isManualClient && searchClientText && filteredClients.length > 0"
+                      style="max-height: 200px; overflow-y: auto;">
+                      <button type="button" class="dropdown-item" *ngFor="let client of filteredClients"
+                        (click)="selectClient(client)">
+                        {{ client.name }} {{ client.lastname }}
+                      </button>
+                    </div>
+                  </div>
 
-          <!-- Lista de resultados -->
-          <div class="dropdown-menu w-100" 
-               [class.show]="!isManualClient && searchClientText && filteredClients.length > 0" 
-               style="max-height: 200px; overflow-y: auto;">
-            <button type="button" 
-                    class="dropdown-item" 
-                    *ngFor="let client of filteredClients"
-                    (click)="selectClient(client)">
-              {{ client.name }} {{ client.lastname }}
-            </button>
+                  <!-- Input manual -->
+                  <input *ngIf="isManualClient" type="text" class="form-control mt-2"
+                    placeholder="Nombre completo del cliente" name="manualClient" [(ngModel)]="eventForm.title"
+                    (blur)="formatClientName()" [required]="isManualClient" />
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">Detalles del Servicio</h6>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label">Sucursal</label>
+                    <select class="form-control" [(ngModel)]="eventForm.id_subsidiary"
+                      (change)="getServices(eventForm.id_subsidiary); calculateAvailableTimeSlots()" required>
+                      <option value="" selected>Seleccione una sucursal</option>
+                      <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
+                        {{ subsidiary.name }}
+                      </option>
+                    </select>
+
+                    <!-- <select class="form-control" [(ngModel)]="eventForm.id_subsidiary" 
+                            (change)="getServices(eventForm.id_subsidiary)" required>
+                      <option value="" selected>Seleccione una sucursal</option>
+                      <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
+                        {{ subsidiary.name }}
+                      </option>
+                    </select> -->
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Servicio</label>
+                    <select class="form-control" [(ngModel)]="eventForm.service" (change)="onServiceSelected()"
+                      required>
+                      <option value="" selected>Seleccione un servicio</option>
+                      <option *ngFor="let service of services" [value]="service.id">
+                        {{ service.name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Orden ligada</label>
+                    <div class="position-relative">
+                      <input type="text" class="form-control" placeholder="Buscar orden..."
+                        [(ngModel)]="searchOrderText" (input)="filterOrders()" [ngModelOptions]="{standalone: true}">
+
+                      <div class="dropdown-menu w-100" [class.show]="searchOrderText && filteredOrders.length > 0"
+                        style="max-height: 200px; overflow-y: auto;">
+                        <button type="button" class="dropdown-item" *ngFor="let order of filteredOrders"
+                          (click)="selectOrder(order)">
+                          <div class="d-flex flex-column">
+                            <span><strong>Paciente:</strong> {{order.patient}}</span>
+                            <small class="text-muted">
+                              <span><strong>Doctor:</strong> {{order.doctor}}</span> |
+                              <span><strong>Servicio:</strong> {{order.service_name}}</span> |
+                              <span><strong>Fecha:</strong> {{order.created_at | date:'short'}}</span>
+                            </small>
+                          </div>
+                        </button>
+                      </div>
+                      <input type="hidden" name="id_order" [(ngModel)]="eventForm.id_order">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col-md-6">
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">Información del Doctor</h6>
+                </div>
+                <div class="card-body">
+                  <div class="position-relative">
+                    <!-- Input de búsqueda -->
+                    <input type="text" class="form-control" placeholder="Buscar doctor..."
+                      [(ngModel)]="searchDoctorText" (input)="filterDoctors()" [ngModelOptions]="{standalone: true}"
+                      [class.is-invalid]="rol !== 'Doctor' && searchDoctorText && filteredDoctors.length === 0 && !eventForm.personal"
+                      [readonly]="rol === 'Doctor'" [style.backgroundColor]="rol === 'Doctor' ? '#e9ecef' : ''">
+
+                    <!-- Lista de resultados (solo visible si no es Doctor) -->
+                    <div class="dropdown-menu w-100"
+                      [class.show]="rol !== 'Doctor' && searchDoctorText && filteredDoctors.length > 0"
+                      style="max-height: 200px; overflow-y: auto;">
+                      <button type="button" class="dropdown-item" *ngFor="let doctor of filteredDoctors"
+                        (click)="selectDoctor(doctor)">
+                        {{ doctor.name }} {{ doctor.lastname }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">Fecha y Hora</h6>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-control" [(ngModel)]="eventForm.start"
+                      (change)="calculateAvailableTimeSlots()" [disabled]="!canSelectDateTime" required />
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <label class="form-label">Horarios Disponibles (15 minutos)</label>
+                      <div class="time-slots border rounded p-2" style="max-height: 300px; overflow-y: auto;">
+                        <div *ngIf="timeSlots.length === 0" class="text-center text-muted p-2">
+                          <i class="bi bi-calendar-x"></i> Seleccione una fecha para ver los horarios
+                        </div>
+                        <div class="d-grid gap-1">
+                          <ng-container *ngFor="let slot of timeSlots">
+                            <!-- Horario Disponible -->
+                            <button *ngIf="slot.status === 'available'" 
+                                    type="button" 
+                                    class="btn btn-outline-success text-start" 
+                                    (click)="eventForm.startTime = slot.slot_start.substring(11, 16); updateEndTime()"
+                                    [class.active]="eventForm.startTime === slot.slot_start.substring(11, 16)">
+                              <i class="bi bi-clock me-2"></i>
+                              {{ slot.slot_start | date:'HH:mm' }} - {{ slot.slot_end | date:'HH:mm' }}
+                              <small class="text-success ms-2">(Disponible)</small>
+                            </button>
+
+                            <!-- Horario Ocupado -->
+                            <div *ngIf="slot.status === 'occupied'" 
+                                 class="btn btn-outline-danger text-start disabled">
+                              <i class="bi bi-clock-fill me-2"></i>
+                              {{ slot.slot_start | date:'HH:mm' }} - {{ slot.slot_end | date:'HH:mm' }}
+                              <small class="text-danger ms-2">(Ocupado)</small>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-3" *ngIf="eventForm.startTime">
+                    <label class="form-label">Hora Seleccionada</label>
+                    <div class="alert alert-info">
+                      <i class="bi bi-clock"></i>
+                      Inicio: <strong>{{ eventForm.startTime }}</strong> |
+                      Fin: <strong>{{ eventForm.endTime }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <!-- Input manual -->
-        <input *ngIf="isManualClient" 
-               type="text" 
-               class="form-control mb-2" 
-               placeholder="Nombre completo del cliente"
-               name="manualClient" 
-               [(ngModel)]="eventForm.title" 
-               (blur)="formatClientName()"
-               [required]="isManualClient" />
-
-
-
-        <label>Fecha</label>
-        <input type="date" class="form-control mb-2" [(ngModel)]="eventForm.start" required />
-
-        <label>Hora de Inicio</label>
-        <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.startTime" (change)="updateEndTime()"
-          required />
-
-        <label>Hora de Finalización</label>
-        <input type="time" class="form-control mb-2" [(ngModel)]="eventForm.endTime" readonly required />
-
-
-        <label>Doctor Afiliado</label>
-        <div class="position-relative">
-          <!-- Input de búsqueda -->
-          <input type="text" 
-                 class="form-control mb-2" 
-                 placeholder="Buscar doctor..."
-                 [(ngModel)]="searchDoctorText"
-                 (input)="filterDoctors()"
-                 [ngModelOptions]="{standalone: true}"
-                 [class.is-invalid]="searchDoctorText && filteredDoctors.length === 0">
-
-          <!-- Lista de resultados -->
-          <div class="dropdown-menu w-100" 
-               [class.show]="searchDoctorText && filteredDoctors.length > 0" 
-               style="max-height: 200px; overflow-y: auto;">
-            <button type="button" 
-                    class="dropdown-item" 
-                    *ngFor="let doctor of filteredDoctors"
-                    (click)="selectDoctor(doctor)">
-              {{ doctor.name }} {{ doctor.lastname }}
-            </button>
-          </div>
-        </div>
-
-        <label>Orden ligada</label>
-        <select name="id_order" id="" class="form-control mb-2" [(ngModel)]="eventForm.id_order">
-          <option value="" selected>Seleccione un orden</option>
-          <option *ngFor="let order of catalogOrders" value="{{order.id}}">{{order.patient}} - {{order.created_at}}
-          </option>
-        </select>
-
-        <label>Sucursal</label>
-        <select class="form-control mb-2" [(ngModel)]="eventForm.id_subsidiary"
-          (change)="getServices(eventForm.id_subsidiary)" required>
-          <option value="" selected>Seleccione una sucursal</option>
-          <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
-            {{ subsidiary.name }}
-          </option>
-        </select>
-
-        <label>Servicio</label>
-        <select class="form-control mb-2" [(ngModel)]="eventForm.service" required>
-          <option *ngFor="let service of services" [value]="service.id">
-            {{ service.name }}
-          </option>
-        </select>
-
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
         <button type="button" class="btn btn-primary" (click)="saveEvent(); modal.dismiss()"
           [disabled]="!isFormValid()">Guardar</button>
-
       </div>
     </div>
   </ng-template>
 
-</div>
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">BARCODE</h4>
+      <input type="text" #codigoInput (input)="onBarcodeInput(codigoInput.value)" autocomplete="off" autofocus />
 
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">BARCODE</h4>
-    <input type="text" #codigoInput (input)="onBarcodeInput(codigoInput.value)" autocomplete="off" autofocus />
-
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-  </div>
-  <div class="modal-body">
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Doctor</th>
-            <th>Sucursal</th>
-            <th>Service</th>
-            <th>Folio</th>
-            <th>Cita</th>
-            <th>Costo</th>
-            <th>Creación</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{appointment?.client}}</td>
-            <td>{{appointment?.personal}}</td>
-            <td>{{appointment?.subsidiary_name}}</td>
-            <td>{{appointment?.service_name}}</td>
-            <td>{{appointment?.code}}</td>
-            <td>{{ appointment?.appointment | date:"EEEE d 'de' MMMM 'de' y, h:mm a" }}</td>
-            <td>${{appointment?.price}}</td>
-            <td>{{appointment?.created_at | date:'short'}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
-
-
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary"
-      (click)="checkAppointment(appointment.appointment_id)">Cobrar</button>
-  </div>
-</ng-template>
+    <div class="modal-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Doctor</th>
+              <th>Sucursal</th>
+              <th>Service</th>
+              <th>Folio</th>
+              <th>Cita</th>
+              <th>Costo</th>
+              <th>Creación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{appointment?.client}}</td>
+              <td>{{appointment?.personal}}</td>
+              <td>{{appointment?.subsidiary_name}}</td>
+              <td>{{appointment?.service_name}}</td>
+              <td>{{appointment?.code}}</td>
+              <td>{{ appointment?.appointment | date:"EEEE d 'de' MMMM 'de' y, h:mm a" }}</td>
+              <td>${{appointment?.price}}</td>
+              <td>{{appointment?.created_at | date:'short'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary"
+        (click)="checkAppointment(appointment.appointment_id)">Cobrar</button>
+    </div>
+  </ng-template>
+</div>

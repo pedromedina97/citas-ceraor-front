@@ -424,6 +424,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.rol === 'Doctor';
   }
 
+  isAdminRole(): boolean {
+    return this.rol === 'Owner' || this.rol === 'Superadmin';
+  }
+
+  canSeeAdminGraphic(): boolean {
+    return this.rol === 'Admin';
+  }
+
   getDoctorData() {
     // Obtener pacientes del doctor
     this.api.getDataById('user/getmyusers', this.idUser).subscribe(

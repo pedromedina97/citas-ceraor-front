@@ -20,7 +20,8 @@ export class NavComponent implements OnInit {
   @Output() toggle = new EventEmitter<void>();
   id: any;
   userRole: string;
-  userProfileImage: string = 'assets/profile.png'; // o null si no tiene imagen
+  userProfileImage: string = 'assets/profile.png';
+  
   userEdit = {
     name: '',
     lastname: '',
@@ -29,12 +30,21 @@ export class NavComponent implements OnInit {
     address: '',
     image: null,
     professional_id: null,
-    /*  previewImage: '' */
   };
+  
+  originalUserData = {
+    name: '',
+    lastname: '',
+    email: '',
+    phone: '',
+    address: '',
+    image: null,
+    professional_id: null,
+  };
+
   previewImage: string = '';
   loadingImage: boolean = false;
   uploadProgress: number = 0;
-
 
   onImageSelected(event: any): void {
     const file = event.target.files[0];
@@ -74,10 +84,32 @@ export class NavComponent implements OnInit {
     this.userEdit.image = null;
   }
 
-
   updateUser() {
-    this.api.updateData('user/updateuser', this.id, this.userEdit).subscribe(
+    // Create an object to store only the modified fields
+    const changedFields: any = {};
+
+    // Compare each field and only include those that have changed
+    Object.keys(this.userEdit).forEach(key => {
+      if (this.userEdit[key] !== this.originalUserData[key]) {
+        changedFields[key] = this.userEdit[key];
+      }
+    });
+
+    // Only proceed with the update if there are changes
+    if (Object.keys(changedFields).length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin cambios',
+        text: 'No se han detectado cambios para actualizar'
+      });
+      return;
+    }
+
+    this.api.updateData('user/updatedata', this.id, changedFields).subscribe(
       (resp: any) => {
+        // Update originalUserData with the new values
+        Object.assign(this.originalUserData, changedFields);
+        
         Swal.fire({
           icon: 'success',
           title: 'Actualización',
@@ -93,10 +125,7 @@ export class NavComponent implements OnInit {
         });
       }
     );
-    // Aquí puedes llamar tu servicio para guardar los cambios.
   }
-
-
 
   constructor(
     private api: CeraorService,
@@ -125,10 +154,9 @@ export class NavComponent implements OnInit {
     );
   }
 
-
   ngOnInit(): void {
     this.loadPermissions();
-    this.user = localStorage.getItem('userName') || ''; // Asigna el valor en ngOnInit
+    this.user = localStorage.getItem('userName') || '';
     this.getUser();
     this.isDarkMode$ = this.themeService.darkMode$;
   }
@@ -153,8 +181,6 @@ export class NavComponent implements OnInit {
     }
   }
 
-
-
   logout() {
     Swal.fire({
       title: "Cerrar Sesión",
@@ -176,7 +202,6 @@ export class NavComponent implements OnInit {
         this.router.navigateByUrl('/login');
       }
     });
-
   }
 
   loadPermissions() {
@@ -204,42 +229,40 @@ export class NavComponent implements OnInit {
     return this.hasPermissions(option);
   }
 
-
   getUser() {
     this.api.getDataById('user/getinstance', this.id).subscribe(
       (resp: any) => {
         console.log(resp);
-        this.userEdit.name = resp.data[0].name;
-        this.userEdit.lastname = resp.data[0].lastname;
-        this.userEdit.email = resp.data[0].email;
-        this.userEdit.address = resp.data[0].address;
-        this.userEdit.phone = resp.data[0].phone;
-        this.userEdit.professional_id = resp.data[0].professional_id;
-        this.userEdit.image = resp.data[0].image;
+        // Store original data
+        this.originalUserData = {
+          name: resp.data[0].name,
+          lastname: resp.data[0].lastname,
+          email: resp.data[0].email,
+          address: resp.data[0].address,
+          phone: resp.data[0].phone,
+          professional_id: resp.data[0].professional_id,
+          image: resp.data[0].image
+        };
+
+        // Set current edit data
+        this.userEdit = { ...this.originalUserData };
 
         const imageFromAPI = resp.data[0].image;
 
         if (typeof imageFromAPI === 'string' && imageFromAPI.startsWith('data:image')) {
           this.previewImage = imageFromAPI;
         } else {
-          this.previewImage = 'assets/profile.png'; // Imagen por defecto
+          this.previewImage = 'assets/profile.png';
         }
         if (typeof this.userEdit.image === 'string' && this.userEdit.image.startsWith('data:image')) {
           this.userProfileImage = this.userEdit.image;
         } else {
           this.userProfileImage = 'assets/profile.png';
         }
-
-
-
       },
       (error) => {
         console.log(error);
       }
     );
   }
-
-
-
 }
-
