@@ -1,7 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CeraorService } from '../../services/ceraor.service';
 import CounterUp from 'counterup2';
-import { OnDestroy } from '@angular/core';
+import Swal from 'sweetalert2';
 
 import {
   Chart,
@@ -108,10 +108,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(private api: CeraorService, private permission: PermissionsService) { }
 
   ngOnDestroy(): void {
-    if (this.chart) this.chart.destroy();
-    if (this.pieChart) this.pieChart.destroy();
-    if (this.barChart) this.barChart.destroy();
-    if (this.weeklyChart) this.weeklyChart.destroy();
+    // Destruir todas las gráficas al salir del componente
+    const charts = [this.chart, this.pieChart, this.barChart, this.weeklyChart];
+    charts.forEach(chart => {
+      if (chart) {
+        chart.destroy();
+      }
+    });
   }
 
   generateMonths(yearsBack = 1): { value: string; label: string }[] {
@@ -176,56 +179,109 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getGainsWeek() {
-    this.api.getData('cashcut/gains-week').subscribe((resp: any) => {
-      this.gainsWeek = resp.data; // Guardas la respuesta por si la necesitas en otro lugar
+    if (!this.weeklyCanvas) {
+      console.warn('Canvas para gráfica semanal no encontrado');
+      return;
+    }
 
-      const labels = this.gainsWeek.map((item: any) => item.fecha);
-      const totals = this.gainsWeek.map((item: any) => parseFloat(item.total_dia));
+    this.api.getData('cashcut/gains-week').subscribe({
+      next: (resp: any) => {
+        try {
+          if (!resp.data || !Array.isArray(resp.data) || resp.data.length === 0) {
+            console.warn('No hay datos de ingresos semanales disponibles');
+            return;
+          }
 
-      const ctx = this.weeklyCanvas.nativeElement.getContext('2d');
+          this.gainsWeek = resp.data;
 
-      if (this.weeklyChart) {
-        this.weeklyChart.destroy();
-      }
+          // Formatear fechas y totales
+          const labels = this.gainsWeek.map((item: any) => {
+            const fecha = new Date(item.fecha);
+            return fecha.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+          });
 
-      this.weeklyChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Ingresos semanales ($)',
-            data: totals,
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            fill: true,
-            tension: 0.3,
-            borderWidth: 2,
-            pointRadius: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Ingresos ($)'
-              }
+          const totals = this.gainsWeek.map((item: any) => {
+            const total = parseFloat(item.total_dia);
+            return isNaN(total) ? 0 : total;
+          });
+
+          const ctx = this.weeklyCanvas.nativeElement.getContext('2d');
+
+          // Destruir gráfica existente si hay una
+          if (this.weeklyChart) {
+            this.weeklyChart.destroy();
+          }
+
+          // Crear nueva gráfica
+          this.weeklyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Ingresos semanales ($)',
+                data: totals,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.3,
+                borderWidth: 2,
+                pointRadius: 3
+              }]
             },
-            x: {
-              title: {
-                display: true,
-                text: 'Fecha'
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Ingresos ($)'
+                  },
+                  ticks: {
+                    callback: function(value) {
+                      return '$ ' + value.toLocaleString('es-MX');
+                    }
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Fecha'
+                  }
+                }
+              },
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      let label = context.dataset.label || '';
+                      if (label) {
+                        label += ': ';
+                      }
+                      label += '$ ' + context.parsed.y.toLocaleString('es-MX');
+                      return label;
+                    }
+                  }
+                }
               }
             }
-          }
+          });
+        } catch (error) {
+          console.error('Error al crear la gráfica de ingresos semanales:', error);
         }
-      });
-    },
-      (error) => {
-        console.error('Error al obtener ingresos semanales', error);
-      });
+      },
+      error: (error) => {
+        console.error('Error al obtener ingresos semanales:', error);
+        // Mostrar mensaje de error al usuario
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los datos de ingresos semanales',
+          confirmButtonColor: '#198754'
+        });
+      }
+    });
   }
 
 
