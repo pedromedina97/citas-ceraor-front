@@ -533,6 +533,16 @@ export class AgendaComponent implements OnInit {
       return;
     }
 
+    // Si es sábado, mostrar mensaje informativo sobre horario limitado
+    if (day.getDay() === 6) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Horario limitado',
+        text: 'Los sábados solo se pueden agendar citas hasta las 2:45 PM.',
+        confirmButtonColor: '#198754'
+      });
+    }
+
 
     // 🟢 Verificar si el clic ocurrió dentro de un evento
     if (event) {
