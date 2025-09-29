@@ -887,42 +887,86 @@
                 <i class="bi bi-person me-1"></i>
                 Nombre <span class="text-danger">*</span>
               </label>
-                <input type="text" class="form-control" [(ngModel)]="newPatient.name" (blur)="capitalizeFirstLetter('name')" name="newPatientName" required>
+              <input type="text" class="form-control" [(ngModel)]="newPatient.name" 
+                     (blur)="capitalizeFirstLetter('name')" name="newPatientName" 
+                     required minlength="3" #name="ngModel">
+              <div *ngIf="name.invalid && name.touched" class="text-danger">
+                <small>El nombre debe tener al menos 3 caracteres.</small>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-person me-1"></i>
                 Apellido <span class="text-danger">*</span>
               </label>
-                <input type="text" class="form-control" [(ngModel)]="newPatient.lastname" (blur)="capitalizeFirstLetter('lastname')" name="newPatientLastname" required>
+              <input type="text" class="form-control" [(ngModel)]="newPatient.lastname" 
+                     (blur)="capitalizeFirstLetter('lastname')" name="newPatientLastname" 
+                     required minlength="3" #lastname="ngModel">
+              <div *ngIf="lastname.invalid && lastname.touched" class="text-danger">
+                <small>Los apellidos deben tener al menos 3 caracteres.</small>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-envelope me-1"></i>
-                Email <span class="text-danger">*</span>
+                Email <span *ngIf="rol !== 'Doctor'" class="text-danger">*</span>
               </label>
-              <input type="email" class="form-control" [(ngModel)]="newPatient.email" name="newPatientEmail" required>
+              <input type="email" class="form-control" [(ngModel)]="newPatient.email" 
+                     name="newPatientEmail" [email]="newPatient.email !== ''" 
+                     [required]="rol !== 'Doctor'" #email="ngModel">
+              <div *ngIf="email.invalid && email.touched" class="text-danger">
+                <small>Ingrese un email válido.</small>
+              </div>
+              <div class="form-text" *ngIf="rol === 'Doctor'">
+                <small><i class="bi bi-info-circle me-1"></i>El email es opcional para pacientes</small>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-telephone me-1"></i>
-                Teléfono
+                Teléfono <span *ngIf="rol === 'Doctor'" class="text-danger">*</span>
               </label>
-              <input type="tel" class="form-control" [(ngModel)]="newPatient.phone" name="newPatientPhone">
+              <input type="tel" class="form-control" [(ngModel)]="newPatient.phone" 
+                     name="newPatientPhone" [required]="rol === 'Doctor'" #phone="ngModel">
+              <div *ngIf="phone.invalid && phone.touched" class="text-danger">
+                <small>El teléfono es requerido para pacientes.</small>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-calendar me-1"></i>
-                Fecha de Nacimiento
+                Fecha de Nacimiento <span class="text-danger">*</span>
               </label>
-              <input type="date" class="form-control" [(ngModel)]="newPatient.birthday" name="newPatientBirthday">
+              <input type="date" class="form-control" [(ngModel)]="newPatient.birthday" 
+                     name="newPatientBirthday" required #birthday="ngModel"
+                     (change)="onBirthdayChange()">
+              <div *ngIf="birthday.invalid && birthday.touched" class="text-danger">
+                <small>Seleccione una fecha de nacimiento.</small>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">
                 <i class="bi bi-geo-alt me-1"></i>
-                Dirección
+                Dirección <span class="text-danger">*</span>
               </label>
-              <input type="text" class="form-control" [(ngModel)]="newPatient.address" name="newPatientAddress">
+              <input type="text" class="form-control" [(ngModel)]="newPatient.address" 
+                     name="newPatientAddress" required minlength="3" #address="ngModel">
+              <div *ngIf="address.invalid && address.touched" class="text-danger">
+                <small>La dirección debe tener al menos 3 caracteres.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta de datos de contacto -->
+          <div class="alert alert-info d-flex align-items-center mt-3 border-start border-info border-4" role="alert">
+            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+            <div>
+              <strong>Información de contacto requerida</strong>
+              <p class="mb-0">
+                <small>
+                  {{rol === 'Doctor' ? 'Debe proporcionar un número de teléfono para el paciente.' : 'Debe proporcionar al menos un dato de contacto (Email o Teléfono) para continuar.'}}
+                </small>
+              </p>
             </div>
           </div>
         </form>

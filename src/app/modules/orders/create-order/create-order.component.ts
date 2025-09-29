@@ -96,8 +96,11 @@ export class CreateOrderComponent {
     email: '',
     phone: '',
     birthday: '',
-    address: ''
+    address: '',
+    password: ''
   };
+  
+  rol: string = '';
   id: string;
   idUser: string; // ID del usuario actual para parentId
   user: string = localStorage.getItem('userName') || ''; // Nombre del usuario actual
@@ -359,7 +362,20 @@ export class CreateOrderComponent {
     this.getInstance();
     this.getMyClients();
     this.getRols(); // Obtener roles disponibles
+    this.loadUserRole();
     this.cd.detectChanges();
+  }
+
+  loadUserRole() {
+    this.permissionsService.getRol().subscribe(
+      (value) => {
+        this.rol = value;
+        this.cd.detectChanges();
+      },
+      (error) => {
+        console.error('Error al obtener el rol del usuario:', error);
+      }
+    );
   }
 
 
@@ -504,7 +520,8 @@ export class CreateOrderComponent {
       email: '',
       phone: '',
       birthday: '',
-      address: ''
+      address: '',
+      password: ''
     };
   }
 
@@ -519,20 +536,77 @@ export class CreateOrderComponent {
       email: '',
       phone: '',
       birthday: '',
-      address: ''
+      address: '',
+      password: ''
     };
   }
 
   /**
    * Crea un nuevo paciente usando la misma estructura que en usuarios
    */
+  hasContactInfo(): boolean {
+    return !!(
+      (this.newPatient.email && this.newPatient.email.trim()) ||
+      (this.newPatient.phone && this.newPatient.phone.trim())
+    );
+  }
+
+  onBirthdayChange() {
+    if (this.newPatient.birthday) {
+      const generatedPassword = this.generatePasswordFromBirthday();
+      if (generatedPassword) {
+        this.newPatient.password = generatedPassword;
+      }
+    }
+  }
+
+  private generatePasswordFromBirthday(): string {
+    if (!this.newPatient.birthday) {
+      return '';
+    }
+
+    const [year, month, day] = this.newPatient.birthday.split('-');
+    return `${day}${month}${year.slice(-2)}`;
+  }
+
   createNewPatient() {
-    // Validaciones básicas
-    if (!this.newPatient.name || !this.newPatient.lastname || !this.newPatient.email) {
+    // Validar el formulario
+    if (!this.newPatient.name || !this.newPatient.lastname || !this.newPatient.birthday || !this.newPatient.address) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos requeridos',
-        text: 'Por favor complete nombre, apellido y email'
+        text: 'Por favor complete todos los campos obligatorios'
+      });
+      return;
+    }
+
+    // Validar longitud mínima
+    if (this.newPatient.name.length < 3 || this.newPatient.lastname.length < 3 || this.newPatient.address.length < 3) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos inválidos',
+        text: 'Los campos de nombre, apellido y dirección deben tener al menos 3 caracteres'
+      });
+      return;
+    }
+
+    // Validar datos de contacto según el rol
+    if (this.rol === 'Doctor') {
+      if (!this.newPatient.phone) {
+        Swal.fire({
+          title: 'Teléfono requerido',
+          icon: 'warning',
+          text: 'Debe proporcionar un número de teléfono para el paciente.',
+          confirmButtonColor: '#198754'
+        });
+        return;
+      }
+    } else if (!this.hasContactInfo()) {
+      Swal.fire({
+        title: 'Datos de contacto requeridos',
+        icon: 'warning',
+        text: 'Debe proporcionar al menos un dato de contacto (email o teléfono).',
+        confirmButtonColor: '#198754'
       });
       return;
     }
@@ -547,34 +621,42 @@ export class CreateOrderComponent {
       return;
     }
 
-    // Crear el objeto paciente con la misma estructura que en users.component
+    // Generar la contraseña basada en la fecha de nacimiento
+    const password = this.generatePasswordFromBirthday();
+
+    // Crear el objeto paciente
     const patientData = {
       parentId: this.idUser,
       name: this.newPatient.name,
       lastname: this.newPatient.lastname,
-      email: this.newPatient.email,
-      password: this.generateTemporaryPassword(), // Generar contraseña temporal
+      email: this.newPatient.email || undefined, // Solo incluir si tiene valor
+      password: password,
       birthday: this.newPatient.birthday,
       phone: this.newPatient.phone,
       related: this.user,
       address: this.newPatient.address,
-      id_rol: this.clienteRolId // Usar ID numérico del rol Cliente
+      id_rol: this.clienteRolId
     };
 
-    console.log('📤 Enviando datos del paciente:', patientData);
+    // Usar el endpoint específico para pacientes si el usuario es Doctor
+    const endpoint = this.rol === 'Doctor' ? 'user/createpatient' : 'user/register';
 
-    // Usar el mismo endpoint que en users.component
-    this.api.createData('user/register', patientData).subscribe(
+    this.api.createData(endpoint, patientData).subscribe(
       (resp: any) => {
+        let successMessage = 'El paciente ha sido registrado exitosamente';
+        if (this.rol === 'Doctor' && resp.data?.password) {
+          successMessage = `${successMessage}\nContraseña generada: ${resp.data.password}`;
+        }
+
         Swal.fire({
           icon: 'success',
           title: 'Paciente creado',
-          text: 'El paciente ha sido registrado exitosamente'
+          text: successMessage
         });
 
         // Agregar el nuevo paciente a la lista local
         const newClient = {
-          id: resp.data?.id || Date.now(), // Usar ID del response o timestamp
+          id: resp.data?.id || Date.now(),
           name: this.newPatient.name,
           lastname: this.newPatient.lastname,
           email: this.newPatient.email,
@@ -589,10 +671,17 @@ export class CreateOrderComponent {
       },
       (error) => {
         console.error('❌ Error al crear paciente:', error);
+        let errorMessage = error.error?.msg || error.error?.message || 'Error al crear el paciente';
+        
+        // Manejar el caso específico de email existente
+        if (error.error?.msg === 'El email ya existe') {
+          errorMessage = 'El email ya existe';
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.error?.msg || error.error?.message || 'Error al crear el paciente'
+          text: errorMessage
         });
       }
     );

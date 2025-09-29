@@ -254,9 +254,12 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input type="email" placeholder="Email" name="email" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.email" email #email="ngModel">
+                  [(ngModel)]="dataInstance.email" [email]="dataInstance.email !== ''" #email="ngModel">
                 <div *ngIf="email.invalid && email.touched" class="text-danger">
                   <small>Ingrese un email válido.</small>
+                </div>
+                <div class="form-text" *ngIf="rol === 'Doctor'">
+                  <small><i class="bi bi-info-circle me-1"></i>El email es opcional para pacientes</small>
                 </div>
 
                 <div class="input-group mb-2">
@@ -351,8 +354,11 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input type="email" placeholder="Email" name="email" class="form-control input-ios mb-2"
-                  [(ngModel)]="dataInstance.email" email #email="ngModel">
+                  [(ngModel)]="dataInstance.email" [email]="dataInstance.email !== ''" #email="ngModel">
                 <div *ngIf="email.invalid && email.touched" class="text-danger">Ingrese un email válido.</div>
+                <div class="form-text" *ngIf="rol === 'Doctor'">
+                  <small><i class="bi bi-info-circle me-1"></i>El email es opcional para pacientes</small>
+                </div>
 
                 <div class="input-group mb-2">
                   <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" name="password" 

@@ -235,7 +235,19 @@ export class UsersComponent implements OnInit{
       return;
     }
 
-    if (!this.hasContactInfo()) {
+    // Si el usuario es Doctor, solo validamos el teléfono como contacto obligatorio
+    if (this.rol === 'Doctor') {
+      if (!this.dataInstance.phone) {
+        Swal.fire({
+          title: 'Teléfono requerido',
+          icon: 'warning',
+          text: 'Debe proporcionar un número de teléfono para el paciente.',
+          confirmButtonColor: '#198754'
+        });
+        return;
+      }
+    } else if (!this.hasContactInfo()) {
+      // Para otros roles, mantenemos la validación original de contacto
       Swal.fire({
         title: 'Datos de contacto requeridos',
         icon: 'warning',
@@ -247,14 +259,32 @@ export class UsersComponent implements OnInit{
   
     this.dataInstance.parentId = this.idUser;
     this.dataInstance.related = this.user;
+
+    // Si es un Doctor creando un paciente, usamos el endpoint específico
+    const endpoint = this.rol === 'Doctor' ? 'user/createpatient' : 'user/register';
+    const payload = this.rol === 'Doctor' ? {
+      name: this.dataInstance.name,
+      lastname: this.dataInstance.lastname,
+      birthday: this.dataInstance.birthday,
+      phone: this.dataInstance.phone,
+      address: this.dataInstance.address,
+      email: this.dataInstance.email || undefined // Solo incluimos email si tiene valor
+    } : this.dataInstance;
   
-    this.api.createData('user/register', this.dataInstance).subscribe(
+    this.api.createData(endpoint, payload).subscribe(
       (data: any) => {
         console.log(data);
+        let successMessage = data.msg;
+        
+        // Si es un doctor creando un paciente, mostramos la contraseña generada
+        if (this.rol === 'Doctor' && data.data?.password) {
+          successMessage = `${data.msg}\nContraseña generada: ${data.data.password}`;
+        }
+
         Swal.fire({
           title: 'Usuario Creado',
           icon: 'success',
-          text: data.msg,
+          text: successMessage,
           confirmButtonColor: '#198754'
         });
   
@@ -270,10 +300,17 @@ export class UsersComponent implements OnInit{
       },
       (error) => {
         console.log(error);
+        let errorMessage = error.error?.msg || error.error?.message || 'Error al crear el usuario';
+        
+        // Manejar el caso específico de email existente
+        if (error.error?.msg === 'El email ya existe') {
+          errorMessage = 'El email ya existe';
+        }
+
         Swal.fire({
           title: 'Error',
           icon: 'error',
-          text: error.error.message,
+          text: errorMessage,
           confirmButtonColor: '#198754'
         });
       }

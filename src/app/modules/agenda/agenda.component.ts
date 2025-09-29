@@ -417,6 +417,10 @@ export class AgendaComponent implements OnInit {
       day.getDate() === today.getDate();
   }
 
+  isSunday(day: Date): boolean {
+    return day.getDay() === 0;
+  }
+
 
   getDaysOfWeek(): Date[] {
     let days: Date[] = [];
@@ -517,6 +521,18 @@ export class AgendaComponent implements OnInit {
 
   openModal(day: Date | null = null, event?: MouseEvent) {
     if (!day) return; // No hacer nada si no se selecciona un día
+
+    // Verificar si es domingo (0 = domingo en getDay())
+    if (day.getDay() === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Día no disponible',
+        text: 'No se pueden agendar citas los días domingo.',
+        confirmButtonColor: '#198754'
+      });
+      return;
+    }
+
 
     // 🟢 Verificar si el clic ocurrió dentro de un evento
     if (event) {
