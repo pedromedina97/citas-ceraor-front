@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { CeraorService } from '../../../services/ceraor.service';
 import { PermissionsService } from '../../../services/permissions.service';
 import Swal from 'sweetalert2';
@@ -110,6 +111,7 @@ export class CreateOrderComponent {
   switch3DEnabled: boolean = false;
   rols: any[] = []; // Lista de roles disponibles
   clienteRolId: string | null = null; // ID del rol Cliente
+  scheduleAppointment: boolean = false; // Control para agendar cita
 
   private readonly CHECKBOX_KEYS = [
     // Entrega
@@ -355,7 +357,55 @@ export class CreateOrderComponent {
     });
   }
 
-  constructor(private fb: FormBuilder, private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private location: Location) { }
+  constructor(
+    private fb: FormBuilder, 
+    private api: CeraorService, 
+    private permissionsService: PermissionsService, 
+    private cd: ChangeDetectorRef, 
+    private location: Location,
+    private router: Router
+  ) { }
+
+  /**
+   * Obtiene los servicios seleccionados de la orden
+   */
+  private getSelectedServices(): string {
+    const selectedServices = [];
+    
+    // Radiografías
+    if (this.order.rx_panoramic) selectedServices.push('Rx Panorámica');
+    if (this.order.rx_arc_panoramic) selectedServices.push('Rx Arco Panorámico');
+    if (this.order.rx_lateral_skull) selectedServices.push('Rx Lateral Cráneo');
+    if (this.order.ap_skull) selectedServices.push('AP Cráneo');
+    if (this.order.pa_skull) selectedServices.push('PA Cráneo');
+    if (this.order.paranasal_sinuses) selectedServices.push('Senos Paranasales');
+    if (this.order.atm_open_close) selectedServices.push('ATM Abre/Cierra');
+    if (this.order.profilogram) selectedServices.push('Profilograma');
+    if (this.order.watters_skull) selectedServices.push('Watters');
+    if (this.order.palmar_digit) selectedServices.push('Dígito Palmar');
+
+    // Intraorales
+    if (this.order.complete_periapical) selectedServices.push('Serie Periapical Completa');
+    if (this.order.individual_periapical) selectedServices.push('Periapical Individual');
+    if (this.order.occlusal_xray) selectedServices.push('Oclusal Completa');
+    if (this.order.superior) selectedServices.push('Oclusal Superior');
+    if (this.order.inferior) selectedServices.push('Oclusal Inferior');
+
+    // Fotografía Clínica
+    if (this.order.clinical_photography) selectedServices.push('Fotografía Clínica');
+    if (this.order.dental_interpretation) selectedServices.push('Interpretación Odontológica');
+
+    // Tomografías
+    if (this.order.complete_tomography) selectedServices.push('Tomografía Completa');
+    if (this.order.two_jaws_tomography) selectedServices.push('Tomografía Ambos Maxilares');
+    if (this.order.maxilar_tomography) selectedServices.push('Tomografía Maxilar');
+    if (this.order.jaw_tomography) selectedServices.push('Tomografía Mandíbula');
+    if (this.order.snp_tomography) selectedServices.push('Tomografía SNP');
+    if (this.order.ear_tomography) selectedServices.push('Tomografía Oído');
+    if (this.order.atm_tomography_open_close) selectedServices.push('ATM Abierta/Cerrada');
+
+    return selectedServices.join(', ');
+  }
 
   ngOnInit(): void {
     this.loadId();
@@ -385,12 +435,42 @@ export class CreateOrderComponent {
 
     this.api.createData('order/create', this.order).subscribe(
       (resp: any) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Orden Creada',
-          text: resp.msg
-        });
-        this.back();
+        if (this.scheduleAppointment) {
+          // Si se quiere agendar cita, mostrar confirmación con opciones
+          Swal.fire({
+            icon: 'success',
+            title: 'Orden Creada',
+            text: resp.msg + '\n¿Desea agendar una cita para esta orden?',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, agendar cita',
+            cancelButtonText: 'No, volver',
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Navegar a la agenda con los datos de la orden
+              this.router.navigate(['/agenda'], {
+                queryParams: {
+                  orderId: resp.data?.id,
+                  patient: this.order.patient,
+                  doctor: this.order.doctor,
+                  service: this.getSelectedServices() // Función helper que obtendrá los servicios seleccionados
+                }
+              });
+            } else {
+              this.back();
+            }
+          });
+        } else {
+          // Si no se quiere agendar cita, mostrar mensaje normal y volver
+          Swal.fire({
+            icon: 'success',
+            title: 'Orden Creada',
+            text: resp.msg
+          }).then(() => {
+            this.back();
+          });
+        }
       },
       (error) => {
         console.log(error);
