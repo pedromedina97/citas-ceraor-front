@@ -33,21 +33,35 @@ body.dark-mode {
 
   // Navbar
   .navbar {
-    background-color: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
     color: var(--text-primary);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), 
+                0 2px 8px rgba(99, 102, 241, 0.15);
+    backdrop-filter: blur(12px) saturate(180%);
   }
 
   // Sidebar
   .sidebar {
-    background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
+    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+
+    .header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
     a {
       color: var(--text-primary);
       
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+      }
+
+      &.active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4));
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
       }
     }
   }
@@ -584,12 +598,23 @@ body.dark-mode {
   // Vista móvil
   .mobile-card {
     background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+    &:hover {
+      background-color: rgba(45, 45, 45, 0.8);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+    }
 
     strong {
-      color: var(--text-secondary);
-      font-weight: 500;
+      color: #a78bfa;
+      font-weight: 600;
+    }
+    
+    p {
+      color: #e2e8f0;
     }
 
     // Estilos específicos para cortes de caja
@@ -643,24 +668,25 @@ body.dark-mode {
   // Modals
   .modal-content {
     background-color: var(--bg-secondary);
-    border-color: var(--border-color);
+    border: 1px solid rgba(99, 102, 241, 0.2);
     color: var(--text-primary);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 
     .modal-header {
-      border-bottom: 1px solid var(--border-color);
-      background-color: var(--bg-secondary);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      
+      .modal-title {
+        color: white;
+      }
       
       .btn-close {
-        filter: invert(1) grayscale(100%) brightness(200%);
-      }
-
-      .modal-title {
-        color: var(--text-primary);
-      }
-
-      &.bg-info, &.bg-primary, &.bg-success {
-        .btn-close {
-          filter: invert(0) grayscale(100%) brightness(200%);
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+        
+        &:hover {
+          opacity: 1;
         }
       }
     }
@@ -689,8 +715,8 @@ body.dark-mode {
     }
 
     .modal-footer {
-      border-top: 1px solid var(--border-color);
-      background-color: var(--bg-secondary);
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
     }
 
     .modal-body {
@@ -908,6 +934,9 @@ body.dark-mode {
   // Select dropdown
   .form-select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
 
     option {
       background-color: var(--bg-primary);
@@ -945,24 +974,34 @@ body.dark-mode {
 
     .user-name {
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
       }
     }
 
     .dropdown {
-      background-color: var(--bg-secondary);
-      border-color: var(--border-color);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 
+                  0 0 0 1px rgba(255, 255, 255, 0.1);
 
       li {
-        border-bottom-color: var(--border-color);
+        &:hover {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+        }
 
         a {
           color: var(--text-primary);
 
+          i {
+            color: #8b5cf6;
+          }
+
           &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
+            color: #a78bfa;
+            
+            i {
+              color: #a78bfa;
+            }
           }
         }
       }
@@ -972,16 +1011,313 @@ body.dark-mode {
   // Dark mode switch
   .dark-mode-toggle {
     .form-check-input {
-      background-color: var(--bg-primary);
-      border-color: var(--border-color);
+      background-color: rgba(71, 85, 105, 0.8);
+      border: 2px solid rgba(148, 163, 184, 0.5);
+
+      // Círculo del switch con mejor visibilidad
+      &::after {
+        background: #e2e8f0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 
+                    0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+      }
 
       &:checked {
-        background-color: #0d6efd;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-color: #8b5cf6;
+        
+        &::after {
+          background: white !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6),
+                      0 0 12px rgba(139, 92, 246, 0.4) !important;
+        }
+      }
+      
+      &:hover {
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
       }
     }
 
     .form-check-label {
       color: var(--text-primary);
+      
+      i {
+        &.bi-moon-fill {
+          color: #c4b5fd;
+          filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.6));
+        }
+        
+        &.bi-sun-fill {
+          color: #fbbf24;
+        }
+      }
     }
+  }
+
+  // Toggle button (hamburger menu)
+  .toggle-btn {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.6);
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.7);
+    }
+  }
+
+  // ========================================
+  // Estilos específicos para el módulo de usuarios
+  // ========================================
+  
+  // Card de filtros mejorado
+  .container .card {
+    background: linear-gradient(135deg, rgba(45, 45, 45, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                0 4px 12px rgba(99, 102, 241, 0.2);
+    
+    &:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 
+                  0 6px 16px rgba(99, 102, 241, 0.25);
+    }
+  }
+  
+  // Inputs mejorados
+  .input-ios {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--text-primary);
+    
+    &:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background-color: rgba(15, 23, 42, 0.7);
+    }
+    
+    &:focus {
+      background-color: rgba(15, 23, 42, 0.8);
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+      color: var(--text-primary);
+    }
+    
+    &::placeholder {
+      color: rgba(226, 232, 240, 0.5);
+    }
+  }
+  
+  .form-select.input-ios {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--text-primary);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    
+    option {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+  }
+  
+  // Labels
+  .form-label {
+    color: #c4b5fd;
+  }
+  
+  // Título de tabla mejorado
+  .table-title {
+    color: var(--text-primary);
+    
+    &::before {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    }
+  }
+  
+  // Wrapper de tabla mejorado
+  .dashboard-table-wrapper {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  // Tabla mejorada
+  .dashboard-table {
+    thead {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      
+      th {
+        color: white !important;
+        border-color: rgba(99, 102, 241, 0.3);
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+    }
+    
+    tbody {
+      tr {
+        border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+        
+        &:hover {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+        }
+        
+        td {
+          color: #e2e8f0 !important;
+          border-color: rgba(99, 102, 241, 0.1);
+        }
+      }
+    }
+  }
+  
+  // Botones outline mejorados
+  .btn-outline-warning {
+    border-color: #fbbf24;
+    color: #fbbf24;
+    
+    &:hover {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: #f59e0b;
+      color: #fbbf24;
+    }
+  }
+  
+  .btn-outline-danger {
+    border-color: #f87171;
+    color: #f87171;
+    
+    &:hover {
+      background: rgba(248, 113, 113, 0.2);
+      border-color: #ef4444;
+      color: #f87171;
+    }
+  }
+  
+  .btn-outline-info {
+    border-color: #22d3ee;
+    color: #22d3ee;
+    
+    &:hover {
+      background: rgba(34, 211, 238, 0.2);
+      border-color: #06b6d4;
+      color: #22d3ee;
+    }
+  }
+  
+  .btn-outline-secondary {
+    border-color: #94a3b8;
+    color: #cbd5e1;
+    
+    &:hover {
+      background: rgba(148, 163, 184, 0.2);
+      border-color: #cbd5e1;
+      color: #e2e8f0;
+    }
+  }
+  
+  // Modales mejorados (específico para usuarios)
+  #createModal,
+  #editModal {
+    .modal-content {
+      background-color: var(--bg-secondary);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      
+      .modal-header {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        
+        .modal-title {
+          color: white;
+        }
+        
+        .btn-close {
+          filter: brightness(0) invert(1);
+          opacity: 0.9;
+        }
+      }
+      
+      .modal-body {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+        
+        input, select, textarea {
+          &:not(.btn) {
+            background-color: rgba(15, 23, 42, 0.7);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+            
+            &:focus {
+              background-color: rgba(15, 23, 42, 0.9);
+              border-color: #8b5cf6;
+              box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+            }
+            
+            &::placeholder {
+              color: rgba(226, 232, 240, 0.5);
+            }
+          }
+        }
+        
+        .form-text {
+          color: #a78bfa;
+        }
+      }
+      
+      .modal-footer {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.6));
+        border-top: 1px solid rgba(99, 102, 241, 0.2);
+      }
+    }
+  }
+  
+  // Alertas mejoradas
+  .alert {
+    &.alert-info {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15));
+      border-left-color: #6366f1;
+      color: #c7d2fe;
+      
+      i {
+        color: #818cf8;
+      }
+      
+      strong {
+        color: #a5b4fc;
+      }
+    }
+    
+    &.alert-warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.15));
+      border-left-color: #fbbf24;
+      color: #fef3c7;
+      
+      i {
+        color: #fbbf24;
+      }
+      
+      strong {
+        color: #fde68a;
+      }
+    }
+  }
+  
+  // Spinner
+  .spinner-border {
+    &.text-primary {
+      color: #a78bfa !important;
+    }
+  }
+
+  // Ocultar elementos internos del input date en modo oscuro
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-clear-button {
+    display: none;
+    -webkit-appearance: none;
   }
 }

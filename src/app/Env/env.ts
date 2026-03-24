@@ -1,4 +1,4 @@
 export const Environment = {
-    url: "http://apiceraor.api/"
+    url: "http://www.api-ceraor3d.api/"
     /* url: "https://api-ceraor.ceraor3d.com/" */
 };

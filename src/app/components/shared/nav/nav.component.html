@@ -56,43 +56,43 @@
     <img src="../../../assets/logo_ceraor.svg" width="60" height="auto" />
   </div>
   <nav>
-    <a [routerLink]="['/home']">
+    <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
       <i class="bi bi-house-door-fill"></i>
       <p>Home</p>
     </a>
-    <a *ngIf="canShow('see_user')" [routerLink]="['/users']">
+    <a *ngIf="canShow('see_user')" [routerLink]="['/users']" routerLinkActive="active">
       <i class="bi bi-people-fill"></i>
       <p>Usuarios</p>
     </a>
-    <a *ngIf="canShow('see_cashcut')" [routerLink]="['/cashcuts']">
+    <a *ngIf="canShow('see_cashcut')" [routerLink]="['/cashcuts']" routerLinkActive="active">
       <i class="bi bi-wallet-fill"></i>
       <p>Corte de Caja</p>
     </a>
-    <a *ngIf="canShow('see_payment')" [routerLink]="['/payments']">
+    <a *ngIf="canShow('see_payment')" [routerLink]="['/payments']" routerLinkActive="active">
       <i class="bi bi-credit-card-fill"></i>
       <p>Pagos</p>
     </a>
-    <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']">
+    <a *ngIf="canShow('see_rolpermission')" [routerLink]="['/rolspermissions']" routerLinkActive="active">
       <i class="bi bi-ui-radios"></i>
       <p>Roles/Permisos</p>
     </a>
-    <a *ngIf="canShow('see_service')" [routerLink]="['/services']">
+    <a *ngIf="canShow('see_service')" [routerLink]="['/services']" routerLinkActive="active">
       <i class="bi bi-list-check"></i>
-      <p>Servicios</p>
+      <p>Sucursales & Servicios</p>
     </a>
-    <a *ngIf="canShow('see_subsidiary')" [routerLink]="['/subsidiaries']">
+    <a *ngIf="canShow('see_subsidiary')" [routerLink]="['/subsidiaries']" routerLinkActive="active">
       <i class="bi bi-building"></i>
       <p>Sucursales</p>
     </a>
-    <!-- <a *ngIf="canShow('see_client')" [routerLink]="['/clients']">
+    <!-- <a *ngIf="canShow('see_client')" [routerLink]="['/clients']" routerLinkActive="active">
       <i class="bi bi-person-video2"></i>
       <p>Clientes</p>
     </a> -->
-    <a [routerLink]="['/agenda']">
+    <a [routerLink]="['/agenda']" routerLinkActive="active">
       <i class="bi bi-calendar-date-fill"></i>
       <p>Agenda</p>
     </a>
-    <a *ngIf="canShow('see_order')" [routerLink]="['/orders']">
+    <a *ngIf="canShow('see_order')" [routerLink]="['/orders']" routerLinkActive="active">
       <i class="bi bi-list-ul"></i>
       <p>Ordenes</p>
 

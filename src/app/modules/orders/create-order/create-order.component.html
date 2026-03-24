@@ -213,574 +213,101 @@
                         <input type="text" class="form-control form-control-sm" name="professional_id"
                           [(ngModel)]="order.professional_id" />
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 3: Radiografías -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0">
-                      <i class="bi bi-camera me-2"></i>
-                      Radiografías
-                    </h6>
-                  </div>
-                  <div class="card-body overflow-auto" style="max-height: 400px;">
-                    <!-- Opciones de entrega -->
-                    <h6 class="text-muted mb-2 text-sm">
-                      <i class="bi bi-printer me-1"></i>
-                      Entrega
-                    </h6>
-                    <div class="row g-1 mb-3">
                       <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="acetate_print" id="acetate_print"
-                            [(ngModel)]="order.acetate_print" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="acetate_print">Acetato</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="paper_print" id="paper_print"
-                            [(ngModel)]="order.paper_print" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="paper_print">Papel Backlight Blanco</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="send_email" id="send_email"
-                            [(ngModel)]="order.send_email" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="send_email">Email</label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr class="my-2">
-
-                    <!-- Tipos de Radiografías -->
-                    <h6 class="text-muted mb-2 text-sm">
-                      <i class="bi bi-x-ray me-1"></i>
-                      Tipos
-                    </h6>
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="rx_panoramic" id="rx_panoramic"
-                            [(ngModel)]="order.rx_panoramic" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="rx_panoramic">Rx Panorámica</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="rx_arc_panoramic" id="rx_arc_panoramic"
-                            [(ngModel)]="order.rx_arc_panoramic" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="rx_arc_panoramic">Rx Arco Panorámico</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="rx_lateral_skull" id="rx_lateral_skull"
-                            [(ngModel)]="order.rx_lateral_skull" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="rx_lateral_skull">Rx Lateral Cráneo</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="ap_skull" id="ap_skull"
-                            [(ngModel)]="order.ap_skull" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="ap_skull">AP Cráneo</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="pa_skull" id="pa_skull"
-                            [(ngModel)]="order.pa_skull" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="pa_skull">PA Cráneo</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="paranasal_sinuses"
-                            id="paranasal_sinuses" [(ngModel)]="order.paranasal_sinuses" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="paranasal_sinuses">Senos Paranasales</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="atm_open_close" id="atm_open_close"
-                            [(ngModel)]="order.atm_open_close" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="atm_open_close">ATM Abre/Cierra</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="profilogram" id="profilogram"
-                            [(ngModel)]="order.profilogram" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="profilogram">Profilograma</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="watters_skull" id="watters_skull"
-                            [(ngModel)]="order.watters_skull" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="watters_skull">Watters</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="palmar_digit" id="palmar_digit"
-                            [(ngModel)]="order.palmar_digit" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="palmar_digit">Dígito Palmar</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Otras</label>
-                        <input type="text" class="form-control form-control-sm" name="others_radiography"
-                          [(ngModel)]="order.others_radiography" placeholder="Otras radiografías..." />
+                        <label class="form-label form-label-sm">
+                          <i class="bi bi-building me-1"></i>
+                          Sucursal <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select form-select-sm" name="subsidiary" 
+                                [(ngModel)]="selectedSubsidiaryId" 
+                                (change)="onSubsidiaryChange()"
+                                required>
+                          <option value="" disabled selected>Seleccione una sucursal</option>
+                          <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">
+                            {{subsidiary.name}} - {{subsidiary.address}}
+                          </option>
+                        </select>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- Card 4: Intraorales -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-danger text-white">
+            <!-- Segunda fila: Card de Servicios Dinámicos -->
+            <div class="row g-4 mb-4" *ngIf="selectedSubsidiaryId">
+              <div class="col-12">
+                <div class="card shadow-sm card-form">
+                  <div class="card-header bg-primary text-white">
                     <h6 class="mb-0">
-                      <i class="bi bi-teeth me-2"></i>
-                      Intraorales
+                      <i class="bi bi-list-check me-2"></i>
+                      Servicios Disponibles
                     </h6>
                   </div>
                   <div class="card-body">
-                    <!-- Alerta para Intraorales -->
-                    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert" *ngIf="hasIntraoralSelection()">
-                      <small>
-                        <i class="bi bi-calendar-check me-2"></i>
-                        Recuerde agendar para este servicio
-                      </small>
-                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <!-- Spinner de carga -->
+                    <div class="text-center py-5" *ngIf="loadingServices">
+                      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Cargando...</span>
+                      </div>
+                      <p class="mt-3 text-muted">
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        Cargando servicios disponibles...
+                      </p>
                     </div>
 
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="complete_periapical"
-                            id="complete_periapical" [(ngModel)]="order.complete_periapical" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="complete_periapical">Serie Periapical Completa</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="individual_periapical"
-                            id="individual_periapical" [(ngModel)]="order.individual_periapical" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="individual_periapical">Periapical Individual</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="superior" id="superior"
-                            [(ngModel)]="order.superior" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="superior">Oclusal Superior</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="inferior" id="inferior"
-                            [(ngModel)]="order.inferior" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="inferior">Oclusal Inferior</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="occlusal_xray" id="occlusal_xray"
-                            [(ngModel)]="order.occlusal_xray" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="occlusal_xray">Oclusal Completa</label>
-                        </div>
+                    <!-- Mensaje cuando no hay servicios disponibles -->
+                    <div class="alert alert-warning d-flex align-items-center" role="alert" 
+                         *ngIf="!loadingServices && services.length === 0">
+                      <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                      <div>
+                        <strong>No hay servicios disponibles</strong>
+                        <p class="mb-0">Esta sucursal no tiene servicios configurados. Por favor, seleccione otra sucursal o contacte al administrador.</p>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Card 5: Análisis Cefalométricos -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-secondary text-white">
-                    <h6 class="mb-0">
-                      <i class="bi bi-graph-up me-2"></i>
-                      Análisis Cefalométricos
-                    </h6>
-                  </div>
-                  <div class="card-body">
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="rickets" id="rickets"
-                            [(ngModel)]="order.rickets" (ngModelChange)="onCephChange('rickets')">
-                          <label class="form-check-label" for="rickets">Rickets</label>
+                    <!-- Lista de servicios -->
+                    <div *ngIf="!loadingServices && services.length > 0">
+                      <div class="row g-3">
+                        <div class="col-md-4" *ngFor="let service of services">
+                          <div class="card h-100 border">
+                            <div class="card-body">
+                              <div class="form-check">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       [id]="'service-' + service.id"
+                                       [(ngModel)]="service.selected"
+                                       [name]="'service-' + service.id">
+                                <label class="form-check-label fw-bold" [for]="'service-' + service.id">
+                                  <i class="bi bi-check-circle me-1"></i>
+                                  {{service.name}}
+                                </label>
+                              </div>
+                              <div class="mt-2">
+                                <small class="text-muted d-block">{{service.description}}</small>
+                                <small class="text-primary fw-bold d-block mt-1">
+                                  <i class="bi bi-tag me-1"></i>
+                                  Precio: ${{service.price}}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="mcnamara" id="mcnamara"
-                            [(ngModel)]="order.mcnamara" (ngModelChange)="onCephChange('mcnamara')">
-                          <label class="form-check-label" for="mcnamara">McNamara</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="downs" id="downs"
-                            [(ngModel)]="order.downs" (ngModelChange)="onCephChange('downs')">
-                          <label class="form-check-label" for="downs">Downs</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="jaraback" id="jaraback"
-                            [(ngModel)]="order.jaraback" (ngModelChange)="onCephChange('jaraback')">
-                          <label class="form-check-label" for="jaraback">Jaraback</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="steiner" id="steiner"
-                            [(ngModel)]="order.steiner" (ngModelChange)="onCephChange('steiner')">
-                          <label class="form-check-label" for="steiner">Steiner</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Otros análisis</label>
-                        <input type="text" class="form-control form-control-sm" name="others_analysis"
-                          [(ngModel)]="order.others_analysis" placeholder="Otros análisis..." />
+                      
+                      <!-- Mensaje cuando no hay servicios seleccionados -->
+                      <div class="alert alert-info mt-3" *ngIf="!hasSelectedServices()">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Por favor seleccione al menos un servicio para continuar.
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 6: Modelos de Estudio -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-dark text-white">
-                    <h6 class="mb-0">
-                      <i class="bi bi-box-seam me-2"></i>
-                      Modelos de Estudio
-                    </h6>
-                  </div>
-                  <div class="card-body">
-                    <!-- Alerta para Modelos de Estudio -->
-                    <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert" *ngIf="hasModelSelection()">
-                      <small>
-                        <i class="bi bi-calendar-check me-2"></i>
-                        Recuerde agendar para este servicio
-                      </small>
-                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="risina" id="risina"
-                            [(ngModel)]="order.risina" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="risina">Resina</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="dentalprint" id="dentalprint"
-                            [(ngModel)]="order.dentalprint" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="dentalprint">Impresión Dental</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="3d_risina" id="3d_risina"
-                            [(ngModel)]="order.risina_3d" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="3d_risina">Resina 3D</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="surgical_guide" id="surgical_guide"
-                            [(ngModel)]="order.surgical_guide" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="surgical_guide">Guía Quirúrgica</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Pieza de estudio</label>
-                        <input type="text" class="form-control form-control-sm" name="studio_piece"
-                          [(ngModel)]="order.studio_piece" placeholder="Pieza de estudio..." />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 7: Tomografías 3D -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">
-                      <i class="bi bi-layers me-2"></i>
-                      Tomografías 3D
-                    </h6>
-                  </div>
-                  <div class="card-body overflow-auto" style="max-height: 400px;">
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="complete_tomography"
-                            id="complete_tomography" [(ngModel)]="order.complete_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="complete_tomography">Tomografía Completa</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="two_jaws_tomography"
-                            id="two_jaws_tomography" [(ngModel)]="order.two_jaws_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="two_jaws_tomography">Tomografía Ambos Maxilares</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="maxilar_tomography"
-                            id="maxilar_tomography" [(ngModel)]="order.maxilar_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="maxilar_tomography">Tomografía Maxilar</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="jaw_tomography" id="jaw_tomography"
-                            [(ngModel)]="order.jaw_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="jaw_tomography">Tomografía Mandíbula</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="snp_tomography" id="snp_tomography"
-                            [(ngModel)]="order.snp_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="snp_tomography">Tomografía SNP</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="ear_tomography" id="ear_tomography"
-                            [(ngModel)]="order.ear_tomography" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="ear_tomography">Tomografía Oído</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="atm_tomography_open_close"
-                            id="atm_tomography_open_close" [(ngModel)]="order.atm_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="atm_tomography_open_close">ATM Abierta/Cerrada</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="lateral_left_tomography_open_close"
-                            id="lateral_left_tomography_open_close"
-                            [(ngModel)]="order.lateral_left_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="lateral_left_tomography_open_close">ATM Abierta</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="lateral_right_tomography_open_close"
-                            id="lateral_right_tomography_open_close"
-                            [(ngModel)]="order.lateral_right_tomography_open_close" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="lateral_right_tomography_open_close">ATM Cerrada</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="ondemand" id="ondemand"
-                            [(ngModel)]="order.ondemand" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="ondemand">Ondemand</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="dicom" id="dicom"
-                            [(ngModel)]="order.dicom" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="dicom">DICOM</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Pieza</label>
-                        <input type="text" class="form-control form-control-sm" name="tomography_piece"
-                          [(ngModel)]="order.tomography_piece" placeholder="Especificar pieza..." />
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Implante</label>
-                        <input type="text" class="form-control form-control-sm" name="implant"
-                          [(ngModel)]="order.implant" placeholder="Especificar implante..." />
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Diente Retenido</label>
-                        <input type="text" class="form-control form-control-sm" name="impacted_tooth"
-                          [(ngModel)]="order.impacted_tooth" placeholder="Diente retenido..." />
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Otros</label>
-                        <input type="text" class="form-control form-control-sm" name="others_tomography"
-                          placeholder="Otros estudios..." />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 8: Escaneo Intraoral -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-success text-white">
-                    <h6 class="mb-0">
-                      <i class="bi bi-scanner me-2"></i>
-                      Escaneo Intraoral
-                    </h6>
-                  </div>
-                  <div class="card-body">
-                    <!-- Alerta para Escaneo Intraoral -->
-                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" *ngIf="hasScannerSelection()">
-                      <small>
-                        <i class="bi bi-calendar-check me-2"></i>
-                        Recuerde agendar para este servicio
-                      </small>
-                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="stl" id="stl" [(ngModel)]="order.stl" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="stl">STL</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="obj" id="obj" [(ngModel)]="order.obj" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="obj">OBJ</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="ply" id="ply" [(ngModel)]="order.ply" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="ply">PLY</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="invisaligh" id="invisaligh"
-                            [(ngModel)]="order.invisaligh" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="invisaligh">Invisalign</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Otros</label>
-                        <input type="text" class="form-control form-control-sm" name="others_scanners"
-                          [(ngModel)]="order.others_scanners" placeholder="Otros formatos..." />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 9: Estereolitografía -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0">
-                      <i class="bi bi-printer me-2"></i>
-                      Estereolitografía
-                    </h6>
-                  </div>
-                  <div class="card-body">
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="maxilar_superior" id="maxilar_superior"
-                            [(ngModel)]="order.maxilar_superior" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="maxilar_superior">Maxilar Superior</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="maxilar_inferior" id="maxilar_inferior"
-                            [(ngModel)]="order.maxilar_inferior" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="maxilar_inferior">Maxilar Inferior</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input class="form-check-input" type="checkbox" name="maxilar_both" id="maxilar_both"
-                            [(ngModel)]="order.maxilar_both" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="maxilar_both">Maxilar Ambos</label>
-                        </div>
-                      </div>
-                      <div class="col-12 mt-2">
-                        <label class="form-label form-label-sm">Otros</label>
-                        <input type="text" class="form-control form-control-sm" name="maxilar_others"
-                          [(ngModel)]="order.maxilar_others" placeholder="Otros modelos..." />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
-
-              <!-- Card 10: Fotografía Clínica -->
-              <div class="col-lg-3 col-md-6 col-12">
-                <div class="card h-100 shadow-sm card-form">
-                  <div class="card-header bg-danger text-white">
-                    <h6 class="mb-0">
-                      <i class="bi bi-camera-fill me-2"></i>
-                      Fotografía Clínica
-                    </h6>
-                  </div>
-                  <div class="card-body">
-                    <!-- Alerta para Fotografía Clínica -->
-                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert" *ngIf="hasPhotographySelection()">
-                      <small>
-                        <i class="bi bi-calendar-check me-2"></i>
-                        Recuerde agendar para este servicio
-                      </small>
-                      <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-                    <div class="row g-1">
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input type="checkbox" name="clinical_photography" id="clinical_photography"
-                            [(ngModel)]="order.clinical_photography" class="form-check-input" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="clinical_photography">Fotografía Clínica</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="form-check form-check-custom-sm">
-                          <input type="checkbox" name="dental_interpretation" id="dental_interpretation"
-                            [(ngModel)]="order.dental_interpretation" class="form-check-input" (ngModelChange)="onAnyOptionChange()">
-                          <label class="form-check-label" for="dental_interpretation">Interpretación
-                            Odontológica</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Espacio para mantener el layout -->
-              <div class="col-lg-3 col-md-6 col-12 d-none d-lg-block"></div>
-              <div class="col-lg-3 col-md-6 col-12 d-none d-lg-block"></div>
-
-
-              <!-- Botón de envío -->
-              <div class="row g-4 mb-4">
-                <div class="col-12">
+            <!-- Botón de envío -->
+            <div class="row g-4 mb-4">
+              <div class="col-12">
                   <div class="card shadow-sm">
                     <div class="card-body">
                       <!-- Opción para agendar cita -->
@@ -798,7 +325,7 @@
                           <i class="bi bi-arrow-counterclockwise me-2"></i>
                           Restablecer Formulario
                         </button>
-                        <button type="submit" class="btn btn-primary btn-lg px-5" [disabled]="!order.patient">
+                        <button type="submit" class="btn btn-primary btn-lg px-5" [disabled]="!order.patient || !hasSelectedServices()">
                           <i class="bi bi-check-circle me-2"></i>
                           Crear Orden de Estudios
                         </button>
@@ -809,69 +336,6 @@
               </div>
             </div>
           </form>
-
-          <!-- Información de estudios incluidos -->
-          <div class="row" *ngIf="basicEnabled || basicDigitalEnabled || switch3DEnabled">
-            <div class="col-12 text-center mb-4">
-              <h4 class="text-primary">
-                <i class="bi bi-info-circle me-2"></i>
-                Estudios Incluidos
-              </h4>
-            </div>
-
-            <div *ngIf="basicEnabled" class="col-md-4 mb-3">
-              <div class="card h-100 border-primary">
-                <div class="card-header bg-primary text-white text-center">
-                  <h6 class="mb-0">📋 Básico</h6>
-                </div>
-                <div class="card-body">
-                  <ul class="list-unstyled">
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Panorámica</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Lateral Cráneo</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Modelos de Estudio en Resina</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Fotografía Clínica Intraoral y Extraoral</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="basicDigitalEnabled" class="col-md-4 mb-3">
-              <div class="card h-100 border-info">
-                <div class="card-header bg-info text-white text-center">
-                  <h6 class="mb-0">💻 Básico Digital</h6>
-                </div>
-                <div class="card-body">
-                  <ul class="list-unstyled">
-                    <li><i class="bi bi-check text-success me-2"></i>Fotografía Clínica Intraoral y Extraoral</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Panorámica</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Lateral de Cráneo</li>
-                    <li><i class="bi bi-check text-success me-2"></i>1 Análisis Cefalométrico a Elegir</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="switch3DEnabled" class="col-md-4 mb-3">
-              <div class="card h-100 border-success">
-                <div class="card-header bg-success text-white text-center">
-                  <h6 class="mb-0">🔬 3D (Con Tomografía)</h6>
-                </div>
-                <div class="card-body">
-                  <ul class="list-unstyled">
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Panorámica 3D</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Rx Lateral De Cráneo</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Fotografía Clínica Digital Intraoral y Extraoral
-                    </li>
-                    <li><i class="bi bi-check text-success me-2"></i>Análisis Cefalométrico (a Elegir)</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Modelos De Estudio En Resina</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Tomografía Completa Para Ortodoncia</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Archivo STL</li>
-                    <li><i class="bi bi-check text-success me-2"></i>Escaneo Facial</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

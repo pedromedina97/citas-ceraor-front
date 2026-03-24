@@ -1,117 +1,339 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <!-- 📍 Formulario de Búsqueda -->
-    <div class="col-lg-5 col-md-6 col-sm-12 mt-4">
-      <div class="card shadow-lg p-4 rounded-lg fade-in">
-        <div class="card-body">
-          <h4 class="text-center text-primary mb-4">Buscar Sucursal</h4>
-          <form #form="ngForm" (ngSubmit)="search(form)">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Seleccione una sucursal:</label>
-              <select
-                [(ngModel)]="subsidiary"
-                class="form-select input-ios"
-                name="id_subsidiary"
-                required
-              >
-                <option *ngFor="let sub of subsidiaries" [value]="sub.id">{{ sub.name }}</option>
-              </select>
+<div class="services-manager">
+  <!-- Header -->
+  <div class="manager-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="bi bi-building"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Gestión de Servicios por Sucursal</h2>
+        <p class="header-subtitle">Asigna servicios a tus sucursales mediante drag & drop</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="manager-content">
+    <!-- Panel de Sucursales -->
+    <div class="panel subsidiaries-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>Sucursales</span>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canShow('create_subsidiary')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createSubsidiaryModal" title="Crear sucursal">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+          <span class="badge-count">{{ subsidiaries?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" placeholder="Buscar sucursal..." class="search-input">
+        </div>
+        <div class="subsidiaries-list">
+          <div 
+            *ngFor="let sub of subsidiaries" 
+            class="subsidiary-item"
+            [class.active]="sub.id === selectedSubsidiary?.id"
+            (click)="selectSubsidiary(sub)">
+            <div class="subsidiary-icon">
+              <i class="bi bi-shop"></i>
             </div>
-            <button type="submit" class="btn btn-primary btn-ios w-100 mt-3">
-              <i class="bi bi-search me-1"></i> Buscar
-            </button>
-          </form>
+            <div class="subsidiary-info">
+              <div class="subsidiary-name">{{ sub.name }}</div>
+              <div class="subsidiary-services">{{ getSubsidiaryServicesCount(sub.id) }} servicios</div>
+            </div>
+            <div class="subsidiary-arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+          <div *ngIf="!subsidiaries || subsidiaries.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No hay sucursales</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 📄 Tabla de Resultados -->
-    <div class="col-lg-7 col-md-6 col-sm-12 mt-4">
-      <div class="card shadow-lg p-4 rounded-lg fade-in">
-        <div class="card-body">
-          <h4 class="text-center text-primary mb-4">Resultados</h4>
-          <div class="table-responsive">
-            <table class="dashboard-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th class="text-center">Opciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let instance of filtered">
-                  <td>{{ instance.name }}</td>
-                  <td>{{ instance.description }}</td>
-                  <td class="text-center">
-                    <button *ngIf="canShow('update_service')" class="btn btn-sm btn-outline-warning me-2"
-                      data-bs-toggle="modal" data-bs-target="#editModal"
-                      (click)="getInstance(instance, instance.id)">
-                      <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button *ngIf="canShow('delete_service')" class="btn btn-sm btn-outline-danger"
-                      (click)="delete(instance.id, instance.name)">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr *ngIf="filtered.length === 0">
-                  <td colspan="3" class="text-center text-muted">No hay resultados.</td>
-                </tr>
-              </tbody>
-            </table>
+    <!-- Panel de Servicios Disponibles -->
+    <div class="panel services-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Servicios Disponibles</span>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canShow('create_service')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createServiceModal" title="Crear servicio">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+          <span class="badge-count">{{ getAvailableServices()?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="!selectedSubsidiary" class="empty-selection">
+          <div class="empty-icon">
+            <i class="bi bi-cursor"></i>
+          </div>
+          <p>Selecciona una sucursal para comenzar</p>
+        </div>
+        <div *ngIf="selectedSubsidiary" class="services-grid">
+          <div 
+            *ngFor="let service of getAvailableServices()" 
+            class="service-card draggable"
+            draggable="true"
+            (dragstart)="onDragStart($event, service)"
+            (dragend)="onDragEnd($event)">
+            <div class="service-icon">
+              <i class="bi bi-box"></i>
+            </div>
+            <div class="service-content">
+              <div class="service-name">{{ service.name }}</div>
+              <div class="service-description">{{ service.description || 'Sin descripción' }}</div>
+            </div>
+            <div class="drag-indicator">
+              <i class="bi bi-grip-vertical"></i>
+            </div>
+          </div>
+          <div *ngIf="getAvailableServices()?.length === 0" class="empty-state">
+            <i class="bi bi-check-circle"></i>
+            <p>Todos los servicios asignados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Servicios Asignados -->
+    <div class="panel assigned-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-check2-square"></i>
+          <span>Servicios Asignados</span>
+        </div>
+        <span class="badge-count success">{{ getAssignedServices()?.length || 0 }}</span>
+      </div>
+      
+      <!-- Botón de guardar cambios -->
+      <div *ngIf="selectedSubsidiary && hasUnsavedChanges" class="save-changes-bar">
+        <div class="changes-indicator">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>Tienes cambios sin guardar</span>
+        </div>
+        <button class="btn btn-save" (click)="saveChanges()">
+          <i class="bi bi-save"></i>
+          Guardar Cambios
+        </button>
+      </div>
+      
+      <div class="panel-body">
+        <div *ngIf="!selectedSubsidiary" class="empty-selection">
+          <div class="empty-icon">
+            <i class="bi bi-arrow-left-circle"></i>
+          </div>
+          <p>Selecciona una sucursal</p>
+        </div>
+        <div 
+          *ngIf="selectedSubsidiary" 
+          class="drop-zone"
+          [class.drag-over]="isDragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)">
+          <div *ngIf="getAssignedServices()?.length === 0" class="drop-placeholder">
+            <div class="placeholder-icon">
+              <i class="bi bi-cloud-upload"></i>
+            </div>
+            <p class="placeholder-text">Arrastra servicios aquí</p>
+            <p class="placeholder-hint">Los servicios se asignarán a {{ selectedSubsidiary?.name }}</p>
+          </div>
+          <div class="assigned-services-list">
+            <div 
+              *ngFor="let service of getAssignedServices()" 
+              class="assigned-service-item"
+              draggable="true"
+              (dragstart)="onDragStart($event, service)"
+              (dragend)="onDragEnd($event)">
+              <div class="service-info">
+                <div class="service-icon-small">
+                  <i class="bi bi-box-fill"></i>
+                </div>
+                <div class="service-details">
+                  <div class="service-name-small">{{ service.name }}</div>
+                  <div class="service-desc-small">{{ service.description || 'Sin descripción' }}</div>
+                  <div class="service-price-input mt-2">
+                    <label class="form-label-small">Precio: $</label>
+                    <input 
+                      type="number" 
+                      class="form-control form-control-sm price-input" 
+                      [(ngModel)]="service.subsidiaryPrice"
+                      (ngModelChange)="updateServicePrice(service, $event)"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      name="price_{{service.id}}">
+                  </div>
+                </div>
+              </div>
+              <div class="service-actions">
+                <button 
+                  *ngIf="canShow('update_service')"
+                  class="action-btn edit"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#editModal"
+                  (click)="getInstance(service, service.id)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button 
+                  class="action-btn remove"
+                  (click)="removeServiceLocally(service)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- ✏️ Modal de Edición -->
+
+<!-- Modal de Edición -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content modal-ios fade-in">
+    <div class="modal-content modern-modal">
       <div class="modal-header">
-        <h5 class="modal-title text-primary">Editar Sucursal</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Editar Servicio
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form #form="ngForm">
-          <div class="row">
-            <div class="col">
-              <div class="form-group mb-3">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Nombre"
-                  class="form-control input-ios"
-                  [(ngModel)]="dataInstance.name"
-                  required
-                />
-              </div>
-              <div class="form-group mb-3">
-                <input
-                  type="text"
-                  name="id_subsidiary"
-                  placeholder="ID Sucursal"
-                  class="form-control input-ios"
-                  [(ngModel)]="dataInstance.id_subsidiary"
-                  required
-                />
-              </div>
-              <div class="form-group mb-2">
-                <input
-                  type="text"
-                  name="description"
-                  placeholder="Descripción"
-                  class="form-control input-ios"
-                  [(ngModel)]="dataInstance.description"
-                />
-              </div>
-            </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="name"
+              class="form-control input-ios"
+              placeholder="Nombre"
+              [(ngModel)]="dataInstance.name"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="description"
+              class="form-control input-ios"
+              placeholder="Descripción"
+              [(ngModel)]="dataInstance.description"
+            />
           </div>
         </form>
       </div>
-      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="editInstance(form)">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Servicio -->
+<div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear Nuevo Servicio
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #createServiceForm="ngForm">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="serviceName"
+              class="form-control input-ios"
+              placeholder="Nombre"
+              [(ngModel)]="newService.name"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="serviceDescription"
+              class="form-control input-ios"
+              placeholder="Descripción"
+              [(ngModel)]="newService.description"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetServiceForm(createServiceForm)">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="createService(createServiceForm)" [disabled]="!createServiceForm.valid">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Sucursal -->
+<div class="modal fade" id="createSubsidiaryModal" tabindex="-1" aria-labelledby="createSubsidiaryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear Nueva Sucursal
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #createSubsidiaryForm="ngForm">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="subsidiaryName"
+              class="form-control input-ios"
+              placeholder="Nombre"
+              [(ngModel)]="newSubsidiary.name"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="subsidiaryAddress"
+              class="form-control input-ios"
+              placeholder="Dirección"
+              [(ngModel)]="newSubsidiary.address"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetSubsidiaryForm(createSubsidiaryForm)">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="createSubsidiary(createSubsidiaryForm)" [disabled]="!createSubsidiaryForm.valid">
+          Guardar
+        </button>
+      </div>
     </div>
   </div>
 </div>

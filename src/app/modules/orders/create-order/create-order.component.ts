@@ -86,6 +86,12 @@ export class CreateOrderComponent {
     dental_interpretation: 0
   }
 
+  // Nuevas propiedades para sucursales y servicios
+  subsidiaries: any[] = [];
+  selectedSubsidiaryId: string = '';
+  services: any[] = [];
+  loadingServices: boolean = false;
+
   clients: any[] = [];
   filteredClients: any[] = [];
   searchTerm: string = '';
@@ -370,41 +376,8 @@ export class CreateOrderComponent {
    * Obtiene los servicios seleccionados de la orden
    */
   private getSelectedServices(): string {
-    const selectedServices = [];
-    
-    // Radiografías
-    if (this.order.rx_panoramic) selectedServices.push('Rx Panorámica');
-    if (this.order.rx_arc_panoramic) selectedServices.push('Rx Arco Panorámico');
-    if (this.order.rx_lateral_skull) selectedServices.push('Rx Lateral Cráneo');
-    if (this.order.ap_skull) selectedServices.push('AP Cráneo');
-    if (this.order.pa_skull) selectedServices.push('PA Cráneo');
-    if (this.order.paranasal_sinuses) selectedServices.push('Senos Paranasales');
-    if (this.order.atm_open_close) selectedServices.push('ATM Abre/Cierra');
-    if (this.order.profilogram) selectedServices.push('Profilograma');
-    if (this.order.watters_skull) selectedServices.push('Watters');
-    if (this.order.palmar_digit) selectedServices.push('Dígito Palmar');
-
-    // Intraorales
-    if (this.order.complete_periapical) selectedServices.push('Serie Periapical Completa');
-    if (this.order.individual_periapical) selectedServices.push('Periapical Individual');
-    if (this.order.occlusal_xray) selectedServices.push('Oclusal Completa');
-    if (this.order.superior) selectedServices.push('Oclusal Superior');
-    if (this.order.inferior) selectedServices.push('Oclusal Inferior');
-
-    // Fotografía Clínica
-    if (this.order.clinical_photography) selectedServices.push('Fotografía Clínica');
-    if (this.order.dental_interpretation) selectedServices.push('Interpretación Odontológica');
-
-    // Tomografías
-    if (this.order.complete_tomography) selectedServices.push('Tomografía Completa');
-    if (this.order.two_jaws_tomography) selectedServices.push('Tomografía Ambos Maxilares');
-    if (this.order.maxilar_tomography) selectedServices.push('Tomografía Maxilar');
-    if (this.order.jaw_tomography) selectedServices.push('Tomografía Mandíbula');
-    if (this.order.snp_tomography) selectedServices.push('Tomografía SNP');
-    if (this.order.ear_tomography) selectedServices.push('Tomografía Oído');
-    if (this.order.atm_tomography_open_close) selectedServices.push('ATM Abierta/Cerrada');
-
-    return selectedServices.join(', ');
+    const selectedServices = this.getSelectedServicesList();
+    return selectedServices.map(s => s.name).join(', ');
   }
 
   ngOnInit(): void {
@@ -413,6 +386,7 @@ export class CreateOrderComponent {
     this.getMyClients();
     this.getRols(); // Obtener roles disponibles
     this.loadUserRole();
+    this.loadSubsidiaries(); // Cargar sucursales disponibles
     this.cd.detectChanges();
   }
 
@@ -431,9 +405,24 @@ export class CreateOrderComponent {
 
 
   create() {
-    const orderCopy = { ...this.order };
+    // Obtener los servicios seleccionados
+    const selectedServices = this.getSelectedServicesList();
+    
+    // Preparar el objeto de la orden con la información de servicios
+    const orderData = {
+      ...this.order,
+      subsidiary_id: this.selectedSubsidiaryId,
+      services: selectedServices.map(s => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        price: s.price
+      }))
+    };
 
-    this.api.createData('order/create', this.order).subscribe(
+    console.log('📦 Enviando orden:', orderData);
+
+    this.api.createData('order/create', orderData).subscribe(
       (resp: any) => {
         if (this.scheduleAppointment) {
           // Si se quiere agendar cita, mostrar confirmación con opciones
@@ -893,5 +882,95 @@ export class CreateOrderComponent {
       this.order.clinical_photography ||
       this.order.dental_interpretation
     );
+  }
+
+  /**
+   * Carga la lista de sucursales disponibles
+   */
+  loadSubsidiaries() {
+    this.api.getData('subsidiary/getall').subscribe(
+      (resp: any) => {
+        if (resp.status === 'success' && resp.data) {
+          this.subsidiaries = resp.data;
+          console.log('✅ Sucursales cargadas:', this.subsidiaries);
+        }
+      },
+      (error) => {
+        console.error('❌ Error al cargar sucursales:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar las sucursales'
+        });
+      }
+    );
+  }
+
+  /**
+   * Maneja el cambio de sucursal seleccionada
+   */
+  onSubsidiaryChange() {
+    if (this.selectedSubsidiaryId) {
+      console.log('🏢 Sucursal seleccionada:', this.selectedSubsidiaryId);
+      this.loadServicesBySubsidiary(this.selectedSubsidiaryId);
+    } else {
+      this.services = [];
+      this.loadingServices = false;
+    }
+  }
+
+  /**
+   * Carga los servicios disponibles para la sucursal seleccionada
+   */
+  loadServicesBySubsidiary(subsidiaryId: string) {
+    this.loadingServices = true;
+    this.services = [];
+    
+    this.api.getDataById('service/getbysubsidiary', subsidiaryId).subscribe(
+      (resp: any) => {
+        this.loadingServices = false;
+        
+        if (resp.status === 'success' && resp.data && Array.isArray(resp.data)) {
+          if (resp.data.length > 0) {
+            // Agregar propiedad 'selected' a cada servicio
+            this.services = resp.data.map((service: any) => ({
+              ...service,
+              selected: false
+            }));
+            console.log('✅ Servicios cargados:', this.services);
+          } else {
+            console.log('⚠️ No hay servicios disponibles para esta sucursal');
+            this.services = [];
+          }
+        } else {
+          console.log('⚠️ Respuesta sin datos de servicios');
+          this.services = [];
+        }
+      },
+      (error) => {
+        this.loadingServices = false;
+        console.error('❌ Error al cargar servicios:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los servicios de esta sucursal'
+        });
+        this.services = [];
+      }
+    );
+  }
+
+  /**
+   * Verifica si hay al menos un servicio seleccionado
+   */
+  hasSelectedServices(): boolean {
+    return this.services.some(service => service.selected);
+  }
+
+  /**
+   * Obtiene los servicios seleccionados con sus detalles
+   */
+  getSelectedServicesList(): any[] {
+    return this.services.filter(service => service.selected);
   }
 }

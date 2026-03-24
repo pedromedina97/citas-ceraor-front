@@ -1,27 +1,42 @@
-.hover-up {
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  }
-  
-  .hover-up::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 123, 255, 0.2); /* Color azul semi-transparente */
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-    left: 0;
-    top: 0;
-  }
-  
-  .hover-up:hover {
-    transform: translateY(-10px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  }
-  
-  .hover-up:hover::before {
-    transform: translateY(0);
-  }
+// === Container ===
+.container {
+  max-width: 100%;
+  margin: auto;
+  padding: 0 16px;
+}
+
+// === Cards con efecto hover mejorado ===
+.hover-up, .card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.hover-up::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.hover-up:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15), 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.hover-up:hover::before {
+  transform: translateY(0);
+}
   

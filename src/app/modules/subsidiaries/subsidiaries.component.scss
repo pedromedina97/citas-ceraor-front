@@ -1,98 +1,395 @@
+// === Container ===
 .container {
-    max-width: 1100px;
-    margin: auto;
+  max-width: 100%;
+  margin: auto;
+  padding: 0 16px;
+}
+
+// === Card de filtros ===
+.card {
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1), 
+              0 4px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15), 
+                0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+h5 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+// === Inputs ===
+.input-ios {
+  border-radius: 12px;
+  font-size: 14px;
+  padding: 12px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid #e2e8f0;
+  background: white;
+  
+  &:hover {
+    border-color: #cbd5e1;
   }
   
-  .card {
+  &:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    outline: none;
+  }
+}
+
+.form-select.input-ios {
+  cursor: pointer;
+  
+  &:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+}
+
+// === Labels ===
+.form-label {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// === Botones modernos ===
+.btn, .btn-ios {
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  
+  i {
+    font-size: 16px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Botones de acciones (pequeños)
+.btn-sm {
+  padding: 5px 5px;
+}
+
+.btn-primary, .btn-ios.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  
+  &:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+  }
+}
+
+.btn-success, .btn-ios.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  
+  &:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.btn-secondary, .btn-ios.btn-secondary {
+  background: #64748b;
+  
+  &:hover {
+    background: #475569;
+  }
+}
+
+.btn-outline-secondary {
+  border: 2px solid #94a3b8;
+  color: #64748b;
+  background: transparent;
+  
+  &:hover {
+    background: #f1f5f9;
+    border-color: #64748b;
+    color: #475569;
+  }
+}
+
+.btn-outline-warning {
+  border: 2px solid #f59e0b;
+  color: #f59e0b;
+  background: transparent;
+  
+  &:hover {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border-color: #d97706;
+  }
+}
+
+.btn-outline-danger {
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  background: transparent;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border-color: #dc2626;
+  }
+}
+
+.btn-outline-info {
+  border: 2px solid #06b6d4;
+  color: #06b6d4;
+  background: transparent;
+  
+  &:hover {
+    background: rgba(6, 182, 212, 0.1);
+    color: #0891b2;
+    border-color: #0891b2;
+  }
+}
+
+// === Tabla mejorada ===
+.table-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  &::before {
+    content: '';
+    width: 4px;
+    height: 32px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 4px;
+  }
+}
+
+.dashboard-table-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.dashboard-table {
+  margin: 0;
+  
+  thead {
+    background: linear-gradient(135deg, #e0e7ff, #ddd6fe);
+    
+    th {
+      color: #1e293b;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding: 16px;
+      border: none;
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f1f5f9;
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        padding: 16px;
+        color: #334155;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+// === Cards móviles ===
+.mobile-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    transform: translateY(-4px);
+  }
+  
+  p {
+    margin: 8px 0;
+    font-size: 14px;
+    
+    strong {
+      color: #6366f1;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+  }
+}
+
+// === Modales mejorados ===
+.modal-content, .modal-ios {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  
+  .modal-header {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
     border: none;
-    border-radius: 15px;
-    background: #ffffff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px 32px;
+    
+    .modal-title {
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .btn-close {
+      filter: brightness(0) invert(1);
+      opacity: 0.8;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
   
-  h5 {
+  .modal-body {
+    padding: 32px;
+  }
+  
+  .modal-footer {
+    border: none;
+    padding: 20px 32px;
+    background: #f8fafc;
+  }
+}
+
+// === Alertas mejoradas ===
+.alert {
+  border-radius: 12px;
+  border-left: 4px solid;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  
+  &.alert-info {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+    border-left-color: #3b82f6;
+    color: #1e40af;
+    
+    i {
+      color: #3b82f6;
+      font-size: 20px;
+    }
+  }
+  
+  &.alert-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+    border-left-color: #f59e0b;
+    color: #92400e;
+    
+    i {
+      color: #f59e0b;
+      font-size: 20px;
+    }
+  }
+}
+
+// === Spinner mejorado ===
+.spinner-border {
+  border-width: 4px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// === Animaciones ===
+.fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// === Responsive ===
+@media (max-width: 768px) {
+  .btn {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  
+  .table-title {
     font-size: 20px;
-    font-weight: 600;
-    color: #333;
   }
-  
-  .input-ios {
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    padding: 12px;
-    font-size: 16px;
-    transition: all 0.3s ease-in-out;
-  
-    &:focus {
-      border-color: #007aff;
-      box-shadow: 0px 0px 8px rgba(0, 122, 255, 0.3);
-    }
-  }
-  
-  .btn-ios {
-    border-radius: 12px;
-    font-size: 16px;
-    padding: 10px 15px;
-    transition: all 0.3s ease-in-out;
-  
-    &.btn-primary {
-      background: #007aff;
-      border: none;
-  
-      &:hover {
-        background: #005ecb;
-      }
-    }
-  
-    &.btn-success {
-      background: #34c759;
-      border: none;
-  
-      &:hover {
-        background: #28a745;
-      }
-    }
-  
-    &.btn-secondary {
-      background: #8e8e93;
-      border: none;
-  
-      &:hover {
-        background: #6c757d;
-      }
-    }
-  }
-  
-  /* Animaciones */
-  .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .modal-ios {
-    border-radius: 15px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-    animation: scaleIn 0.3s ease-in-out;
-  }
-  
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
+}
