@@ -17,6 +17,7 @@ import { noAuthGuard } from "./guards/no-auth.guard";
 import { CreateOrderComponent } from "./modules/orders/create-order/create-order.component";
 import { CashcutsComponent } from "./modules/cashcuts/cashcuts.component";
 import { PaymentsComponent } from "./modules/payments/payments.component";
+import { PublicOrderComponent } from "./modules/public/public-order/public-order.component";
 
 export const ROUTES: Routes = [
   { 
@@ -113,6 +114,11 @@ export const ROUTES: Routes = [
     path: 'unauthorized-access', 
     component: UnauthorizedAccessComponent, 
     data: { breadcrumb: 'Acceso no autorizado' } 
+  },
+  {
+    path: 'public-order',
+    component: PublicOrderComponent,
+    data: { breadcrumb: 'Orden Pública' }
   },
   { 
     path: '**', 

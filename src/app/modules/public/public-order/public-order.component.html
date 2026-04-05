@@ -1,0 +1,146 @@
+<div class="order-form-container">
+  <form #orderForm="ngForm">
+    <!-- Sección Paciente -->
+    <div class="section-header">
+      <h3>Paciente:</h3>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Nombre" name="pacienteNombre" [(ngModel)]="paciente.nombre">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Paterno" name="pacientePaterno" [(ngModel)]="paciente.paterno">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Materno" name="pacienteMaterno" [(ngModel)]="paciente.materno">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Teléfono" name="pacienteTelefono" [(ngModel)]="paciente.telefono">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group fecha-group">
+        <label class="fecha-label">Fecha de Nacimiento</label>
+        <label class="edad-label">Edad</label>
+      </div>
+      <div class="form-group select-group">
+        <select class="form-control" name="dia" [(ngModel)]="paciente.dia">
+          <option value="01">01</option>
+          <option *ngFor="let d of dias" [value]="d">{{ d }}</option>
+        </select>
+        <select class="form-control" name="mes" [(ngModel)]="paciente.mes">
+          <option value="Enero">Enero</option>
+          <option *ngFor="let m of meses" [value]="m">{{ m }}</option>
+        </select>
+        <select class="form-control" name="anio" [(ngModel)]="paciente.anio">
+          <option value="2026">2026</option>
+          <option *ngFor="let a of anios" [value]="a">{{ a }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="email" class="form-control" placeholder="E-mail" name="pacienteEmail" [(ngModel)]="paciente.email">
+      </div>
+    </div>
+
+    <!-- Sección Doctor -->
+    <div class="section-header">
+      <h3>Doctor:</h3>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Nombre" name="doctorNombre" [(ngModel)]="doctor.nombre">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Paterno" name="doctorPaterno" [(ngModel)]="doctor.paterno">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Materno" name="doctorMaterno" [(ngModel)]="doctor.materno">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Teléfono" name="doctorTelefono" [(ngModel)]="doctor.telefono">
+      </div>
+      <div class="form-group">
+        <input type="email" class="form-control" placeholder="E-mail" name="doctorEmail" [(ngModel)]="doctor.email">
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Selección de Sucursal -->
+    <div class="section-header">
+      <h3>Sucursal:</h3>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <select class="form-control" name="subsidiary" [(ngModel)]="selectedSubsidiaryId" (change)="onSubsidiaryChange()">
+          <option value="" disabled>Seleccione una sucursal</option>
+          <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">{{ subsidiary.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Paquetes -->
+    <div *ngIf="packets.length > 0" class="packets-section">
+      <div class="section-header">
+        <h3>Paquetes disponibles:</h3>
+      </div>
+      
+      <div class="packets-list">
+        <div *ngFor="let packet of packets" class="packet-card" [class.selected]="isPacketSelected(packet.id)">
+          <div class="packet-header">
+            <input 
+              type="radio" 
+              [id]="'packet-' + packet.id" 
+              name="selectedPacket"
+              [value]="packet.id"
+              [(ngModel)]="selectedPacketId"
+              (change)="onPacketChange(packet.id)">
+            <label [for]="'packet-' + packet.id" class="packet-title">
+              <span class="packet-name">{{ packet.name }}</span>
+              <span class="packet-price">${{ packet.price }}</span>
+            </label>
+          </div>
+          <div class="packet-services">
+            <p class="services-label">Incluye:</p>
+            <ul>
+              <li *ngFor="let service of packet.services">{{ service.name }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Categorías y Servicios Dinámicos -->
+    <div class="categories-grid">
+      <div *ngFor="let category of categories" class="category-section">
+        <div class="section-header">
+          <h3>{{ category.name }}</h3>
+        </div>
+        
+        <div class="services-list">
+          <div *ngFor="let service of category.services" class="checkbox-group service-item">
+            <input 
+              type="checkbox" 
+              [id]="'service-' + service.id" 
+              [name]="'service-' + service.id"
+              [checked]="isServiceSelected(service.id)"
+              (change)="onServiceChange(service.id, $any($event.target).checked)">
+            <label [for]="'service-' + service.id" class="service-label">
+              <img *ngIf="service.image" [src]="getImageUrl(service.image)" alt="{{ service.name }}" class="service-image">
+              <span class="service-name">{{ service.name }}</span>
+              <span *ngIf="service.price" class="service-price">${{ service.price }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

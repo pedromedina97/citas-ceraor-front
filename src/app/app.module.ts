@@ -31,6 +31,7 @@ import { CashcutsComponent } from './modules/cashcuts/cashcuts.component';
 import { CustomPaginationComponent } from './components/custom-pagination/custom-pagination.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PaymentsComponent } from './modules/payments/payments.component';
+import { PublicOrderComponent } from './modules/public/public-order/public-order.component';
 
 
 registerLocaleData(localeEs, 'es');
@@ -58,6 +59,7 @@ registerLocaleData(localeEs, 'es');
     CashcutsComponent,
     CustomPaginationComponent,
     PaymentsComponent,
+    PublicOrderComponent,
 
   ],
   imports: [

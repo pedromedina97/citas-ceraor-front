@@ -19,7 +19,12 @@ export class CeraorService {
   getData(endpoint: string) {
     const url = `${Environment.url}${endpoint}`;
    /*  console.log(url); */
-    return this.http.get(url);
+    return this.http.get(url, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
   }
 
   getDataById(endpoint: string, id: any) {

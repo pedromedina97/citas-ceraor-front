@@ -9,11 +9,45 @@
         <h2 class="header-title">Gestión de Servicios por Sucursal</h2>
         <p class="header-subtitle">Asigna servicios a tus sucursales mediante drag & drop</p>
       </div>
+      <div class="header-actions-main">
+        <button *ngIf="canShow('create_service')" class="btn-add-category" data-bs-toggle="modal" data-bs-target="#createCategoryModal" title="Crear categoría">
+          <i class="bi bi-tag-fill me-2"></i>
+          Crear Categoría
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div class="manager-content">
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button 
+      type="button"
+      class="tab-button" 
+      [class.active]="activeTab === 'services'"
+      (click)="activeTab = 'services'; selectedSubsidiary = null; selectedPackage = null; viewingPackage = null">
+      <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+      Sucursales/Servicios
+    </button>
+    <button 
+      type="button"
+      class="tab-button" 
+      [class.active]="activeTab === 'packages'"
+      (click)="activeTab = 'packages'; selectedSubsidiary = null; selectedPackage = null; viewingPackage = null">
+      <i class="bi bi-box-seam me-2"></i>
+      Sucursales/Paquetes
+    </button>
+    <button 
+      type="button"
+      class="tab-button" 
+      [class.active]="activeTab === 'managePackages'"
+      (click)="activeTab = 'managePackages'; selectedSubsidiary = null; selectedPackage = null; viewingPackage = null">
+      <i class="bi bi-gear-fill me-2"></i>
+      Gestión de Paquetes
+    </button>
+  </div>
+
+  <!-- Main Content: Tab Servicios -->
+  <div class="manager-content" *ngIf="activeTab === 'services'">
     <!-- Panel de Sucursales -->
     <div class="panel subsidiaries-panel">
       <div class="panel-header">
@@ -87,11 +121,11 @@
             (dragstart)="onDragStart($event, service)"
             (dragend)="onDragEnd($event)">
             <div class="service-icon">
-              <i class="bi bi-box"></i>
+              <img *ngIf="service.image" [src]="getSafeImageUrl(service.image)" alt="{{ service.name }}" class="service-thumbnail">
+              <i *ngIf="!service.image" class="bi bi-image"></i>
             </div>
             <div class="service-content">
               <div class="service-name">{{ service.name }}</div>
-              <div class="service-description">{{ service.description || 'Sin descripción' }}</div>
             </div>
             <div class="drag-indicator">
               <i class="bi bi-grip-vertical"></i>
@@ -197,6 +231,497 @@
       </div>
     </div>
   </div>
+
+  <!-- Main Content: Tab Paquetes -->
+  <div class="manager-content" *ngIf="activeTab === 'packages'">
+    <!-- Panel de Sucursales -->
+    <div class="panel subsidiaries-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>Sucursales</span>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canShow('create_subsidiary')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createSubsidiaryModal" title="Crear sucursal">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+          <span class="badge-count">{{ subsidiaries?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" placeholder="Buscar sucursal..." class="search-input">
+        </div>
+        <div class="subsidiaries-list">
+          <div 
+            *ngFor="let sub of subsidiaries" 
+            class="subsidiary-item"
+            [class.active]="sub.id === selectedSubsidiary?.id"
+            (click)="selectSubsidiary(sub)">
+            <div class="subsidiary-icon">
+              <i class="bi bi-shop"></i>
+            </div>
+            <div class="subsidiary-info">
+              <div class="subsidiary-name">{{ sub.name }}</div>
+              <div class="subsidiary-services">{{ getSubsidiaryPackagesCount(sub.id) }} paquetes</div>
+            </div>
+            <div class="subsidiary-arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+          <div *ngIf="!subsidiaries || subsidiaries.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No hay sucursales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Paquetes Disponibles -->
+    <div class="panel services-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-box-seam"></i>
+          <span>Paquetes Disponibles</span>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canShow('create_service')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createPackageModal" title="Crear paquete">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+          <span class="badge-count">{{ getAvailablePackages()?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="!selectedSubsidiary" class="empty-selection">
+          <div class="empty-icon">
+            <i class="bi bi-cursor"></i>
+          </div>
+          <p>Selecciona una sucursal para comenzar</p>
+        </div>
+        <div *ngIf="selectedSubsidiary" class="services-grid">
+          <div 
+            *ngFor="let pkg of getAvailablePackages()" 
+            class="service-card draggable"
+            draggable="true"
+            (dragstart)="onDragStartPackage($event, pkg)"
+            (dragend)="onDragEndPackage($event)">
+            <div class="service-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="service-content">
+              <div class="service-name">{{ pkg.name || 'Paquete #' + pkg.id?.substring(0, 8) }}</div>
+            </div>
+            <div class="drag-indicator">
+              <i class="bi bi-grip-vertical"></i>
+            </div>
+          </div>
+          <div *ngIf="getAvailablePackages()?.length === 0" class="empty-state">
+            <i class="bi bi-check-circle"></i>
+            <p>Todos los paquetes asignados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Paquetes Asignados -->
+    <div class="panel assigned-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-check2-square"></i>
+          <span>Paquetes Asignados</span>
+        </div>
+        <span class="badge-count success">{{ getAssignedPackages()?.length || 0 }}</span>
+      </div>
+      
+      <!-- Botón de guardar cambios -->
+      <div *ngIf="selectedSubsidiary && hasUnsavedPackageChanges" class="save-changes-bar">
+        <div class="changes-indicator">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>Tienes cambios sin guardar</span>
+        </div>
+        <button class="btn btn-save" (click)="savePackageChanges()">
+          <i class="bi bi-save"></i>
+          Guardar Cambios
+        </button>
+      </div>
+      
+      <div class="panel-body">
+        <div *ngIf="!selectedSubsidiary" class="empty-selection">
+          <div class="empty-icon">
+            <i class="bi bi-arrow-left-circle"></i>
+          </div>
+          <p>Selecciona una sucursal</p>
+        </div>
+        <div 
+          *ngIf="selectedSubsidiary" 
+          class="drop-zone"
+          [class.drag-over]="isDragOverPackage"
+          (dragover)="onDragOverPackage($event)"
+          (dragleave)="onDragLeavePackage($event)"
+          (drop)="onDropPackage($event)">
+          <div *ngIf="getAssignedPackages()?.length === 0" class="drop-placeholder">
+            <div class="placeholder-icon">
+              <i class="bi bi-cloud-upload"></i>
+            </div>
+            <p class="placeholder-text">Arrastra paquetes aquí</p>
+            <p class="placeholder-hint">Los paquetes se asignarán a {{ selectedSubsidiary?.name }}</p>
+          </div>
+          <div class="assigned-services-list">
+            <div 
+              *ngFor="let pkg of getAssignedPackages()" 
+              class="assigned-service-item"
+              draggable="true"
+              (dragstart)="onDragStartPackage($event, pkg)"
+              (dragend)="onDragEndPackage($event)">
+              <div class="service-info">
+                <div class="service-icon-small">
+                  <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <div class="service-details">
+                  <div class="service-name-small">{{ pkg.name || 'Paquete #' + pkg.id?.substring(0, 8) }}</div>
+                  <div class="service-desc-small">{{ pkg.description || ('Subtotal: $' + (pkg.subtotal || 0)) }}</div>
+                  <div class="service-price-input mt-2">
+                    <label class="form-label-small">Precio: $</label>
+                    <input 
+                      type="number" 
+                      class="form-control form-control-sm price-input" 
+                      [(ngModel)]="pkg.subsidiaryPrice"
+                      (ngModelChange)="updatePackagePrice(pkg, $event)"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      name="price_{{pkg.id}}">
+                  </div>
+                </div>
+              </div>
+              <div class="service-actions">
+                <button 
+                  class="action-btn manage"
+                  (click)="selectPackageForServices(pkg, true)"
+                  title="Gestionar servicios del paquete">
+                  <i class="bi bi-gear"></i>
+                </button>
+                <button 
+                  *ngIf="canShow('update_service')"
+                  class="action-btn edit"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#editPackageModal"
+                  (click)="getPackageInstance(pkg, pkg.id)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button 
+                  class="action-btn remove"
+                  (click)="removePackageLocally(pkg)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gestión de Paquetes (Nueva pestaña) -->
+  <div class="manager-content" *ngIf="activeTab === 'managePackages' && !selectedPackage">
+    <!-- Panel de Paquetes -->
+    <div class="panel subsidiaries-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-box-seam-fill"></i>
+          <span>Todos los Paquetes</span>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canShow('create_service')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createPackageModal" title="Crear paquete">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+          <span class="badge-count">{{ allPackages?.length || 0 }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" placeholder="Buscar paquete..." class="search-input">
+        </div>
+        <div class="subsidiaries-list">
+          <div 
+            *ngFor="let pkg of allPackages" 
+            class="subsidiary-item"
+            [class.active]="pkg.id === viewingPackage?.id"
+            (click)="selectPackageForServices(pkg, false)">
+            <div class="subsidiary-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="subsidiary-info">
+              <div class="subsidiary-name">{{ pkg.name || 'Paquete #' + pkg.id?.substring(0, 8) }}</div>
+              <div class="subsidiary-services">{{ getPackageServicesCount(pkg.id) }} servicios</div>
+            </div>
+            <div class="subsidiary-arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+          <div *ngIf="!allPackages || allPackages.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No hay paquetes creados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Servicios Asignados al Paquete -->
+    <div class="panel services-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-list-check"></i>
+          <span>Servicios del Paquete</span>
+        </div>
+        <div class="header-actions" *ngIf="viewingPackage">
+          <span class="badge-count">{{ getPackageServicesCount(viewingPackage.id) }}</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="!viewingPackage" class="empty-selection">
+          <div class="empty-icon">
+            <i class="bi bi-cursor"></i>
+          </div>
+          <p>Selecciona un paquete para ver sus servicios</p>
+        </div>
+        
+        <div *ngIf="viewingPackage" class="package-services-view">
+          <div class="package-info-header">
+            <h5>{{ viewingPackage.name || 'Paquete #' + viewingPackage.id?.substring(0, 8) }}</h5>
+            <button class="btn btn-edit-package" (click)="selectPackageForServices(viewingPackage, true)">
+              <i class="bi bi-pencil me-1"></i>
+              Editar Servicios
+            </button>
+          </div>
+          
+          <div class="services-list-view">
+            <div 
+              *ngFor="let service of getPackageAssignedServices(); let i = index" 
+              class="service-list-item">
+              <div class="service-number">{{ i + 1 }}</div>
+              <div class="service-icon-small">
+                <i class="bi bi-box-fill"></i>
+              </div>
+              <div class="service-info-view">
+                <div class="service-name-small">{{ service.name }}</div>
+                <div class="service-desc-small">{{ service.description || 'Sin descripción' }}</div>
+              </div>
+            </div>
+            
+            <div *ngIf="getPackageAssignedServices()?.length === 0" class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>Este paquete no tiene servicios asignados</p>
+              <button class="btn btn-sm btn-add-services" (click)="selectPackageForServices(viewingPackage, true)">
+                <i class="bi bi-plus-circle me-1"></i>
+                Agregar Servicios
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gestión de Servicios del Paquete -->
+  <div class="manager-content package-services-manager" *ngIf="(activeTab === 'packages' || activeTab === 'managePackages') && selectedPackage">
+    <div class="package-header">
+      <button class="btn-back" (click)="backToPackagesList()">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver a Paquetes
+      </button>
+      <h3 class="package-title">
+        <i class="bi bi-box-seam me-2"></i>
+        Gestionar Servicios del Paquete
+      </h3>
+    </div>
+
+    <!-- Panel de Servicios Disponibles -->
+    <div class="panel services-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Servicios Disponibles</span>
+        </div>
+        <span class="badge-count">{{ getPackageAvailableServices()?.length || 0 }}</span>
+      </div>
+      <div class="panel-body">
+        <div class="services-grid">
+          <div 
+            *ngFor="let service of getPackageAvailableServices()" 
+            class="service-card draggable"
+            draggable="true"
+            (dragstart)="onDragStartPackageService($event, service)"
+            (dragend)="onDragEndPackageService($event)">
+            <div class="service-icon">
+              <img *ngIf="service.image" [src]="getSafeImageUrl(service.image)" alt="{{ service.name }}" class="service-thumbnail">
+              <i *ngIf="!service.image" class="bi bi-image"></i>
+            </div>
+            <div class="service-content">
+              <div class="service-name">{{ service.name }}</div>
+            </div>
+            <div class="drag-indicator">
+              <i class="bi bi-grip-vertical"></i>
+            </div>
+          </div>
+          <div *ngIf="getPackageAvailableServices()?.length === 0" class="empty-state">
+            <i class="bi bi-check-circle"></i>
+            <p>Todos los servicios asignados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Servicios Asignados al Paquete -->
+    <div class="panel assigned-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-check2-square"></i>
+          <span>Servicios en el Paquete</span>
+        </div>
+        <span class="badge-count success">{{ getPackageAssignedServices()?.length || 0 }}</span>
+      </div>
+      
+      <!-- Botón de guardar cambios -->
+      <div *ngIf="hasUnsavedPackageServiceChanges" class="save-changes-bar">
+        <div class="changes-indicator">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>Tienes cambios sin guardar</span>
+        </div>
+        <button class="btn btn-save" (click)="savePackageServiceChanges()">
+          <i class="bi bi-save"></i>
+          Guardar Cambios
+        </button>
+      </div>
+      
+      <div class="panel-body">
+        <div 
+          class="drop-zone"
+          [class.drag-over]="isDragOverPackageService"
+          (dragover)="onDragOverPackageService($event)"
+          (dragleave)="onDragLeavePackageService($event)"
+          (drop)="onDropPackageService($event)">
+          <div *ngIf="getPackageAssignedServices()?.length === 0" class="drop-placeholder">
+            <div class="placeholder-icon">
+              <i class="bi bi-cloud-upload"></i>
+            </div>
+            <p class="placeholder-text">Arrastra servicios aquí</p>
+            <p class="placeholder-hint">Los servicios se agregarán al paquete</p>
+          </div>
+          <div class="assigned-services-list">
+            <div 
+              *ngFor="let service of getPackageAssignedServices()" 
+              class="assigned-service-item"
+              draggable="true"
+              (dragstart)="onDragStartPackageService($event, service)"
+              (dragend)="onDragEndPackageService($event)">
+              <div class="service-info">
+                <div class="service-icon-small">
+                  <i class="bi bi-box-fill"></i>
+                </div>
+                <div class="service-details">
+                  <div class="service-name-small">{{ service.name }}</div>
+                  <div class="service-desc-small">{{ service.description || 'Sin descripción' }}</div>
+                </div>
+              </div>
+              <div class="service-actions">
+                <button 
+                  class="action-btn remove"
+                  (click)="removePackageServiceLocally(service)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Paquete -->
+<div class="modal fade" id="createPackageModal" tabindex="-1" aria-labelledby="createPackageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear Nuevo Paquete
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #createPackageForm="ngForm">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="packageName"
+              class="form-control input-ios"
+              placeholder="Nombre"
+              [(ngModel)]="newPackage.name"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetPackageForm(createPackageForm)">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="createPackage(createPackageForm)" [disabled]="!createPackageForm.valid">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Paquete -->
+<div class="modal fade" id="editPackageModal" tabindex="-1" aria-labelledby="editPackageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Editar Paquete
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #editPackageForm="ngForm">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="name"
+              class="form-control input-ios"
+              placeholder="Nombre"
+              [(ngModel)]="packageDataInstance.name"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="description"
+              class="form-control input-ios"
+              placeholder="Descripción"
+              [(ngModel)]="packageDataInstance.description"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="editPackageInstance(editPackageForm)">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal de Edición -->
@@ -259,23 +784,67 @@
       <div class="modal-body">
         <form #createServiceForm="ngForm">
           <div class="form-group mb-3">
+            <label class="form-label">Nombre del Servicio *</label>
             <input
               type="text"
               name="serviceName"
               class="form-control input-ios"
-              placeholder="Nombre"
+              placeholder="Nombre del servicio"
               [(ngModel)]="newService.name"
               required
             />
           </div>
+          
           <div class="form-group mb-3">
-            <input
-              type="text"
+            <label class="form-label">Categoría *</label>
+            <select
+              name="serviceCategory"
+              class="form-control input-ios"
+              [(ngModel)]="newService.id_category"
+              required
+            >
+              <option value="" disabled>Selecciona una categoría</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea
               name="serviceDescription"
               class="form-control input-ios"
-              placeholder="Descripción"
+              placeholder="Descripción del servicio"
               [(ngModel)]="newService.description"
+              rows="3"
+            ></textarea>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Imagen (Opcional)</label>
+            <input
+              #fileInput
+              type="file"
+              name="serviceImage"
+              class="form-control input-ios"
+              accept="image/*"
+              (change)="onImageSelected($event)"
             />
+            <small class="form-text text-muted">Formatos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB</small>
+            
+            <!-- Vista previa de la imagen -->
+            <div *ngIf="imagePreview" class="mt-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label mb-0">Vista previa:</label>
+                <button type="button" class="btn btn-sm btn-danger" (click)="removeImage()">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="image-preview-container">
+                <img [src]="getSafeImageUrl(imagePreview)" alt="Vista previa" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -331,6 +900,44 @@
           Cerrar
         </button>
         <button type="button" class="btn btn-success" (click)="createSubsidiary(createSubsidiaryForm)" [disabled]="!createSubsidiaryForm.valid">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Categoría -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-tag-fill me-2"></i>
+          Crear Nueva Categoría
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #createCategoryForm="ngForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Nombre de la Categoría</label>
+            <input
+              type="text"
+              name="categoryName"
+              class="form-control input-ios"
+              placeholder="Ingrese el nombre de la categoría"
+              [(ngModel)]="newCategory.name"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetCategoryForm(createCategoryForm)">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="createCategory(createCategoryForm)" [disabled]="!createCategoryForm.valid">
           Guardar
         </button>
       </div>
