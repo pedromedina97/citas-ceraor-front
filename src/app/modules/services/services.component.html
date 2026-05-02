@@ -44,6 +44,14 @@
       <i class="bi bi-gear-fill me-2"></i>
       Gestión de Paquetes
     </button>
+    <button 
+      type="button"
+      class="tab-button" 
+      [class.active]="activeTab === 'categories'"
+      (click)="activeTab = 'categories'; selectedSubsidiary = null; selectedPackage = null; viewingPackage = null">
+      <i class="bi bi-tags-fill me-2"></i>
+      Categorías
+    </button>
   </div>
 
   <!-- Main Content: Tab Servicios -->
@@ -107,6 +115,22 @@
         </div>
       </div>
       <div class="panel-body">
+        <div *ngIf="selectedSubsidiary" class="search-box">
+          <i class="bi bi-search"></i>
+          <input 
+            type="text" 
+            placeholder="Buscar servicio..." 
+            class="search-input"
+            [(ngModel)]="serviceSearchText"
+            name="serviceSearch">
+          <button 
+            *ngIf="serviceSearchText" 
+            class="clear-search" 
+            (click)="serviceSearchText = ''"
+            title="Limpiar búsqueda">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
         <div *ngIf="!selectedSubsidiary" class="empty-selection">
           <div class="empty-icon">
             <i class="bi bi-cursor"></i>
@@ -120,6 +144,15 @@
             draggable="true"
             (dragstart)="onDragStart($event, service)"
             (dragend)="onDragEnd($event)">
+            <div class="service-actions-top">
+              <button 
+                *ngIf="canShow('update_service')"
+                class="btn-edit-service" 
+                (click)="openEditServiceModal(service)"
+                title="Editar servicio">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+            </div>
             <div class="service-icon">
               <img *ngIf="service.image" [src]="getSafeImageUrl(service.image)" alt="{{ service.name }}" class="service-thumbnail">
               <i *ngIf="!service.image" class="bi bi-image"></i>
@@ -132,8 +165,8 @@
             </div>
           </div>
           <div *ngIf="getAvailableServices()?.length === 0" class="empty-state">
-            <i class="bi bi-check-circle"></i>
-            <p>Todos los servicios asignados</p>
+            <i class="bi" [ngClass]="serviceSearchText ? 'bi-search' : 'bi-check-circle'"></i>
+            <p>{{ serviceSearchText ? 'No se encontraron servicios' : 'Todos los servicios asignados' }}</p>
           </div>
         </div>
       </div>
@@ -639,6 +672,131 @@
       </div>
     </div>
   </div>
+
+  
+<!-- Tab Categorías -->
+<div class="manager-content" *ngIf="activeTab === 'categories'">
+  <!-- Panel de Categorías -->
+  <div class="panel categories-panel-full">
+    <div class="panel-header">
+      <div class="panel-title">
+        <i class="bi bi-tags-fill"></i>
+        <span>Gestión de Categorías</span>
+      </div>
+      <div class="header-actions">
+        <button *ngIf="canShow('create_service')" class="btn-add" data-bs-toggle="modal" data-bs-target="#createCategoryModal" title="Crear categoría">
+          <i class="bi bi-plus-circle"></i>
+        </button>
+        <span class="badge-count">{{ categories?.length || 0 }}</span>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Buscar categoría..." class="search-input">
+      </div>
+      
+      <!-- Grid de Categorías -->
+      <div class="categories-grid" *ngIf="categories.length > 0">
+        <div class="category-card" *ngFor="let category of categories">
+          <div class="category-card-header">
+            <div class="category-icon">
+              <i class="bi bi-tag-fill"></i>
+            </div>
+            <div class="category-info">
+              <h4 class="category-name">{{ category.name }}</h4>
+              
+              <!-- Detectar datos truncados por límite de BD -->
+              <p class="category-meta text-danger" *ngIf="category.inputs && isInputsTruncated(category.inputs)">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                Datos truncados (límite BD)
+              </p>
+              
+              <!-- Mostrar conteo normal si no está truncado -->
+              <p class="category-meta" *ngIf="category.inputs && category.inputs !== '' && !isInputsTruncated(category.inputs)">
+                <i class="bi bi-plus-square me-1"></i>
+                {{ getInputsCount(category.inputs) }} campos personalizados
+              </p>
+              
+              <p class="category-meta" *ngIf="!category.inputs || category.inputs === ''">
+                <i class="bi bi-info-circle me-1"></i>
+                Sin campos personalizados
+              </p>
+            </div>
+          </div>
+
+          <!-- Campos personalizados preview -->
+          <div class="category-inputs" *ngIf="category.inputs && category.inputs !== '' && !isInputsTruncated(category.inputs)">
+            <div class="inputs-preview">
+              <div class="input-preview-item" *ngFor="let input of parseInputs(category.inputs)">
+                <span class="input-icon">
+                  <i class="bi" [ngClass]="{
+                    'bi-input-cursor-text': input.input === 'text',
+                    'bi-check-square': input.input === 'checkbox',
+                    'bi-circle': input.input === 'radiobutton'
+                  }"></i>
+                </span>
+                <span class="input-name">{{ input.name }}</span>
+                <span class="input-type badge bg-secondary">{{ input.input }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje de error para datos truncados -->
+          <div class="category-inputs-error" *ngIf="category.inputs && isInputsTruncated(category.inputs)">
+            <div class="alert alert-danger mb-0">
+              <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                <div>
+                  <strong class="d-block mb-1">Datos truncados por límite de base de datos</strong>
+                  <small class="d-block mb-2">
+                    El campo está limitado a 255 caracteres. Los datos fueron cortados y no se pueden mostrar.
+                  </small>
+                  <small class="d-block text-muted">
+                    <strong>Solución:</strong> Ejecuta en tu base de datos:<br>
+                    <code class="bg-dark text-white px-2 py-1 rounded d-inline-block mt-1">
+                      ALTER TABLE category MODIFY COLUMN inputs TEXT;
+                    </code>
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="category-actions">
+            <button 
+              *ngIf="canShow('update_service')"
+              class="btn btn-sm btn-edit-category" 
+              (click)="openEditCategoryModal(category)"
+              title="Editar categoría">
+              <i class="bi bi-pencil-fill me-1"></i>
+              Editar
+            </button>
+            <button 
+              *ngIf="canShow('delete_service')"
+              class="btn btn-sm btn-delete-category" 
+              (click)="deleteCategory(category)"
+              title="Eliminar categoría">
+              <i class="bi bi-trash-fill me-1"></i>
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div *ngIf="categories.length === 0" class="empty-state">
+        <i class="bi bi-tags"></i>
+        <p>No hay categorías creadas</p>
+        <button *ngIf="canShow('create_service')" class="btn btn-sm btn-create-first" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear categoría
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- Modal Crear Paquete -->
@@ -769,6 +927,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Modal Crear Servicio -->
 <div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel" aria-hidden="true">
@@ -931,14 +1090,360 @@
               required
             />
           </div>
+
+          <!-- Entradas Extras -->
+          <div class="form-group mb-3">
+            <label class="form-label">Entradas Extras (Campos Adicionales)</label>
+            <div class="input-chip-container">
+              <div class="chip-input-group">
+                <input
+                  type="text"
+                  name="chipName"
+                  class="form-control input-ios"
+                  placeholder="Nombre del campo"
+                  [(ngModel)]="newInputChip.name"
+                  style="flex: 2;"
+                />
+                <select
+                  name="chipType"
+                  class="form-control input-ios"
+                  [(ngModel)]="newInputChip.type"
+                  style="flex: 1;"
+                >
+                  <option value="text">Texto</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="radiobutton">Radio</option>
+                </select>
+                <button 
+                  type="button" 
+                  class="btn btn-add-chip"
+                  [ngClass]="newInputChip.type === 'radiobutton' && radioOptions.length >= 2 ? 'btn-success' : 'btn-primary'"
+                  (click)="addInputChip()"
+                  [disabled]="newInputChip.type === 'radiobutton' && radioOptions.length < 2"
+                  [title]="newInputChip.type === 'radiobutton' && radioOptions.length < 2 ? 'Agrega mínimo 2 opciones primero' : 'Agregar campo'">
+                  <i class="bi" [ngClass]="newInputChip.type === 'radiobutton' && radioOptions.length >= 2 ? 'bi-check-circle' : 'bi-plus-circle'"></i>
+                  <span *ngIf="newInputChip.type === 'radiobutton'" class="ms-1">{{ radioOptions.length >= 2 ? 'Crear campo' : radioOptions.length + '/2' }}</span>
+                </button>
+              </div>
+
+              <!-- Opciones de radiobutton -->
+              <div *ngIf="newInputChip.type === 'radiobutton'" class="radio-options-container mt-3">
+                <label class="form-label mb-2">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Opciones del Radiobutton
+                  <span class="badge ms-2" [ngClass]="radioOptions.length >= 2 ? 'bg-success' : 'bg-warning'">
+                    {{ radioOptions.length }} / 2 mínimo
+                  </span>
+                </label>
+                <small class="text-muted d-block mb-2">Agrega al menos 2 opciones antes de crear el campo</small>
+                <div class="chip-input-group">
+                  <input
+                    type="text"
+                    name="radioOption"
+                    class="form-control input-ios"
+                    placeholder="Nombre de la opción"
+                    [(ngModel)]="newRadioOption"
+                    (keyup.enter)="addRadioOption()"
+                    style="flex: 3;"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-add-chip"
+                    (click)="addRadioOption()"
+                    title="Agregar opción">
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+                </div>
+                
+                <!-- Lista de opciones agregadas -->
+                <div class="radio-options-list mt-2" *ngIf="radioOptions.length > 0">
+                  <div class="badge bg-info text-dark me-2 mb-2 p-2" *ngFor="let option of radioOptions; let i = index">
+                    {{ option }}
+                    <button 
+                      type="button" 
+                      class="btn-close btn-close-white ms-2" 
+                      (click)="removeRadioOption(i)"
+                      style="font-size: 0.7rem;"
+                      title="Eliminar">
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de ayuda cuando tiene opciones suficientes -->
+                <div *ngIf="radioOptions.length >= 2" class="alert alert-success mt-2 py-2 px-3" style="font-size: 13px;">
+                  <i class="bi bi-info-circle me-1"></i>
+                  <strong>¡Listo!</strong> Ahora haz clic en el botón verde <strong>"Crear campo"</strong> arriba para agregar este radiobutton.
+                </div>
+              </div>
+              
+              <!-- Chips creados -->
+              <div class="chips-list" *ngIf="inputChips.length > 0">
+                <div class="chip-item" *ngFor="let chip of inputChips; let i = index">
+                  <span class="chip-icon">
+                    <i class="bi" [ngClass]="{
+                      'bi-input-cursor-text': chip.input === 'text',
+                      'bi-check-square': chip.input === 'checkbox',
+                      'bi-circle': chip.input === 'radiobutton'
+                    }"></i>
+                  </span>
+                  <span class="chip-name">{{ chip.name }}</span>
+                  <span class="chip-type badge bg-secondary">{{ chip.input }}</span>
+                  <button 
+                    type="button" 
+                    class="chip-remove"
+                    (click)="removeInputChip(i)"
+                    title="Eliminar">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetCategoryForm(createCategoryForm)">
           Cerrar
         </button>
-        <button type="button" class="btn btn-success" (click)="createCategory(createCategoryForm)" [disabled]="!createCategoryForm.valid">
+        <button type="button" class="btn btn-success" (click)="createCategory(createCategoryForm)" [disabled]="!newCategory.name || newCategory.name.trim() === ''">
           Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Categoría -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Editar Categoría
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #editCategoryForm="ngForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Nombre de la Categoría</label>
+            <input
+              type="text"
+              name="editCategoryName"
+              class="form-control input-ios"
+              placeholder="Ingrese el nombre de la categoría"
+              [(ngModel)]="editCategory.name"
+              required
+            />
+          </div>
+
+          <!-- Entradas Extras -->
+          <div class="form-group mb-3">
+            <label class="form-label">Entradas Extras (Campos Adicionales)</label>
+            <div class="input-chip-container">
+              <div class="chip-input-group">
+                <input
+                  type="text"
+                  name="editChipName"
+                  class="form-control input-ios"
+                  placeholder="Nombre del campo"
+                  [(ngModel)]="newInputChip.name"
+                  style="flex: 2;"
+                />
+                <select
+                  name="editChipType"
+                  class="form-control input-ios"
+                  [(ngModel)]="newInputChip.type"
+                  style="flex: 1;"
+                >
+                  <option value="text">Texto</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="radiobutton">Radio</option>
+                </select>
+                <button 
+                  type="button" 
+                  class="btn btn-add-chip"
+                  [ngClass]="newInputChip.type === 'radiobutton' && radioOptions.length >= 2 ? 'btn-success' : 'btn-primary'"
+                  (click)="addEditInputChip()"
+                  [disabled]="newInputChip.type === 'radiobutton' && radioOptions.length < 2"
+                  [title]="newInputChip.type === 'radiobutton' && radioOptions.length < 2 ? 'Agrega mínimo 2 opciones primero' : 'Agregar campo'">
+                  <i class="bi" [ngClass]="newInputChip.type === 'radiobutton' && radioOptions.length >= 2 ? 'bi-check-circle' : 'bi-plus-circle'"></i>
+                  <span *ngIf="newInputChip.type === 'radiobutton'" class="ms-1">{{ radioOptions.length >= 2 ? 'Crear campo' : radioOptions.length + '/2' }}</span>
+                </button>
+              </div>
+
+              <!-- Opciones de radiobutton -->
+              <div *ngIf="newInputChip.type === 'radiobutton'" class="radio-options-container mt-3">
+                <label class="form-label mb-2">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Opciones del Radiobutton
+                  <span class="badge ms-2" [ngClass]="radioOptions.length >= 2 ? 'bg-success' : 'bg-warning'">
+                    {{ radioOptions.length }} / 2 mínimo
+                  </span>
+                </label>
+                <small class="text-muted d-block mb-2">Agrega al menos 2 opciones antes de crear el campo</small>
+                <div class="chip-input-group">
+                  <input
+                    type="text"
+                    name="editRadioOption"
+                    class="form-control input-ios"
+                    placeholder="Nombre de la opción"
+                    [(ngModel)]="newRadioOption"
+                    (keyup.enter)="addRadioOption()"
+                    style="flex: 3;"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-add-chip"
+                    (click)="addRadioOption()"
+                    title="Agregar opción">
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+                </div>
+                
+                <!-- Lista de opciones agregadas -->
+                <div class="radio-options-list mt-2" *ngIf="radioOptions.length > 0">
+                  <div class="badge bg-info text-dark me-2 mb-2 p-2" *ngFor="let option of radioOptions; let i = index">
+                    {{ option }}
+                    <button 
+                      type="button" 
+                      class="btn-close btn-close-white ms-2" 
+                      (click)="removeRadioOption(i)"
+                      style="font-size: 0.7rem;"
+                      title="Eliminar">
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Mensaje de ayuda cuando tiene opciones suficientes -->
+                <div *ngIf="radioOptions.length >= 2" class="alert alert-success mt-2 py-2 px-3" style="font-size: 13px;">
+                  <i class="bi bi-info-circle me-1"></i>
+                  <strong>¡Listo!</strong> Ahora haz clic en el botón verde <strong>"Crear campo"</strong> arriba para agregar este radiobutton.
+                </div>
+              </div>
+              
+              <!-- Chips creados -->
+              <div class="chips-list" *ngIf="editInputChips.length > 0">
+                <div class="chip-item" *ngFor="let chip of editInputChips; let i = index">
+                  <span class="chip-icon">
+                    <i class="bi" [ngClass]="{
+                      'bi-input-cursor-text': chip.input === 'text',
+                      'bi-check-square': chip.input === 'checkbox',
+                      'bi-circle': chip.input === 'radiobutton'
+                    }"></i>
+                  </span>
+                  <span class="chip-name">{{ chip.name }}</span>
+                  <span class="chip-type badge bg-secondary">{{ chip.input }}</span>
+                  <button 
+                    type="button" 
+                    class="chip-remove"
+                    (click)="removeEditInputChip(i)"
+                    title="Eliminar">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetEditCategoryForm(editCategoryForm)">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-success" (click)="updateCategory(editCategoryForm)" [disabled]="!editCategory.name || editCategory.name.trim() === ''">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Servicio -->
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Editar Servicio
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form #editServiceForm="ngForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Nombre del Servicio *</label>
+            <input
+              type="text"
+              name="editServiceName"
+              class="form-control input-ios"
+              placeholder="Nombre del servicio"
+              [(ngModel)]="editService.name"
+              required
+            />
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Categoría *</label>
+            <select
+              name="editServiceCategory"
+              class="form-control input-ios"
+              [(ngModel)]="editService.id_category"
+              required
+            >
+              <option value="" disabled>Selecciona una categoría</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea
+              name="editServiceDescription"
+              class="form-control input-ios"
+              placeholder="Descripción del servicio"
+              [(ngModel)]="editService.description"
+              rows="3"
+            ></textarea>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Imagen (Opcional)</label>
+            <input
+              type="file"
+              name="editServiceImage"
+              class="form-control input-ios"
+              accept="image/*"
+              (change)="onEditImageSelected($event)"
+            />
+            <small class="form-text text-muted">Formatos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB</small>
+            
+            <!-- Vista previa de la imagen -->
+            <div *ngIf="editImagePreview" class="mt-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label mb-0">Vista previa:</label>
+                <button type="button" class="btn btn-sm btn-danger" (click)="removeEditImage()">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="image-preview-container">
+                <img [src]="getSafeImageUrl(editImagePreview)" alt="Vista previa" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetEditServiceForm(editServiceForm)">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="updateService(editServiceForm)" [disabled]="!editServiceForm.valid">
+          <i class="bi bi-check-circle me-2"></i>
+          Actualizar Servicio
         </button>
       </div>
     </div>

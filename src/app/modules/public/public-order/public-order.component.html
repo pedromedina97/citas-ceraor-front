@@ -65,17 +65,10 @@
       <div class="form-group">
         <input type="email" class="form-control" placeholder="E-mail" name="doctorEmail" [(ngModel)]="doctor.email">
       </div>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <!-- Selección de Sucursal -->
-    <div class="section-header">
+      <div class="form-group">
+         <div class="section-header">
       <h3>Sucursal:</h3>
     </div>
-    
-    <div class="form-row">
-      <div class="form-group">
         <select class="form-control" name="subsidiary" [(ngModel)]="selectedSubsidiaryId" (change)="onSubsidiaryChange()">
           <option value="" disabled>Seleccione una sucursal</option>
           <option *ngFor="let subsidiary of subsidiaries" [value]="subsidiary.id">{{ subsidiary.name }}</option>
@@ -83,50 +76,49 @@
       </div>
     </div>
 
-    <div class="section-divider"></div>
 
-    <!-- Paquetes -->
-    <div *ngIf="packets.length > 0" class="packets-section">
+
+
+    <!-- Estudios Ortodónticos -->
+    <div *ngIf="packets.length > 0" class="category-section">
       <div class="section-header">
-        <h3>Paquetes disponibles:</h3>
+        <h3>Estudios Ortodónticos</h3>
       </div>
       
-      <div class="packets-list">
-        <div *ngFor="let packet of packets" class="packet-card" [class.selected]="isPacketSelected(packet.id)">
-          <div class="packet-header">
-            <input 
-              type="radio" 
-              [id]="'packet-' + packet.id" 
-              name="selectedPacket"
-              [value]="packet.id"
-              [(ngModel)]="selectedPacketId"
-              (change)="onPacketChange(packet.id)">
-            <label [for]="'packet-' + packet.id" class="packet-title">
-              <span class="packet-name">{{ packet.name }}</span>
-              <span class="packet-price">${{ packet.price }}</span>
-            </label>
-          </div>
-          <div class="packet-services">
-            <p class="services-label">Incluye:</p>
-            <ul>
-              <li *ngFor="let service of packet.services">{{ service.name }}</li>
-            </ul>
-          </div>
+      <div class="services-list">
+        <div *ngFor="let packet of packets" class="service-item">
+          <input 
+            type="radio" 
+            [id]="'packet-' + packet.id" 
+            name="selectedPacket"
+            [value]="packet.id"
+            [(ngModel)]="selectedPacketId"
+            (change)="onPacketChange(packet.id)">
+          <label [for]="'packet-' + packet.id" class="service-label">
+            <div class="service-info">
+              <span class="service-name">{{ packet.name }}</span>
+              <span class="service-price">${{ packet.price }}</span>
+            </div>
+            <div *ngIf="selectedPacketId === packet.id" class="packet-included-services">
+              <p class="included-label">Incluye:</p>
+              <ul>
+                <li *ngFor="let service of packet.services">{{ service.name }}</li>
+              </ul>
+            </div>
+          </label>
         </div>
       </div>
     </div>
 
-    <div class="section-divider"></div>
-
     <!-- Categorías y Servicios Dinámicos -->
     <div class="categories-grid">
-      <div *ngFor="let category of categories" class="category-section">
+      <div *ngFor="let category of categories; trackBy: trackByCategory" class="category-section">
         <div class="section-header">
           <h3>{{ category.name }}</h3>
         </div>
         
         <div class="services-list">
-          <div *ngFor="let service of category.services" class="checkbox-group service-item">
+          <div *ngFor="let service of category.services; trackBy: trackByService" class="service-item">
             <input 
               type="checkbox" 
               [id]="'service-' + service.id" 
@@ -135,12 +127,293 @@
               (change)="onServiceChange(service.id, $any($event.target).checked)">
             <label [for]="'service-' + service.id" class="service-label">
               <img *ngIf="service.image" [src]="getImageUrl(service.image)" alt="{{ service.name }}" class="service-image">
-              <span class="service-name">{{ service.name }}</span>
-              <span *ngIf="service.price" class="service-price">${{ service.price }}</span>
+              <div class="service-info">
+                <span class="service-name">{{ service.name }}</span>
+                <span *ngIf="service.price" class="service-price">${{ service.price }}</span>
+              </div>
             </label>
+          </div>
+        </div>
+
+        <!-- Inputs Personalizados de la Categoría -->
+        <div *ngIf="hasCustomInputs(category)" class="category-custom-inputs">
+          <div class="custom-inputs-header">
+            <h4>Información Adicional</h4>
+          </div>
+          
+          <div class="custom-inputs-grid">
+            <div *ngFor="let input of getParsedInputs(category); trackBy: trackByInput" class="custom-input-item">
+              
+              <!-- Input tipo TEXT -->
+              <div *ngIf="input.input === 'text'" class="form-group">
+                <label [for]="'input-' + category.id + '-' + input.name">{{ input.name }}</label>
+                <input 
+                  type="text"
+                  class="form-control"
+                  [id]="'input-' + category.id + '-' + input.name"
+                  [name]="'input-' + category.id + '-' + input.name"
+                  [placeholder]="input.placeholder || input.name"
+                  [maxlength]="input.characters || 255"
+                  [pattern]="input.pattern || ''"
+                  [ngModel]="getCategoryInputValue(category.id, input.name)"
+                  (ngModelChange)="setCategoryInputValue(category.id, input.name, $event)">
+                <small *ngIf="input.characters" class="text-muted">
+                  Máximo {{ input.characters }} caracteres
+                </small>
+              </div>
+
+              <!-- Input tipo CHECKBOX -->
+              <div *ngIf="input.input === 'checkbox'" class="form-check">
+                <input 
+                  type="checkbox"
+                  class="form-check-input"
+                  [id]="'input-' + category.id + '-' + input.name"
+                  [name]="'input-' + category.id + '-' + input.name"
+                  [ngModel]="getCategoryInputValue(category.id, input.name)"
+                  (ngModelChange)="setCategoryInputValue(category.id, input.name, $event)">
+                <label 
+                  class="form-check-label" 
+                  [for]="'input-' + category.id + '-' + input.name">
+                  {{ input.name }}
+                </label>
+              </div>
+
+              <!-- Input tipo RADIOBUTTON -->
+              <div *ngIf="input.input === 'radiobutton'" class="form-group">
+                <label class="d-block">{{ input.name }}</label>
+                <div class="radio-options">
+                  <div *ngFor="let option of input.options; trackBy: trackByOption" class="form-check form-check-inline">
+                    <input 
+                      type="radio"
+                      class="form-check-input"
+                      [id]="'input-' + category.id + '-' + input.name + '-' + option"
+                      [name]="'input-' + category.id + '-' + input.name"
+                      [value]="option"
+                      [ngModel]="getCategoryInputValue(category.id, input.name)"
+                      (ngModelChange)="setCategoryInputValue(category.id, input.name, $event)">
+                    <label 
+                      class="form-check-label" 
+                      [for]="'input-' + category.id + '-' + input.name + '-' + option">
+                      {{ option }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    
+    <!-- Botones de acción -->
+    <div class="action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <button 
+        type="button" 
+        class="btn btn-success" 
+        (click)="submitOrder()"
+        style="background: #28a745; color: white; border: none; padding: 0.75rem 2rem; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;">
+        ✅ Enviar Orden
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-info btn-sm" 
+        (click)="logFormData()"
+        style="background: #17a2b8; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer;">
+        🐛 Ver datos en consola
+      </button>
+
+      <button 
+        type="button" 
+        class="btn btn-warning btn-sm" 
+        (click)="testModal()"
+        style="background: #ffc107; color: #333; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer;">
+        🧪 Probar Modal
+      </button>
+    </div>
+
+    <!-- Visualización JSON del Formulario -->
+    <div class="json-viewer" style="margin-top: 2rem; padding: 1rem; background: #1e1e1e; border-radius: 8px;">
+      <h4 style="color: #61dafb; margin-bottom: 1rem;">📊 Body para Endpoint POST order/create</h4>
+      
+      <div style="background: #282c34; padding: 1rem; border-radius: 4px; overflow-x: auto;">
+        <pre style="color: #abb2bf; margin: 0; font-size: 12px; line-height: 1.5;">{{ getOrderBody() | json }}</pre>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 1rem; background: #d1ecf1; border-left: 4px solid #0c5460; border-radius: 4px;">
+        <h5 style="color: #0c5460; margin-bottom: 0.5rem; font-size: 14px;">📋 Estructura del body:</h5>
+        <ul style="color: #0c5460; font-size: 12px; margin: 0; padding-left: 1.5rem;">
+          <li><strong>patient:</strong> Nombre completo del paciente</li>
+          <li><strong>birthdate:</strong> Fecha en formato YYYY-MM-DD</li>
+          <li><strong>phone:</strong> Teléfono del paciente</li>
+          <li><strong>doctor:</strong> Nombre completo del doctor</li>
+          <li><strong>email:</strong> Email del paciente</li>
+          <li><strong>content:</strong> JSON string que contiene:
+            <ul style="margin-top: 0.3rem;">
+              <li><code>servicios</code>: Array de IDs de servicios seleccionados</li>
+              <li><code>paquetes</code>: Array con el ID del paquete seleccionado</li>
+              <li><code>camposDinamicos</code>: Objeto con inputs adicionales organizados por <code>id_category</code></li>
+              <li><code>notas</code>: Campo para notas adicionales</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Visualización desglosada del content -->
+      <div style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <h5 style="color: #856404; margin-bottom: 0.5rem; font-size: 14px;">🔍 Contenido del campo "content" (parseado):</h5>
+        <div style="background: #282c34; padding: 1rem; border-radius: 4px; overflow-x: auto; margin-top: 0.5rem;">
+          <pre style="color: #abb2bf; margin: 0; font-size: 12px; line-height: 1.5;">{{ {
+  servicios: selectedServices,
+  paquetes: selectedPacketId ? [selectedPacketId] : [],
+  camposDinamicos: categoryInputsValues,
+  notas: ""
+} | json }}</pre>
+        </div>
+      </div>
+    </div>
   </form>
+</div>
+
+<!-- Debug Info (temporal) -->
+<div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 11px; z-index: 99999;">
+  <div>showOrderModal: {{ showOrderModal }}</div>
+  <div>createdOrderData: {{ createdOrderData ? 'Sí tiene datos' : 'null' }}</div>
+</div>
+
+<!-- Modal de Orden Creada -->
+<div *ngIf="showOrderModal && createdOrderData" class="modal-overlay" (click)="closeOrderModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>✅ Orden Creada Exitosamente</h2>
+      <button class="modal-close-btn" (click)="closeOrderModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Información General -->
+      <div class="order-section">
+        <h3 class="section-title">📋 Información General</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Folio:</span>
+            <span class="info-value">{{ createdOrderData.folio_order || 'Sin asignar' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Código de Ticket:</span>
+            <span class="info-value">{{ createdOrderData.code_ticket }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Estado:</span>
+            <span class="info-value badge-status" [class.status-pending]="createdOrderData.status === 'pending'">
+              {{ createdOrderData.status }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Método de Pago:</span>
+            <span class="info-value">{{ createdOrderData.method }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Creación:</span>
+            <span class="info-value">{{ createdOrderData.created_at }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del Paciente -->
+      <div class="order-section">
+        <h3 class="section-title">👤 Información del Paciente</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ createdOrderData.patient }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Nacimiento:</span>
+            <span class="info-value">{{ createdOrderData.birthdate }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Teléfono:</span>
+            <span class="info-value">{{ createdOrderData.phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ createdOrderData.email }}</span>
+          </div>
+          <div class="info-item" *ngIf="createdOrderData.address">
+            <span class="info-label">Dirección:</span>
+            <span class="info-value">{{ createdOrderData.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del Doctor -->
+      <div class="order-section">
+        <h3 class="section-title">👨‍⚕️ Información del Doctor</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ createdOrderData.doctor }}</span>
+          </div>
+          <div class="info-item" *ngIf="createdOrderData.professional_id">
+            <span class="info-label">Cédula Profesional:</span>
+            <span class="info-value">{{ createdOrderData.professional_id }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servicios y Detalles -->
+      <div class="order-section">
+        <h3 class="section-title">🔬 Servicios Solicitados</h3>
+        
+        <div *ngIf="getParsedContent(createdOrderData).paquetes?.length > 0" class="subsection">
+          <h4 class="subsection-title">Paquetes:</h4>
+          <ul class="services-list-modal">
+            <li *ngFor="let paquete of getParsedContent(createdOrderData).paquetes">
+              {{ paquete }}
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="getParsedContent(createdOrderData).servicios?.length > 0" class="subsection">
+          <h4 class="subsection-title">Servicios Individuales:</h4>
+          <ul class="services-list-modal">
+            <li *ngFor="let servicio of getParsedContent(createdOrderData).servicios">
+              {{ servicio }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Campos Dinámicos por Categoría -->
+        <div *ngIf="getParsedContent(createdOrderData).camposDinamicos && Object.keys(getParsedContent(createdOrderData).camposDinamicos).length > 0" class="subsection">
+          <h4 class="subsection-title">Información Adicional por Categoría:</h4>
+          <div *ngFor="let categoryId of Object.keys(getParsedContent(createdOrderData).camposDinamicos)" class="category-data">
+            <div class="category-id-label">Categoría: {{ categoryId }}</div>
+            <div class="info-grid">
+              <div *ngFor="let key of Object.keys(getParsedContent(createdOrderData).camposDinamicos[categoryId])" class="info-item">
+                <span class="info-label">{{ key }}:</span>
+                <span class="info-value">{{ getParsedContent(createdOrderData).camposDinamicos[categoryId][key] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="getParsedContent(createdOrderData).notas" class="subsection">
+          <h4 class="subsection-title">Notas:</h4>
+          <p class="notes-content">{{ getParsedContent(createdOrderData).notas }}</p>
+        </div>
+      </div>
+
+      <!-- ID Completo -->
+      <div class="order-section">
+        <h3 class="section-title">🔑 Identificador de Orden</h3>
+        <div class="order-id">{{ createdOrderData.id }}</div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="closeOrderModal()">Cerrar</button>
+    </div>
+  </div>
 </div>
