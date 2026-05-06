@@ -75,7 +75,14 @@ export class AgendaComponent implements OnInit {
   searchOrderText: string = '';
   filteredOrders: any[] = [];
   weekDays: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  services: any;
+  services: any[] = [];
+  // Multiselect de servicios con filtro y chips
+  selectedServices: { id: string; name: string; price?: number | string }[] = [];
+  serviceSearchText: string = '';
+  showServicesDropdown: boolean = false;
+  // Paquetes por sucursal (selección única opcional)
+  packets: Array<{ packet_id: string; packet_name: string; packet_price: string; services: Array<{ id: string; name: string }> }> = [];
+  selectedPacketId: string | null = null;
   editing: boolean = false;
   permissions: any;
   id: string;
@@ -457,7 +464,7 @@ export class AgendaComponent implements OnInit {
       'Fecha': this.eventForm.start?.trim() !== '',
       'Horario': this.eventForm.startTime?.trim() !== '',
       'Sucursal': this.eventForm.id_subsidiary?.trim() !== '',
-      'Servicio': this.eventForm.service?.trim() !== ''
+      'Servicio': this.selectedServices.length > 0
     };
 
     const missingFields = Object.entries(requiredFields)
@@ -572,9 +579,11 @@ export class AgendaComponent implements OnInit {
     this.editing = false;
     this.modalService.open(this.eventModal, { 
       size: 'xl',
+      fullscreen: true,
       backdrop: 'static',
-      keyboard: false
-    }); // Modal más grande y previene cierre accidental
+      keyboard: false,
+      windowClass: 'event-modal-fullwidth'
+    }); // Modal a ancho completo y previene cierre accidental
   }
 
   saveEvent() {
@@ -680,7 +689,7 @@ export class AgendaComponent implements OnInit {
   getMyInfo() {
     this.api.getDataById('user/getbyid', this.id).subscribe(
       (resp: any) => {
-        this.doctors = resp.data
+        this.doctors = Array.isArray(resp?.data) ? resp.data : [];
       },
       (error) => {
         console.log(error.error);
@@ -691,7 +700,7 @@ export class AgendaComponent implements OnInit {
   getOrdersByDoctor() {
     this.api.getDataById('order/getbydoctor', this.name + ' ' + this.lastname).subscribe(
       (resp: any) => {
-        this.catalogOrders = resp.data;
+        this.catalogOrders = Array.isArray(resp?.data) ? resp.data : [];
       },
       (error) => {
         console.log(error.error);
@@ -701,8 +710,9 @@ export class AgendaComponent implements OnInit {
   getAllOrders() {
     this.api.getData('order/getall').subscribe(
       (resp: any) => {
-        this.catalogOrders = resp.data;
-        this.filteredOrders = resp.data;
+        const list = Array.isArray(resp?.data) ? resp.data : [];
+        this.catalogOrders = list;
+        this.filteredOrders = list;
       },
       (error) => {
         console.log(error.error);
@@ -712,13 +722,14 @@ export class AgendaComponent implements OnInit {
 
   // Método para filtrar órdenes
   filterOrders() {
+    const list = Array.isArray(this.catalogOrders) ? this.catalogOrders : [];
     if (!this.searchOrderText) {
-      this.filteredOrders = this.catalogOrders;
+      this.filteredOrders = list;
       return;
     }
 
     const searchText = this.searchOrderText.toLowerCase();
-    this.filteredOrders = this.catalogOrders.filter((order: any) => {
+    this.filteredOrders = list.filter((order: any) => {
       return (
         order.patient?.toLowerCase().includes(searchText) ||
         order.doctor?.toLowerCase().includes(searchText) ||
@@ -753,7 +764,7 @@ export class AgendaComponent implements OnInit {
     // Si no es recepcionista, obtener solo las órdenes del doctor
     this.api.getDataById('order/getbydoctor', name + ' ' + lastname).subscribe(
       (resp: any) => {
-        this.catalogOrders = resp.data;
+        this.catalogOrders = Array.isArray(resp?.data) ? resp.data : [];
       },
       (error) => {
         console.log(error.error);
@@ -764,7 +775,7 @@ export class AgendaComponent implements OnInit {
   getDoctors() {
     this.api.getData('catalog/getdoctors').subscribe(
       (resp: any) => {
-        this.doctors = resp.data;
+        this.doctors = Array.isArray(resp?.data) ? resp.data : [];
         this.filteredDoctors = [];
       },
       (error) => {
@@ -780,8 +791,9 @@ export class AgendaComponent implements OnInit {
       return;
     }
 
+    const list = Array.isArray(this.doctors) ? this.doctors : [];
     const searchText = this.searchDoctorText.toLowerCase();
-    this.filteredDoctors = this.doctors.filter(doctor => 
+    this.filteredDoctors = list.filter((doctor: any) => 
       (doctor.name + ' ' + doctor.lastname).toLowerCase().includes(searchText)
     );
   }
@@ -800,7 +812,7 @@ export class AgendaComponent implements OnInit {
   getMyClients() {
     this.api.getDataById('user/getmyusers', this.id).subscribe(
       (resp: any) => {
-        this.clients = resp.data;
+        this.clients = Array.isArray(resp?.data) ? resp.data : [];
       },
       (error) => {
         console.log(error);
@@ -811,7 +823,7 @@ export class AgendaComponent implements OnInit {
   getClients() {
     this.api.getData('catalog/getclients').subscribe(
       (resp: any) => {
-        this.clients = resp.data;
+        this.clients = Array.isArray(resp?.data) ? resp.data : [];
         this.filteredClients = [];
       },
       (error) => {
@@ -827,8 +839,9 @@ export class AgendaComponent implements OnInit {
       return;
     }
 
+    const list = Array.isArray(this.clients) ? this.clients : [];
     const searchText = this.searchClientText.toLowerCase();
-    this.filteredClients = this.clients.filter(client => 
+    this.filteredClients = list.filter((client: any) => 
       (client.name + ' ' + client.lastname).toLowerCase().includes(searchText) ||
       client.email?.toLowerCase().includes(searchText)
     );
@@ -900,7 +913,7 @@ export class AgendaComponent implements OnInit {
   getAllSubsidiary() {
     this.api.getData('subsidiary/getall').subscribe(
       (resp: any) => {
-        this.subsidiaries = resp.data;
+        this.subsidiaries = Array.isArray(resp?.data) ? resp.data : [];
       },
       (error) => {
         console.error('Error al cargar sucursales:', error);
@@ -923,6 +936,8 @@ export class AgendaComponent implements OnInit {
   } */
   getServices(id: string) {
     this.services = []; // Limpiar servicios anteriores
+    this.packets = [];
+    this.selectedPacketId = null;
     
     // Si no hay fecha seleccionada en el formulario, usar la fecha actual
     if (!this.eventForm.start) {
@@ -930,9 +945,10 @@ export class AgendaComponent implements OnInit {
     }
   
     // 1) Cargar servicios de la sucursal
-    this.api.getDataById('service/getbysubsidiary', id).subscribe(
+    this.api.getDataById('catalog/getServicesBySubsidiary', id).subscribe(
       (resp: any) => {
-        this.services = resp.data;
+        console.log(resp);
+        this.services = Array.isArray(resp?.data) ? resp.data : [];
         
         // 2) Cargar horarios disponibles
         this.getAvailableTimeSlots();
@@ -942,6 +958,45 @@ export class AgendaComponent implements OnInit {
         console.error('Error al cargar servicios:', error);
       }
     );
+
+    // 3) Cargar paquetes de la sucursal
+    this.getPacketsBySubsidiary(id);
+  }
+
+  getPacketsBySubsidiary(id: string) {
+    this.api.getDataById('catalog/getPacketsBySubsidiary', id).subscribe(
+      (resp: any) => {
+        const raw = Array.isArray(resp?.data) ? resp.data : [];
+        this.packets = raw.map((p: any) => {
+          let parsedServices: Array<{ id: string; name: string }> = [];
+          try {
+            const value = p?.services;
+            if (Array.isArray(value)) {
+              parsedServices = value;
+            } else if (typeof value === 'string' && value.trim()) {
+              parsedServices = JSON.parse(value);
+            }
+          } catch (e) {
+            console.warn('No se pudieron parsear los servicios del paquete:', p?.packet_name, e);
+            parsedServices = [];
+          }
+          return {
+            packet_id: p.packet_id,
+            packet_name: p.packet_name,
+            packet_price: p.packet_price,
+            services: Array.isArray(parsedServices) ? parsedServices : []
+          };
+        });
+      },
+      (error) => {
+        console.error('Error al cargar paquetes:', error);
+        this.packets = [];
+      }
+    );
+  }
+
+  togglePacketSelection(packetId: string) {
+    this.selectedPacketId = this.selectedPacketId === packetId ? null : packetId;
   }
     
 
@@ -988,13 +1043,68 @@ export class AgendaComponent implements OnInit {
     
 
   onServiceSelected() {
-    if (this.eventForm.id_subsidiary && this.eventForm.service) {
+    if (this.eventForm.id_subsidiary && this.selectedServices.length > 0) {
       this.canSelectDateTime = true;
       if (this.eventForm.start) {
         this.calculateAvailableTimeSlots();
       }
     }
     console.log('Can select date time:', this.canSelectDateTime);
+  }
+
+  // ===== Multiselect de servicios =====
+  get filteredServices(): any[] {
+    const list = Array.isArray(this.services) ? this.services : [];
+    const text = (this.serviceSearchText || '').trim().toLowerCase();
+    if (!text) return list;
+    return list.filter((s: any) => (s?.name || '').toLowerCase().includes(text));
+  }
+
+  isServiceSelected(id: string): boolean {
+    return this.selectedServices.some(s => s.id === id);
+  }
+
+  toggleServiceSelection(service: { id: string; name: string; price?: number | string }) {
+    if (this.isServiceSelected(service.id)) {
+      this.removeServiceChip(service.id);
+    } else {
+      this.selectedServices = [...this.selectedServices, { id: service.id, name: service.name, price: service.price }];
+      this.eventForm.service = this.selectedServices.map(s => s.id).join(',');
+      this.onServiceSelected();
+    }
+  }
+
+  removeServiceChip(id: string) {
+    this.selectedServices = this.selectedServices.filter(s => s.id !== id);
+    this.eventForm.service = this.selectedServices.map(s => s.id).join(',');
+    this.onServiceSelected();
+  }
+
+  onServicesBlur() {
+    // Esperamos a que el mousedown sobre el item se procese antes de ocultar
+    setTimeout(() => { this.showServicesDropdown = false; }, 150);
+  }
+
+  trackServiceById = (_: number, item: any) => item?.id;
+
+  trackPacketById = (_: number, item: any) => item?.packet_id;
+
+  // ===== Totales =====
+  get servicesTotal(): number {
+    return (this.selectedServices || []).reduce((acc, s) => acc + (Number(s?.price) || 0), 0);
+  }
+
+  get selectedPacket(): { packet_id: string; packet_name: string; packet_price: string; services: any[] } | null {
+    if (!this.selectedPacketId) return null;
+    return (this.packets || []).find(p => p.packet_id === this.selectedPacketId) || null;
+  }
+
+  get packetTotal(): number {
+    return Number(this.selectedPacket?.packet_price) || 0;
+  }
+
+  get grandTotal(): number {
+    return this.servicesTotal + this.packetTotal;
   }
 
   calculateAvailableTimeSlots() {
@@ -1006,7 +1116,7 @@ export class AgendaComponent implements OnInit {
   getAvailableTimeSlots() {
    this.api.getData(`appointment/getavaliables/${this.eventForm.id_subsidiary}/${this.eventForm.start}`).subscribe(
     (resp: any) => {
-      this.timeSlots = resp.data;
+      this.timeSlots = Array.isArray(resp?.data) ? resp.data : [];
       console.log('Horarios disponibles:', this.timeSlots);
     },
     (error) => {
@@ -1355,6 +1465,11 @@ export class AgendaComponent implements OnInit {
     this.searchClientText = '';
     this.searchDoctorText = '';
     this.searchOrderText = '';
+    this.serviceSearchText = '';
+    this.selectedServices = [];
+    this.showServicesDropdown = false;
+    this.packets = [];
+    this.selectedPacketId = null;
 
     // Limpiar resultados de búsqueda
     this.filteredClients = [];

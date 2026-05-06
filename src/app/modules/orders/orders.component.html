@@ -13,20 +13,6 @@
           <div class="row g-3">
             <!-- Filtros de texto -->
             <div class="col-md-3">
-              <label for="filterFolio" class="form-label">
-                <i class="bi bi-file-earmark-text me-1"></i>
-                Folio Cita
-              </label>
-              <input 
-                type="text" 
-                id="filterFolio"
-                class="form-control" 
-                placeholder="Buscar por folio de cita..."
-                [(ngModel)]="filters.folio"
-                (input)="applyFilters()">
-            </div>
-
-            <div class="col-md-3">
               <label for="filterFolioOrder" class="form-label">
                 <i class="bi bi-file-text me-1"></i>
                 Folio Orden
@@ -41,20 +27,6 @@
             </div>
             
             <div class="col-md-3">
-              <label for="filterCodeTicket" class="form-label">
-                <i class="bi bi-tag me-1"></i>
-                Código Entrega
-              </label>
-              <input 
-                type="text" 
-                id="filterCodeTicket"
-                class="form-control" 
-                placeholder="Buscar por código entrega..."
-                [(ngModel)]="filters.codeTicket"
-                (input)="applyFilters()">
-            </div>
-            
-            <div class="col-md-3">
               <label for="filterPatient" class="form-label">
                 <i class="bi bi-person me-1"></i>
                 Paciente
@@ -65,20 +37,6 @@
                 class="form-control" 
                 placeholder="Buscar por paciente..."
                 [(ngModel)]="filters.patient"
-                (input)="applyFilters()">
-            </div>
-            
-            <div class="col-md-3">
-              <label for="filterEmail" class="form-label">
-                <i class="bi bi-envelope me-1"></i>
-                Email
-              </label>
-              <input 
-                type="email" 
-                id="filterEmail"
-                class="form-control" 
-                placeholder="Buscar por email..."
-                [(ngModel)]="filters.email"
                 (input)="applyFilters()">
             </div>
             
@@ -108,28 +66,45 @@
                 [(ngModel)]="filters.status"
                 (change)="applyFilters()">
                 <option value="">Todos los status</option>
-                <option value="solicitado">Solicitado</option>
-                <option value="en_proceso">En Proceso</option>
-                <option value="entregado">Entregado</option>
+                <option value="pending">Pendiente</option>
+                <option value="in_progress">En Proceso</option>
+                <option value="completed">Completado</option>
+                <option value="cancelled">Cancelado</option>
               </select>
             </div>
 
-            <!-- Filtro de Tipo Estudio -->
+            <!-- Filtro de método -->
             <div class="col-md-3">
-              <label for="filterPacket" class="form-label">
-                <i class="bi bi-collection me-1"></i>
-                Tipo Estudio
+              <label for="filterMethod" class="form-label">
+                <i class="bi bi-credit-card me-1"></i>
+                Método
               </label>
               <select 
-                id="filterPacket"
+                id="filterMethod"
                 class="form-select"
-                [(ngModel)]="filters.packet"
+                [(ngModel)]="filters.method"
                 (change)="applyFilters()">
-                <option value="">Todos los tipos</option>
-                <option value="0">Personalizado</option>
-                <option value="1">Básico</option>
-                <option value="2">Básico Digital</option>
-                <option value="3">3D (Tomografía)</option>
+                <option value="">Todos los métodos</option>
+                <option value="cash">Efectivo</option>
+                <option value="card">Tarjeta</option>
+                <option value="transfer">Transferencia</option>
+              </select>
+            </div>
+
+            <!-- Filtro relación con cita -->
+            <div class="col-md-3">
+              <label for="filterAppointment" class="form-label">
+                <i class="bi bi-calendar-event me-1"></i>
+                Cita Asociada
+              </label>
+              <select 
+                id="filterAppointment"
+                class="form-select"
+                [(ngModel)]="filters.appointment"
+                (change)="applyFilters()">
+                <option value="">Todas</option>
+                <option value="with">Con cita</option>
+                <option value="without">Sin cita</option>
               </select>
             </div>
             
@@ -225,38 +200,28 @@
         <table class="dashboard-table table table-hover">
           <thead class="table-light">
             <tr>
-              <th>Folio Cita</th>
               <th>Folio Orden</th>
-              <th>Código Entrega</th>
-              <th>Paquete Estudio</th>
               <th>Paciente</th>
-              <th>Email</th>
-              <th>Teléfono</th>
               <th>Doctor</th>
+              <th>Cita</th>
               <th>Status</th>
               <th>Método</th>
+              <th>Total Pagado</th>
               <th>Creación</th>
               <th>Opciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let order of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-              <td>{{ order.appointment_code || 'Sin Folio' }}</td>
               <td>{{ order.folio_order || 'Sin Folio' }}</td>
+              <td>{{ order.patient || '—' }}</td>
+              <td>{{ order.doctor || '—' }}</td>
               <td>
-                <span *ngIf="order.code_ticket" class="badge bg-info text-white">{{ order.code_ticket }}</span>
-                <span *ngIf="!order.code_ticket" class="text-muted">Sin código</span>
+                <span *ngIf="order.appointment_id" class="badge bg-info text-white" title="{{ order.appointment_id }}">
+                  <i class="bi bi-calendar-check me-1"></i>Asociada
+                </span>
+                <span *ngIf="!order.appointment_id" class="text-muted">Sin cita</span>
               </td>
-              <td>
-                <span *ngIf="order.packet === '0'" class="badge bg-warning  text-white">Personalizado</span>
-                <span *ngIf="order.packet === '1'" class="badge bg-success  text-white">Básico</span>
-                <span *ngIf="order.packet === '2'" class="badge bg-primary  text-white">Básico Digital</span>
-                <span *ngIf="order.packet === '3'" class="badge bg-secondary  text-white">3D (Tomografía)</span>
-              </td>
-              <td>{{ order.patient }}</td>
-              <td>{{ order.email }}</td>
-              <td>{{ order.phone }}</td>
-              <td>{{ order.doctor }}</td>
               <td>
                 <span class="badge status-badge" [ngClass]="getStatusClass(order.status)">
                   {{ getStatusText(order.status) }}
@@ -267,6 +232,9 @@
                   {{ getMethodText(order.method || 'por_definir') }}
                 </span>
               </td>
+              <td>
+                <span class="fw-semibold">${{ (order.total_paid || 0) | number:'1.2-2' }}</span>
+              </td>
               <td>{{ order.created_at | date:'dd/MM/yyyy' }}</td>
               <td>
                 <!-- Botón para ver detalle -->
@@ -276,8 +244,8 @@
                   <i class="bi bi-eye"></i>
                 </button>
                 
-                <!-- Botón para generar etiqueta (solo cuando status = entregado) -->
-                <button *ngIf="order.status === 'entregado'" 
+                <!-- Botón para generar etiqueta (solo cuando status = completed/entregado) -->
+                <button *ngIf="order.status === 'completed' || order.status === 'entregado'" 
                         (click)="generateTicket(order)"
                         class="btn btn-outline-warning btn-sm btn-ios me-1"
                         title="Generar Etiqueta">
@@ -292,25 +260,10 @@
                   <i class="bi bi-gear"></i>
                 </button>
                 
-                <!-- Botón para enviar por WhatsApp -->
-                <button *ngIf="order.phone" 
-                        (click)="sendWhatsApp(order)"
-                        class="btn btn-success btn-sm btn-ios me-1"
-                        title="Enviar por WhatsApp">
-                  <i class="bi bi-whatsapp"></i>
-                </button>
-                
-                <!-- Botones de descarga PDF -->
-                <button *ngIf="order.appointment_code !== null"
-                  (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
-                  class="btn btn-outline-danger btn-sm btn-ios"
-                  title="Descargar PDF">
-                  <i class="bi bi-file-earmark-pdf-fill"></i>
-                </button>
-                <button *ngIf="order.appointment_code == null"
-                  (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
-                  class="btn btn-outline-primary btn-sm btn-ios"
-                  title="Descargar PDF">
+                <!-- Botón de descarga PDF -->
+                <button (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.folio_order || order.id)"
+                        class="btn btn-outline-danger btn-sm btn-ios"
+                        title="Descargar PDF">
                   <i class="bi bi-file-earmark-pdf-fill"></i>
                 </button>
               </td>
@@ -344,16 +297,16 @@
       <!-- Cards de datos -->
       <div *ngIf="filtered.length > 0">
         <div class="card mb-3 shadow-sm p-3 fade-in" *ngFor="let order of filtered | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-          <p><strong>Folio:</strong> {{ order.appointment_code || 'Sin Folio' }}</p>
+          <p><strong>Folio Orden:</strong> {{ order.folio_order || 'Sin Folio' }}</p>
+          <p><strong>Paciente:</strong> {{ order.patient || '—' }}</p>
+          <p><strong>Doctor:</strong> {{ order.doctor || '—' }}</p>
           <p>
-            <strong>Código Entrega:</strong> 
-            <span *ngIf="order.code_ticket" class="badge bg-info text-white ms-1">{{ order.code_ticket }}</span>
-            <span *ngIf="!order.code_ticket" class="text-muted ms-1">Sin código</span>
+            <strong>Cita:</strong>
+            <span *ngIf="order.appointment_id" class="badge bg-info text-white ms-1">
+              <i class="bi bi-calendar-check me-1"></i>Asociada
+            </span>
+            <span *ngIf="!order.appointment_id" class="text-muted ms-1">Sin cita</span>
           </p>
-          <p><strong>Paciente:</strong> {{ order.patient }}</p>
-          <p><strong>Email:</strong> {{ order.email }}</p>
-          <p><strong>Teléfono:</strong> {{ order.phone }}</p>
-          <p><strong>Doctor:</strong> {{ order.doctor }}</p>
           <p>
             <strong>Status:</strong> 
             <span class="badge status-badge ms-1" [ngClass]="getStatusClass(order.status)">
@@ -366,6 +319,7 @@
               {{ getMethodText(order.method || 'por_definir') }}
             </span>
           </p>
+          <p><strong>Total Pagado:</strong> ${{ (order.total_paid || 0) | number:'1.2-2' }}</p>
           <p><strong>Creación:</strong> {{ order.created_at | date:'dd/MM/yyyy' }}</p>
           <div class="d-flex justify-content-start gap-2 mt-2">
             <!-- Botón para ver detalle -->
@@ -376,8 +330,8 @@
               <span class="d-none d-sm-inline ms-1">Detalle</span>
             </button>
             
-            <!-- Botón para generar etiqueta (solo cuando status = entregado) -->
-            <button *ngIf="order.status === 'entregado'" 
+            <!-- Botón para generar etiqueta (solo cuando status = completed/entregado) -->
+            <button *ngIf="order.status === 'completed' || order.status === 'entregado'" 
                     (click)="generateTicket(order)"
                     class="btn btn-outline-warning btn-sm btn-ios"
                     title="Generar Etiqueta">
@@ -394,26 +348,10 @@
               <span class="d-none d-sm-inline ms-1">Status</span>
             </button>
             
-            <!-- Botón para enviar por WhatsApp -->
-            <button *ngIf="order.phone" 
-                    (click)="sendWhatsApp(order)"
-                    class="btn btn-success btn-sm btn-ios"
-                    title="Enviar por WhatsApp">
-              <i class="bi bi-whatsapp"></i>
-              <span class="d-none d-sm-inline ms-1">WhatsApp</span>
-            </button>
-            
-            <!-- Botones de descarga PDF -->
-            <button *ngIf="order.appointment_code !== null"
-              (click)="downloadPdf(env.url + 'file/getfile/download/' + order.appointment_code + '.pdf', order.appointment_code)"
-              class="btn btn-outline-danger btn-sm btn-ios"
-              title="Descargar PDF">
-              <i class="bi bi-file-earmark-pdf-fill"></i>
-            </button>
-            <button *ngIf="order.appointment_code == null"
-              (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.id)"
-              class="btn btn-outline-primary btn-sm btn-ios"
-              title="Descargar PDF">
+            <!-- Botón de descarga PDF -->
+            <button (click)="downloadPdf(env.url + 'file/getfile/downloadbyid/' + order.id + '.pdf', order.folio_order || order.id)"
+                    class="btn btn-outline-danger btn-sm btn-ios"
+                    title="Descargar PDF">
               <i class="bi bi-file-earmark-pdf-fill"></i>
             </button>
           </div>
@@ -436,7 +374,7 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <p><strong>Folio:</strong> {{ selectedOrder?.appointment_code || 'Sin Folio' }}</p>
+          <p><strong>Folio:</strong> {{ selectedOrder?.folio_order || 'Sin Folio' }}</p>
           <p><strong>Paciente:</strong> {{ selectedOrder?.patient }}</p>
           <p><strong>Doctor:</strong> {{ selectedOrder?.doctor }}</p>
         </div>
@@ -558,371 +496,217 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" *ngIf="selectedOrderDetail">
-        <!-- Información general -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header bg-primary text-white">
-                <h6 class="mb-0">
-                  <i class="bi bi-info-circle me-2"></i>
-                  Información General
-                </h6>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <p><strong>Paciente:</strong> {{ selectedOrderDetail.patient }}</p>
-                    <p><strong>Fecha de Nacimiento:</strong> {{ selectedOrderDetail.birthdate | date:'dd/MM/yyyy' }}</p>
-                    <p><strong>Teléfono:</strong> {{ selectedOrderDetail.phone }}</p>
-                  </div>
-                  <div class="col-md-6">
-                    <p><strong>Doctor:</strong> {{ selectedOrderDetail.doctor }}</p>
-                    <p><strong>Dirección:</strong> {{ selectedOrderDetail.address }}</p>
-                    <p><strong>Cédula Profesional:</strong> {{ selectedOrderDetail.professional_id }}</p>
-                  </div>
-                  <div class="col-12">
-                    <p><strong>Email:</strong> {{ selectedOrderDetail.email }}</p>
-                    <p>
-                      <strong>Código de Entrega:</strong> 
-                      <span *ngIf="selectedOrderDetail.code_ticket" class="badge bg-info text-white ms-1">{{ selectedOrderDetail.code_ticket }}</span>
-                      <span *ngIf="!selectedOrderDetail.code_ticket" class="text-muted ms-1">Sin código</span>
-                    </p>
-                    <p>
-                      <strong>Status:</strong> 
-                      <span class="badge status-badge ms-1" [ngClass]="getStatusClass(selectedOrderDetail.status)">
-                        {{ getStatusText(selectedOrderDetail.status) }}
-                      </span>
-                    </p>
-                    <p>
-                      <strong>Método de Entrega:</strong> 
-                      <span class="badge method-badge ms-1" [ngClass]="getMethodClass(selectedOrderDetail.method || 'por_definir')">
-                        {{ getMethodText(selectedOrderDetail.method || 'por_definir') }}
-                      </span>
-                    </p>
-                  </div>
+        <!-- Sección: Información General -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-info-circle me-2"></i>
+            Información General
+          </h6>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Folio Orden:</strong> {{ selectedOrderDetail.folio_order || 'Sin Folio' }}</p>
+              <p class="mb-2"><strong>Paciente:</strong> {{ selectedOrderDetail.patient || '—' }}</p>
+              <p class="mb-2"><strong>Fecha de Nacimiento:</strong>
+                <span *ngIf="selectedOrderDetail.birthdate">{{ selectedOrderDetail.birthdate | date:'dd/MM/yyyy' }}</span>
+                <span *ngIf="!selectedOrderDetail.birthdate" class="text-muted">—</span>
+              </p>
+              <p class="mb-2"><strong>Teléfono:</strong> {{ selectedOrderDetail.phone || '—' }}</p>
+              <p class="mb-2"><strong>Email:</strong> {{ selectedOrderDetail.email || '—' }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Doctor:</strong> {{ selectedOrderDetail.doctor || '—' }}</p>
+              <p class="mb-2">
+                <strong>Status:</strong>
+                <span class="badge status-badge ms-1" [ngClass]="getStatusClass(selectedOrderDetail.status)">
+                  {{ getStatusText(selectedOrderDetail.status) }}
+                </span>
+              </p>
+              <p class="mb-2">
+                <strong>Método:</strong>
+                <span class="badge method-badge ms-1" [ngClass]="getMethodClass(selectedOrderDetail.method || 'por_definir')">
+                  {{ getMethodText(selectedOrderDetail.method || 'por_definir') }}
+                </span>
+              </p>
+              <p class="mb-2"><strong>Fecha de Creación:</strong>
+                <span *ngIf="selectedOrderDetail.order_created_at">{{ selectedOrderDetail.order_created_at | date:'dd/MM/yyyy' }}</span>
+                <span *ngIf="!selectedOrderDetail.order_created_at" class="text-muted">—</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Servicios -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+            Servicios
+          </h6>
+          <div *ngIf="parsedOrderContent.servicios.length === 0" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No hay servicios registrados.
+          </div>
+          <ul class="list-group list-group-flush" *ngIf="parsedOrderContent.servicios.length > 0">
+            <li class="list-group-item px-0"
+                *ngFor="let id of parsedOrderContent.servicios; let i = index">
+              <span class="badge bg-secondary me-2">{{ i + 1 }}</span>
+              {{ getServiceName(id) }}
+            </li>
+          </ul>
+        </section>
+
+        <!-- Sección: Paquetes -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-box-seam me-2"></i>
+            Paquetes
+            <span class="badge bg-primary ms-2">{{ parsedOrderContent.paquetes.length }}</span>
+          </h6>
+          <div *ngIf="parsedOrderContent.paquetes.length === 0" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No hay paquetes registrados.
+          </div>
+          <ul class="list-group list-group-flush" *ngIf="parsedOrderContent.paquetes.length > 0">
+            <li class="list-group-item px-0"
+                *ngFor="let id of parsedOrderContent.paquetes; let i = index">
+              <span class="badge bg-secondary me-2">{{ i + 1 }}</span>
+              {{ getPackageName(id) }}
+            </li>
+          </ul>
+        </section>
+
+        <!-- Sección: Campos Dinámicos -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-input-cursor-text me-2"></i>
+            Campos Dinámicos
+            <span class="badge bg-primary ms-2">{{ getDynamicCategoryIds().length }}</span>
+          </h6>
+          <div *ngIf="getDynamicCategoryIds().length === 0" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No hay campos dinámicos registrados.
+          </div>
+          <div *ngIf="getDynamicCategoryIds().length > 0">
+            <div class="mb-3" *ngFor="let catId of getDynamicCategoryIds()">
+              <h6 class="mb-2 text-secondary">
+                <i class="bi bi-tag-fill me-1"></i>
+                {{ getCategoryName(catId) }}
+              </h6>
+              <div class="row ps-3">
+                <div class="col-md-6 mb-2" *ngFor="let entry of getDynamicEntries(catId)">
+                  <ng-container [ngSwitch]="true">
+                    <div *ngSwitchCase="entry.value === true">
+                      <span class="badge bg-success me-2">✓</span>
+                      <strong>{{ entry.key }}</strong>
+                    </div>
+                    <div *ngSwitchCase="entry.value === false" class="text-muted">
+                      <span class="badge bg-light text-dark border me-2">○</span>
+                      {{ entry.key }}
+                    </div>
+                    <div *ngSwitchDefault>
+                      <strong>{{ entry.key }}:</strong>
+                      <span *ngIf="hasDynamicValue(entry.value)" class="ms-1">{{ entry.value }}</span>
+                      <span *ngIf="!hasDynamicValue(entry.value)" class="text-muted ms-1">—</span>
+                    </div>
+                  </ng-container>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Estudios solicitados en tabs -->
-        <div class="row">
-          <div class="col-12">
-            <ul class="nav nav-tabs" id="detailTabs" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="radiografia-tab" data-bs-toggle="tab" data-bs-target="#radiografia" 
-                        type="button" role="tab">
-                  <i class="bi bi-camera me-1"></i>
-                  Radiografías
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="intraoral-tab" data-bs-toggle="tab" data-bs-target="#intraoral" 
-                        type="button" role="tab">
-                  <i class="bi bi-teeth me-1"></i>
-                  Intraorales
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="analisis-tab" data-bs-toggle="tab" data-bs-target="#analisis" 
-                        type="button" role="tab">
-                  <i class="bi bi-graph-up me-1"></i>
-                  Análisis
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="modelos-tab" data-bs-toggle="tab" data-bs-target="#modelos" 
-                        type="button" role="tab">
-                  <i class="bi bi-box-seam me-1"></i>
-                  Modelos
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tomografia-tab" data-bs-toggle="tab" data-bs-target="#tomografia" 
-                        type="button" role="tab">
-                  <i class="bi bi-layers me-1"></i>
-                  Tomografías
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="escaneo-tab" data-bs-toggle="tab" data-bs-target="#escaneo" 
-                        type="button" role="tab">
-                  <i class="bi bi-scanner me-1"></i>
-                  Escaneo
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="otros-tab" data-bs-toggle="tab" data-bs-target="#otros" 
-                        type="button" role="tab">
-                  <i class="bi bi-plus-circle me-1"></i>
-                  Otros
-                </button>
-              </li>
-            </ul>
-            
-            <div class="tab-content" id="detailTabContent">
-              <!-- Tab Radiografías -->
-              <div class="tab-pane fade show active" id="radiografia" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <h6 class="text-muted mb-3">Opciones de Entrega</h6>
-                    <div class="row mb-3">
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.acetate_print === '1'">
-                        <span class="badge bg-success me-2">✓</span> Impresión en acetato
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.paper_print === '1'">
-                        <span class="badge bg-success me-2">✓</span> Impresión en papel
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.send_email === '1'">
-                        <span class="badge bg-success me-2">✓</span> Enviar por correo
-                      </div>
-                    </div>
-                    
-                    <h6 class="text-muted mb-3">Tipos de Radiografías</h6>
-                    <div class="row">
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.rx_panoramic === '1'">
-                        <span class="badge bg-success me-2">✓</span> Rx Panorámica
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.rx_arc_panoramic === '1'">
-                        <span class="badge bg-success me-2">✓</span> Rx Arco Panorámico
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.rx_lateral_skull === '1'">
-                        <span class="badge bg-success me-2">✓</span> Rx Lateral Cráneo
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.ap_skull === '1'">
-                        <span class="badge bg-success me-2">✓</span> AP Cráneo
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.pa_skull === '1'">
-                        <span class="badge bg-success me-2">✓</span> PA Cráneo
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.paranasal_sinuses === '1'">
-                        <span class="badge bg-success me-2">✓</span> Senos Paranasales
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.atm_open_close === '1'">
-                        <span class="badge bg-success me-2">✓</span> ATM Abre/Cierra
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.profilogram === '1'">
-                        <span class="badge bg-success me-2">✓</span> Profilograma
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.watters_skull === '1'">
-                        <span class="badge bg-success me-2">✓</span> Watters
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.palmar_digit === '1'">
-                        <span class="badge bg-success me-2">✓</span> Dígito Palmar
-                      </div>
-                    </div>
-                    <div class="row mt-3" *ngIf="selectedOrderDetail.others_radiography">
-                      <div class="col-12">
-                        <strong>Otras radiografías:</strong> {{ selectedOrderDetail.others_radiography }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Intraorales -->
-              <div class="tab-pane fade" id="intraoral" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.complete_periapical === '1'">
-                        <span class="badge bg-success me-2">✓</span> Serie Periapical Completa
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.individual_periapical === '1'">
-                        <span class="badge bg-success me-2">✓</span> Periapical Individual
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.superior === '1'">
-                        <span class="badge bg-success me-2">✓</span> Oclusal Superior
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.inferior === '1'">
-                        <span class="badge bg-success me-2">✓</span> Oclusal Inferior
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.occlusal_xray === '1'">
-                        <span class="badge bg-success me-2">✓</span> Oclusal Completa
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.clinical_photography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Fotografía Clínica
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Análisis -->
-              <div class="tab-pane fade" id="analisis" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.rickets === '1'">
-                        <span class="badge bg-success me-2">✓</span> Rickets
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.mcnamara === '1'">
-                        <span class="badge bg-success me-2">✓</span> McNamara
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.downs === '1'">
-                        <span class="badge bg-success me-2">✓</span> Downs
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.jaraback === '1'">
-                        <span class="badge bg-success me-2">✓</span> Jaraback
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.steiner === '1'">
-                        <span class="badge bg-success me-2">✓</span> Steiner
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.dental_interpretation === '1'">
-                        <span class="badge bg-success me-2">✓</span> Interpretación Odontológica
-                      </div>
-                    </div>
-                    <div class="row mt-3" *ngIf="selectedOrderDetail.others_analysis">
-                      <div class="col-12">
-                        <strong>Otros análisis:</strong> {{ selectedOrderDetail.others_analysis }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Modelos -->
-              <div class="tab-pane fade" id="modelos" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.risina === '1'">
-                        <span class="badge bg-success me-2">✓</span> Resina
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.dentalprint === '1'">
-                        <span class="badge bg-success me-2">✓</span> Impresión Dental
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail['3d_risina'] === '1'">
-                        <span class="badge bg-success me-2">✓</span> Resina 3D
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.surgical_guide === '1'">
-                        <span class="badge bg-success me-2">✓</span> Guía Quirúrgica
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.maxilar_superior === '1'">
-                        <span class="badge bg-success me-2">✓</span> Maxilar Superior
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.maxilar_inferior === '1'">
-                        <span class="badge bg-success me-2">✓</span> Maxilar Inferior
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.maxilar_both === '1'">
-                        <span class="badge bg-success me-2">✓</span> Maxilar Ambos
-                      </div>
-                    </div>
-                    <div class="row mt-3">
-                      <div class="col-12" *ngIf="selectedOrderDetail.studio_piece">
-                        <strong>Pieza de estudio:</strong> {{ selectedOrderDetail.studio_piece }}
-                      </div>
-                      <div class="col-12" *ngIf="selectedOrderDetail.maxilar_others">
-                        <strong>Otros modelos:</strong> {{ selectedOrderDetail.maxilar_others }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Tomografías -->
-              <div class="tab-pane fade" id="tomografia" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.complete_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía Completa
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.two_jaws_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía Ambos Maxilares
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.maxilar_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía Maxilar
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.jaw_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía Mandíbula
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.snp_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía SNP
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.ear_tomography === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía Oído
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.atm_tomography_open_close === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía ATM Abierta/Cerrada
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.lateral_left_tomography_open_close === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía ATM Abierta
-                      </div>
-                      <div class="col-md-4" *ngIf="selectedOrderDetail.lateral_right_tomography_open_close === '1'">
-                        <span class="badge bg-success me-2">✓</span> Tomografía ATM Cerrada
-                      </div>
-                    </div>
-                    <div class="row mt-3">
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.tomography_piece">
-                        <strong>Pieza:</strong> {{ selectedOrderDetail.tomography_piece }}
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.implant">
-                        <strong>Implante:</strong> {{ selectedOrderDetail.implant }}
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.impacted_tooth">
-                        <strong>Diente Retenido:</strong> {{ selectedOrderDetail.impacted_tooth }}
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.others_tomography">
-                        <strong>Otros:</strong> {{ selectedOrderDetail.others_tomography }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Escaneo -->
-              <div class="tab-pane fade" id="escaneo" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-3" *ngIf="selectedOrderDetail.stl === '1'">
-                        <span class="badge bg-success me-2">✓</span> STL
-                      </div>
-                      <div class="col-md-3" *ngIf="selectedOrderDetail.obj === '1'">
-                        <span class="badge bg-success me-2">✓</span> OBJ
-                      </div>
-                      <div class="col-md-3" *ngIf="selectedOrderDetail.ply === '1'">
-                        <span class="badge bg-success me-2">✓</span> PLY
-                      </div>
-                      <div class="col-md-3" *ngIf="selectedOrderDetail.invisaligh === '1'">
-                        <span class="badge bg-success me-2">✓</span> INVISALIGH
-                      </div>
-                    </div>
-                    <div class="row mt-3" *ngIf="selectedOrderDetail.others_scanners">
-                      <div class="col-12">
-                        <strong>Otros formatos:</strong> {{ selectedOrderDetail.others_scanners }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Otros -->
-              <div class="tab-pane fade" id="otros" role="tabpanel">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.ondemand">
-                        <strong>Ondemand:</strong> {{ selectedOrderDetail.ondemand }}
-                      </div>
-                      <div class="col-md-6" *ngIf="selectedOrderDetail.dicom">
-                        <strong>DICOM:</strong> {{ selectedOrderDetail.dicom }}
-                      </div>
-                    </div>
-                    <div class="row mt-3">
-                      <div class="col-12">
-                        <p><strong>Fecha de Creación:</strong> {{ selectedOrderDetail.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
-                        <p><strong>Última Actualización:</strong> {{ selectedOrderDetail.updated_at | date:'dd/MM/yyyy HH:mm' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <!-- Sección: Cita -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-calendar-event me-2"></i>
+            Cita
+          </h6>
+          <div *ngIf="!selectedOrderDetail.appointment_id" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            Esta orden no está asociada a una cita.
+          </div>
+          <div *ngIf="selectedOrderDetail.appointment_id" class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Inicio:</strong>
+                <span *ngIf="selectedOrderDetail.appointment">{{ selectedOrderDetail.appointment | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span *ngIf="!selectedOrderDetail.appointment" class="text-muted">—</span>
+              </p>
+              <p class="mb-2"><strong>Fin:</strong>
+                <span *ngIf="selectedOrderDetail.end_appointment">{{ selectedOrderDetail.end_appointment | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span *ngIf="!selectedOrderDetail.end_appointment" class="text-muted">—</span>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Cliente:</strong> {{ selectedOrderDetail.client || '—' }}</p>
+              <p class="mb-2"><strong>Personal:</strong> {{ selectedOrderDetail.personal || '—' }}</p>
             </div>
           </div>
-        </div>
+        </section>
+
+        <!-- Sección: Pago -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-cash-coin me-2"></i>
+            Pago
+          </h6>
+          <div *ngIf="!selectedOrderDetail.payment_id" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No se ha registrado un pago para esta orden.
+          </div>
+          <div *ngIf="selectedOrderDetail.payment_id" class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Método:</strong>
+                <span class="badge method-badge ms-1" [ngClass]="getMethodClass(selectedOrderDetail.payment_method || 'por_definir')">
+                  {{ getMethodText(selectedOrderDetail.payment_method || 'por_definir') }}
+                </span>
+              </p>
+              <p class="mb-2"><strong>Status:</strong> {{ selectedOrderDetail.payment_status || '—' }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Monto:</strong> ${{ (selectedOrderDetail.amount || 0) | number:'1.2-2' }}</p>
+            </div>
+            <div class="col-12" *ngIf="selectedOrderDetail.note">
+              <p class="mb-2"><strong>Nota:</strong> {{ selectedOrderDetail.note }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Sucursal -->
+        <section class="detail-section mb-4">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-shop me-2"></i>
+            Sucursal
+          </h6>
+          <div *ngIf="!selectedOrderDetail.subsidiary_name && !selectedOrderDetail.id_subsidiary" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No hay información de sucursal asociada.
+          </div>
+          <div *ngIf="selectedOrderDetail.subsidiary_name || selectedOrderDetail.id_subsidiary" class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong>Nombre:</strong> {{ selectedOrderDetail.subsidiary_name || '—' }}</p>
+              <p class="mb-2"><strong>Dirección:</strong> {{ selectedOrderDetail.subsidiary_address || '—' }}</p>
+            </div>
+            <div class="col-md-6" *ngIf="selectedOrderDetail.service_name || selectedOrderDetail.category_name">
+              <p class="mb-2"><strong>Servicio:</strong> {{ selectedOrderDetail.service_name || '—' }}</p>
+              <p class="mb-2"><strong>Categoría:</strong> {{ selectedOrderDetail.category_name || '—' }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Notas -->
+        <section class="detail-section mb-2">
+          <h6 class="section-title border-bottom pb-2 mb-3 text-primary">
+            <i class="bi bi-journal-text me-2"></i>
+            Notas
+          </h6>
+          <div *ngIf="!parsedOrderContent.notas" class="text-muted">
+            <i class="bi bi-dash-circle me-1"></i>
+            No hay notas registradas.
+          </div>
+          <div *ngIf="parsedOrderContent.notas" class="alert alert-light border mb-0">
+            <i class="bi bi-quote me-2"></i>
+            {{ parsedOrderContent.notas }}
+          </div>
+        </section>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

@@ -20,6 +20,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   filtered: any[] = [];
   filterText: string = '';
   serviceSearchText: string = '';
+  packageServiceSearchText: string = '';
   services: any[] = [];
   categories: any[] = [];
   id: string = '';
@@ -1881,7 +1882,17 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     if (!this.selectedPackage) return [];
     const assigned = this.getPackageAssignedServices();
     const assignedIds = assigned.map(s => s.id);
-    return this.allServices.filter(s => !assignedIds.includes(s.id));
+    let available = this.allServices.filter(s => !assignedIds.includes(s.id));
+
+    if (this.packageServiceSearchText && this.packageServiceSearchText.trim() !== '') {
+      const searchText = this.packageServiceSearchText.toLowerCase().trim();
+      available = available.filter(s =>
+        (s.name && s.name.toLowerCase().includes(searchText)) ||
+        (s.description && s.description.toLowerCase().includes(searchText))
+      );
+    }
+
+    return available;
   }
 
   // ============================================

@@ -581,6 +581,22 @@
         <span class="badge-count">{{ getPackageAvailableServices()?.length || 0 }}</span>
       </div>
       <div class="panel-body">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            placeholder="Buscar servicio..."
+            class="search-input"
+            [(ngModel)]="packageServiceSearchText"
+            name="packageServiceSearch">
+          <button
+            *ngIf="packageServiceSearchText"
+            class="clear-search"
+            (click)="packageServiceSearchText = ''"
+            title="Limpiar búsqueda">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
         <div class="services-grid">
           <div 
             *ngFor="let service of getPackageAvailableServices()" 
@@ -600,8 +616,8 @@
             </div>
           </div>
           <div *ngIf="getPackageAvailableServices()?.length === 0" class="empty-state">
-            <i class="bi bi-check-circle"></i>
-            <p>Todos los servicios asignados</p>
+            <i class="bi" [ngClass]="packageServiceSearchText ? 'bi-search' : 'bi-check-circle'"></i>
+            <p>{{ packageServiceSearchText ? 'No se encontraron servicios' : 'Todos los servicios asignados' }}</p>
           </div>
         </div>
       </div>

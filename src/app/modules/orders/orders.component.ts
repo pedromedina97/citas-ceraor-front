@@ -31,14 +31,12 @@ export class OrdersComponent implements OnInit {
 
   // Filtros de búsqueda
   filters = {
-    folio: '',
     folioOrder: '',
-    codeTicket: '',
     patient: '',
-    email: '',
     doctor: '',
     status: '',
-    packet: '',
+    method: '',
+    appointment: '',
     dateFrom: '',
     dateTo: ''
   };
@@ -54,6 +52,15 @@ export class OrdersComponent implements OnInit {
 
   // Propiedades para el modal de detalle
   selectedOrderDetail: any = null;
+  parsedOrderContent: { servicios: string[]; paquetes: string[]; camposDinamicos: any; notas: string } = {
+    servicios: [],
+    paquetes: [],
+    camposDinamicos: {},
+    notas: ''
+  };
+  servicesMap: { [id: string]: any } = {};
+  packagesMap: { [id: string]: any } = {};
+  categoriesMap: { [id: string]: any } = {};
 
   constructor(private api: CeraorService, private permissionsService: PermissionsService, private cd: ChangeDetectorRef, private router: Router, private zone: NgZone) { }
 
@@ -62,15 +69,45 @@ export class OrdersComponent implements OnInit {
 
     this.setPetitions();
     this.getRols();
+    this.loadCatalogs();
+  }
+
+  /**
+   * Carga catálogos de servicios, paquetes y categorías para mapear ids -> nombres en el detalle
+   */
+  loadCatalogs() {
+    this.api.getData('service/getall').subscribe(
+      (resp: any) => {
+        const list = resp?.data || [];
+        list.forEach((s: any) => { if (s?.id) this.servicesMap[s.id] = s; });
+      },
+      () => { /* silencioso */ }
+    );
+
+    this.api.getData('packet/getall').subscribe(
+      (resp: any) => {
+        const list = resp?.data || [];
+        list.forEach((p: any) => { if (p?.id) this.packagesMap[p.id] = p; });
+      },
+      () => { /* silencioso */ }
+    );
+
+    this.api.getData('category/getall').subscribe(
+      (resp: any) => {
+        const list = resp?.data || [];
+        list.forEach((c: any) => { if (c?.id) this.categoriesMap[c.id] = c; });
+      },
+      () => { /* silencioso */ }
+    );
   }
 
   setPetitions() {
-    if (this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol == 'Admin' || this.rol == 'Operativo' || this.rol == 'Recepcionista') {
+    /* if (this.rol == 'Owner' || this.rol == 'Superadmin' || this.rol == 'Admin' || this.rol == 'Operativo' || this.rol == 'Recepcionista') { */
       this.getData();
-    } else if (this.rol == 'Doctor') {
+    /* } else if (this.rol == 'Doctor') {
       let complete = this.name + " " + this.lastname;
       this.getOrdersByDoctor(complete);
-    }
+    } */
   }
 
   setPermissions() {
@@ -145,15 +182,11 @@ export class OrdersComponent implements OnInit {
     }
 
     this.filtered = this.orders.filter(order => {
-      const folioMatch = order.appointment_code && order.appointment_code.toLowerCase().includes(searchText);
+      const folioMatch = order.folio_order && order.folio_order.toLowerCase().includes(searchText);
       const patientMatch = order.patient && order.patient.toLowerCase().includes(searchText);
-      
-      // Si es un número de folio exacto, priorizar esa coincidencia
-      if (searchText === order.appointment_code?.toLowerCase()) {
-        return true;
-      }
-      
-      return folioMatch || patientMatch;
+      const doctorMatch = order.doctor && order.doctor.toLowerCase().includes(searchText);
+
+      return folioMatch || patientMatch || doctorMatch;
     });
   }
 
@@ -338,28 +371,14 @@ export class OrdersComponent implements OnInit {
    */
   applyFilters() {
     this.filtered = this.orders.filter(order => {
-      // Filtro por folio de cita
-      const folioMatch = !this.filters.folio ||
-        (order.appointment_code && order.appointment_code.toLowerCase().includes(this.filters.folio.toLowerCase())) ||
-        (!order.appointment_code && 'sin folio'.includes(this.filters.folio.toLowerCase()));
-
       // Filtro por folio de orden
       const folioOrderMatch = !this.filters.folioOrder ||
         (order.folio_order && order.folio_order.toLowerCase().includes(this.filters.folioOrder.toLowerCase())) ||
         (!order.folio_order && 'sin folio'.includes(this.filters.folioOrder.toLowerCase()));
 
-      // Filtro por código de entrega
-      const codeTicketMatch = !this.filters.codeTicket ||
-        (order.code_ticket && order.code_ticket.toLowerCase().includes(this.filters.codeTicket.toLowerCase())) ||
-        (!order.code_ticket && 'sin código'.includes(this.filters.codeTicket.toLowerCase()));
-
       // Filtro por paciente
       const patientMatch = !this.filters.patient ||
         (order.patient && order.patient.toLowerCase().includes(this.filters.patient.toLowerCase()));
-
-      // Filtro por email
-      const emailMatch = !this.filters.email ||
-        (order.email && order.email.toLowerCase().includes(this.filters.email.toLowerCase()));
 
       // Filtro por doctor
       const doctorMatch = !this.filters.doctor ||
@@ -369,9 +388,14 @@ export class OrdersComponent implements OnInit {
       const statusMatch = !this.filters.status ||
         (order.status && order.status === this.filters.status);
 
-      // Filtro por tipo de estudio (packet)
-      const packetMatch = !this.filters.packet ||
-        (order.packet && order.packet === this.filters.packet);
+      // Filtro por método
+      const methodMatch = !this.filters.method ||
+        (order.method && order.method === this.filters.method);
+
+      // Filtro por relación con cita
+      const appointmentMatch = !this.filters.appointment ||
+        (this.filters.appointment === 'with' && !!order.appointment_id) ||
+        (this.filters.appointment === 'without' && !order.appointment_id);
 
       // Filtro por rango de fechas
       let dateMatch = true;
@@ -391,7 +415,7 @@ export class OrdersComponent implements OnInit {
         }
       }
 
-      return folioMatch && folioOrderMatch && codeTicketMatch && patientMatch && emailMatch && doctorMatch && statusMatch && packetMatch && dateMatch;
+      return folioOrderMatch && patientMatch && doctorMatch && statusMatch && methodMatch && appointmentMatch && dateMatch;
     });
 
     // Resetear paginación cuando se filtran los datos
@@ -403,14 +427,12 @@ export class OrdersComponent implements OnInit {
    */
   clearFilters() {
     this.filters = {
-      folio: '',
       folioOrder: '',
-      codeTicket: '',
       patient: '',
-      email: '',
       doctor: '',
       status: '',
-      packet: '',
+      method: '',
+      appointment: '',
       dateFrom: '',
       dateTo: ''
     };
@@ -432,9 +454,13 @@ export class OrdersComponent implements OnInit {
    */
   getStatusClass(status: string): string {
     const statusClasses: { [key: string]: string } = {
+      'pending': 'bg-warning text-dark',
       'solicitado': 'bg-warning text-dark',
+      'in_progress': 'bg-info text-white',
       'en_proceso': 'bg-info text-white',
-      'entregado': 'bg-success text-white'
+      'completed': 'bg-success text-white',
+      'entregado': 'bg-success text-white',
+      'cancelled': 'bg-danger text-white'
     };
     return statusClasses[status] || 'bg-secondary text-white';
   }
@@ -444,9 +470,13 @@ export class OrdersComponent implements OnInit {
    */
   getStatusText(status: string): string {
     const statusTexts: { [key: string]: string } = {
+      'pending': 'Pendiente',
       'solicitado': 'Solicitado',
+      'in_progress': 'En Proceso',
       'en_proceso': 'En Proceso',
-      'entregado': 'Entregado'
+      'completed': 'Completado',
+      'entregado': 'Entregado',
+      'cancelled': 'Cancelado'
     };
     return statusTexts[status] || 'Sin Status';
   }
@@ -456,6 +486,9 @@ export class OrdersComponent implements OnInit {
    */
   getMethodClass(method: string): string {
     const methodClasses: { [key: string]: string } = {
+      'cash': 'bg-success text-white',
+      'card': 'bg-primary text-white',
+      'transfer': 'bg-info text-white',
       'fisico': 'bg-primary text-white',
       'digital': 'bg-dark text-white',
       'ambos': 'bg-purple text-white',
@@ -469,6 +502,9 @@ export class OrdersComponent implements OnInit {
    */
   getMethodText(method: string): string {
     const methodTexts: { [key: string]: string } = {
+      'cash': 'Efectivo',
+      'card': 'Tarjeta',
+      'transfer': 'Transferencia',
       'fisico': 'Físico',
       'digital': 'Digital',
       'ambos': 'Ambos',
@@ -547,8 +583,10 @@ export class OrdersComponent implements OnInit {
   openDetailModal(order: any) {
     this.api.getData(`order/getdetailsbyid/${order.id}`).subscribe(
       (response: any) => {
+        console.log(response);
         if (response.status === 'success' && response.data && response.data.length > 0) {
           this.selectedOrderDetail = response.data[0];
+          this.parsedOrderContent = this.parseOrderContent(this.selectedOrderDetail.content);
           // Abrir el modal usando Bootstrap
           const modal = new (window as any).bootstrap.Modal(document.getElementById('detailModal'));
           modal.show();
@@ -571,6 +609,73 @@ export class OrdersComponent implements OnInit {
         });
       }
     );
+  }
+
+  /**
+   * Parsea el campo content (JSON string) del detalle de la orden
+   */
+  parseOrderContent(content: any): { servicios: string[]; paquetes: string[]; camposDinamicos: any; notas: string } {
+    const empty = { servicios: [] as string[], paquetes: [] as string[], camposDinamicos: {}, notas: '' };
+    if (!content) return empty;
+    try {
+      const parsed = typeof content === 'string' ? JSON.parse(content) : content;
+      return {
+        servicios: Array.isArray(parsed?.servicios) ? parsed.servicios : [],
+        paquetes: Array.isArray(parsed?.paquetes) ? parsed.paquetes : [],
+        camposDinamicos: parsed?.camposDinamicos || {},
+        notas: parsed?.notas || ''
+      };
+    } catch (e) {
+      console.error('Error al parsear content de la orden:', e);
+      return empty;
+    }
+  }
+
+  /**
+   * Obtiene el nombre de un servicio a partir de su id
+   */
+  getServiceName(id: string): string {
+    return this.servicesMap[id]?.name || id;
+  }
+
+  /**
+   * Obtiene el nombre de un paquete a partir de su id
+   */
+  getPackageName(id: string): string {
+    return this.packagesMap[id]?.name || id;
+  }
+
+  /**
+   * Obtiene el nombre de una categoría a partir de su id
+   */
+  getCategoryName(id: string): string {
+    return this.categoriesMap[id]?.name || id;
+  }
+
+  /**
+   * Devuelve los IDs de categorías presentes en camposDinamicos
+   */
+  getDynamicCategoryIds(): string[] {
+    const dyn = this.parsedOrderContent?.camposDinamicos || {};
+    return Object.keys(dyn);
+  }
+
+  /**
+   * Devuelve los pares clave/valor de los campos dinámicos para una categoría
+   */
+  getDynamicEntries(categoryId: string): { key: string; value: any }[] {
+    const fields = this.parsedOrderContent?.camposDinamicos?.[categoryId] || {};
+    return Object.keys(fields).map(k => ({ key: k, value: fields[k] }));
+  }
+
+  /**
+   * Indica si un valor de campo dinámico se considera "presente" (no vacío / true)
+   */
+  hasDynamicValue(value: any): boolean {
+    if (value === true) return true;
+    if (typeof value === 'string') return value.trim() !== '';
+    if (typeof value === 'number') return true;
+    return false;
   }
 
   /**
