@@ -414,7 +414,6 @@ export class PublicOrderComponent implements OnInit {
     
     // Formato final del body - mantener el orden de los campos de la BD
     return {
-      folio_order: "",
       patient: patientName || "",
       birthdate: this.formatBirthdate(),
       phone: this.paciente.telefono || "",
@@ -425,7 +424,6 @@ export class PublicOrderComponent implements OnInit {
       status: "pending",
       method: "cash",
       content: JSON.stringify(contentData),
-      active: 1
     };
   }
 
